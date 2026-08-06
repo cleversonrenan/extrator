@@ -1666,6 +1666,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         .filter-btn.naoiniciada-active { background: var(--orange); color: #fff; border-color: var(--orange); }
         .filter-separator { width: 1px; height: 28px; background: var(--border); margin: 0 6px; }
 
+        .multi-select { position: relative; display: inline-block; }
+        .multi-select-btn { min-width: 200px; text-align: left; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .multi-caret { font-size: 9px; color: var(--subtle); }
+        .multi-select-panel { position: absolute; top: calc(100% + 6px); left: 0; min-width: 240px; max-width: 340px; max-height: 300px; overflow: auto; background: var(--white); border: 1px solid var(--border2); border-radius: var(--r-sm); box-shadow: var(--sh); padding: 6px; z-index: 1000; }
+        .multi-option { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text2); white-space: nowrap; }
+        .multi-option:hover { background: var(--accent-light); }
+        .multi-option input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
+        .multi-all { font-weight: 700; border-bottom: 1px solid var(--border); margin-bottom: 4px; padding-bottom: 8px; border-radius: 0; }
+        .multi-options { display: flex; flex-direction: column; }
+
         .search-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; background: var(--white); border-radius: var(--r-sm); box-shadow: var(--sh-sm); margin-bottom: 12px; }
         .search-bar input { flex: 1; min-width: 200px; padding: 8px 14px; border-radius: 20px; border: 2px solid var(--border); font-size: 13px; outline: none; transition: all 0.2s; background: var(--bg); color: var(--text); }
         .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(207, 95, 0, 0.15); background: var(--white); }
@@ -1852,9 +1862,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-filter="naoiniciada">⏳ Não Iniciada</button>
                     <div class="filter-separator"></div>
                     <span class="filter-label" title="Coluna 'Regra usuário criador' das planilhas de atividades">🎯 Regra Criadora:</span>
-                    <select id="regraFilter" class="filter-btn" style="min-width:220px;padding:4px 10px;border-radius:20px;color:var(--text2);background:var(--white);">
-                        <option value="">Todas</option>
-                    </select>
+                    <div class="multi-select" id="regraFilterWrap">
+                        <button type="button" class="filter-btn multi-select-btn" id="regraFilterBtn">
+                            <span id="regraFilterLabel">Todas</span> <span class="multi-caret">▾</span>
+                        </button>
+                        <div class="multi-select-panel" id="regraFilterPanel" hidden>
+                            <label class="multi-option multi-all"><input type="checkbox" id="regraAll" checked> <span>Todas</span></label>
+                            <div class="multi-options" id="regraFilterOptions"></div>
+                        </div>
+                    </div>
                     <div class="filter-separator"></div>
                     <button class="filter-btn" id="btnAtualizar" style="background:var(--accent);color:#fff;border-color:var(--accent);">🔄 Atualizar</button>
                     <div class="filter-separator"></div>
@@ -1973,6 +1989,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             DURACAO: ['Duração'],
             TIPO_FALHA: ['Tipo da Falha'],
             CM: ['CM', 'Regra usuário criador', 'Fila em que está'],
+            REGRA: ['Regra usuário criador', 'Regra do usuário criador', 'Regra criador', 'CM', 'Fila em que está', 'Fila'],
             BAIRRO: ['Bairro'],
             NOME_NE: ['Nome do NE'],
             TITULO_ALARME: ['Título do Alarme'],
@@ -2000,7 +2017,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         let selectedUF = new Set();
         let selectedTNE = null;
         let selectedEstado = new Set();
-        let selectedRegra = '';
+        let selectedRegras = new Set();
         let searchTerm = '';
         const PRIORITY_KEYS = ['P1', 'P2', 'P3', 'P4', 'P5'];
         const SLA_KEYS = ['noprazo', 'vencidos'];
@@ -2017,14 +2034,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         function findColumn(row, possibleNames) {
             const keys = Object.keys(row);
+            const norm = (s) => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
             for (const name of possibleNames) {
-                const found = keys.find(k => k.toLowerCase() === name.toLowerCase());
+                const found = keys.find(k => norm(k) === norm(name));
                 if (found) return found;
             }
             for (const name of possibleNames) {
                 const found = keys.find(k =>
-                    k.toLowerCase().includes(name.toLowerCase()) ||
-                    name.toLowerCase().includes(k.toLowerCase())
+                    norm(k).includes(norm(name)) ||
+                    norm(name).includes(norm(k))
                 );
                 if (found) return found;
             }
@@ -2259,7 +2277,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 saida: get('SAIDA'),
                 duracao: get('DURACAO'),
                 tipoFalha: tipoFalha || 'Não classificado',
-                regra: get('CM') || 'Sem fila',
+                regra: get('REGRA') || 'Sem fila',
                 provedor: get('PROVEDOR') || '',
                 bairro: get('BAIRRO') || '',
                 nome_ne: get('NOME_NE') || '',
@@ -2502,19 +2520,52 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         //  REGRA FILTER
         // ================================================================
         function updateRegraFilter() {
-            const sel = document.getElementById('regraFilter');
-            if (!sel) return;
-            const current = sel.value;
-            const regras = new Set(combinedData.map(d => d.regra).filter(Boolean));
-            const sorted = Array.from(regras).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-            sel.innerHTML = '<option value="">Todas</option>' + sorted.map(r => '<option value="' + String(r).replace(/"/g, '&quot;') + '">' + r + '</option>').join('');
-            if (sorted.includes(current)) sel.value = current; else { sel.value = ''; selectedRegra = ''; }
+            const container = document.getElementById('regraFilterOptions');
+            const allChk = document.getElementById('regraAll');
+            if (!container || !allChk) return;
+            const regras = Array.from(new Set(combinedData.map(d => d.regra).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            container.innerHTML = regras.map(r =>
+                '<label class="multi-option"><input type="checkbox" value="' + String(r).replace(/"/g, '&quot;') + '"' + (selectedRegras.has(r) ? ' checked' : '') + '> <span>' + r + '</span></label>'
+            ).join('');
+            allChk.checked = selectedRegras.size === 0;
+            updateRegraLabel();
         }
 
-        const regraSel = document.getElementById('regraFilter');
-        if (regraSel) {
-            regraSel.addEventListener('change', function() {
-                selectedRegra = this.value;
+        function updateRegraLabel() {
+            const label = document.getElementById('regraFilterLabel');
+            if (!label) return;
+            if (selectedRegras.size === 0) label.textContent = 'Todas';
+            else if (selectedRegras.size === 1) label.textContent = '1 regra';
+            else label.textContent = selectedRegras.size + ' regras';
+        }
+
+        const regraWrap = document.getElementById('regraFilterWrap');
+        if (regraWrap) {
+            const regraBtn = document.getElementById('regraFilterBtn');
+            const regraPanel = document.getElementById('regraFilterPanel');
+            regraBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                regraPanel.hidden = !regraPanel.hidden;
+                if (!regraPanel.hidden) updateRegraFilter();
+            });
+            document.addEventListener('click', function(e) {
+                if (!regraWrap.contains(e.target)) regraPanel.hidden = true;
+            });
+            regraPanel.addEventListener('change', function(e) {
+                const chk = e.target.closest('input[type="checkbox"]');
+                if (!chk) return;
+                e.stopPropagation();
+                const allChk = document.getElementById('regraAll');
+                if (chk.id === 'regraAll') {
+                    selectedRegras.clear();
+                    allChk.checked = true;
+                    document.querySelectorAll('#regraFilterOptions input[type="checkbox"]').forEach(c => c.checked = false);
+                } else {
+                    if (chk.checked) selectedRegras.add(chk.value);
+                    else selectedRegras.delete(chk.value);
+                    allChk.checked = selectedRegras.size === 0;
+                }
+                updateRegraLabel();
                 applyFiltersAndSort(); updateStats(); updateCharts();
             });
         }
@@ -2556,8 +2607,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedEstado.has(d.estadoKey));
             }
 
-            if (selectedRegra) {
-                data = data.filter(d => d.regra === selectedRegra);
+            if (selectedRegras.size > 0) {
+                data = data.filter(d => selectedRegras.has(d.regra));
             }
 
             if (searchTerm.length > 0) {
@@ -2835,9 +2886,11 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
         document.getElementById('resetFilters').addEventListener('click', function() {
             selectedUF.clear(); selectedPriorities.clear(); selectedSLA.clear(); selectedCruzamento.clear(); selectedTNE = null; selectedEstado.clear();
-            selectedRegra = '';
-            const regraSelReset = document.getElementById('regraFilter');
-            if (regraSelReset) regraSelReset.value = '';
+            selectedRegras.clear();
+            const regraAllReset = document.getElementById('regraAll');
+            if (regraAllReset) regraAllReset.checked = true;
+            document.querySelectorAll('#regraFilterOptions input[type="checkbox"]').forEach(c => c.checked = false);
+            updateRegraLabel();
             searchTerm = '';
             document.getElementById('searchInput').value = '';
             currentSort = 'uf'; sortAsc = true;
