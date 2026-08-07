@@ -2044,6 +2044,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             movel: ['CAMPO FMMT TRJ', 'ISOC MONITORACAO ACESSO', 'ISOC MONITORACAO ACESSO BA', 'ISOC MONITORACAO ACESSO FA', 'ISOC SERVICOS FIXO PREMIUM CLASS', 'ISOC SUPORTE ACESSO', 'MABE - TRJ'],
             preditiva: ['DSOC MONITORACAO PREDITIVA']
         };
+
+        function getRegraGroup(d) {
+            if (/_mon$/i.test(String(d.ne || ''))) return 'fixa';
+            for (const g of Object.keys(REGRA_GROUPS)) {
+                if (REGRA_GROUPS[g].includes(d.regra)) return g;
+            }
+            return null;
+        }
         let searchTerm = '';
         const PRIORITY_KEYS = ['P1', 'P2', 'P3', 'P4', 'P5'];
         const SLA_KEYS = ['noprazo', 'vencidos'];
@@ -2598,7 +2606,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             }
 
             if (selectedRegraGroup !== 'todas' && REGRA_GROUPS[selectedRegraGroup]) {
-                data = data.filter(d => REGRA_GROUPS[selectedRegraGroup].includes(d.regra));
+                data = data.filter(d => getRegraGroup(d) === selectedRegraGroup);
             }
 
             if (searchTerm.length > 0) {
