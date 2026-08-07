@@ -2928,18 +2928,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             });
         });
 
-        document.querySelectorAll('.upload-slot').forEach(slot => {
-            const fileInput = slot.querySelector('input[type="file"]');
-            if (!fileInput) return;
-            slot.addEventListener('click', function(e) {
-                if (e.target.closest('.slot-clear')) return;
-                e.preventDefault();
-                fileInput.click();
-            });
-        });
-
         document.querySelectorAll('.slot-clear').forEach(btn => {
             btn.addEventListener('click', function(e) {
+                e.preventDefault();
                 e.stopPropagation();
                 const parent = this.closest('.upload-slot');
                 const type = parent.dataset.type;
