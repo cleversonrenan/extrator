@@ -2054,6 +2054,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
         let searchTerm = '';
         const PRIORITY_KEYS = ['P1', 'P2', 'P3', 'P4', 'P5'];
+        const SLA_HOURS = { P1: 4, P2: 6, P3: 12, P4: 24, P5: 48 };
         const SLA_KEYS = ['noprazo', 'vencidos'];
         const CRUZ_KEYS = ['cruz-fora', 'cruz-verificar', 'cruz-concentrador'];
         const REGIAO_KEYS = ['Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Sem região'];
@@ -2098,6 +2099,20 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             }
             try { const d = new Date(str); if (!isNaN(d.getTime())) return d; } catch (e) {}
             return null;
+        }
+
+        function parseDateValue(val) {
+            if (val === null || val === undefined || val === '') return null;
+            const s = String(val).trim();
+            if (!s) return null;
+            if (!isNaN(s)) {
+                const excelDate = parseFloat(s);
+                if (excelDate > 0 && excelDate < 100000) {
+                    const date = new Date((excelDate - 25569) * 86400 * 1000);
+                    if (!isNaN(date.getTime())) return date;
+                }
+            }
+            return parseSlaData(s);
         }
 
         function parsePriority(p) {
@@ -2257,6 +2272,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 if (parsed) slaFim = parsed.toISOString();
             }
 
+            const prioridade = parsePriority(get('PRIORIDADE'));
+            if (!slaFim && SLA_HOURS[prioridade]) {
+                const criacaoDate = parseDateValue(get('CRIACAO'));
+                if (criacaoDate) {
+                    slaFim = new Date(criacaoDate.getTime() + SLA_HOURS[prioridade] * 3600000).toISOString();
+                }
+            }
+
             let ne = get('NE');
             if (!ne) {
                 const colNE = findColumn(row, ['NE ID', 'NE', 'Nome do NE', 'Elemento']);
@@ -2299,7 +2322,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 cm: get('CM') || '',
                 regiao: getRegiaoInfo(get('CM')).regiao,
                 place: getRegiaoInfo(get('CM')).place,
-                prioridade: parsePriority(get('PRIORIDADE')),
+                prioridade: prioridade,
                 status: get('STATUS') || 'Desconhecido',
                 tecnico: get('TECNICO') || 'Não atribuído',
                 falha: get('FALHA') || 'Sem descrição',
