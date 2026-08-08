@@ -1924,9 +1924,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
                     <!-- CHARTS -->
                     <div class="chart-grid">
-                        <div class="chart-box"><h4>📈 Por UF</h4><div class="chart-container"><canvas id="chartUF" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
+                        <div class="chart-box"><h4>⚠️ Missão Crítica</h4><div class="chart-container"><canvas id="chartUF" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
                         <div class="chart-box"><h4>📈 Por Prioridade</h4><div class="chart-container"><canvas id="chartPrioridade" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
-                        <div class="chart-box"><h4>📈 Motivos de Suspensão</h4><div class="chart-container"><canvas id="chartSuspensao" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
+                        <div class="chart-box"><h4>📈 Regiões</h4><div class="chart-container"><canvas id="chartSuspensao" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
                         <div class="chart-box"><h4>📈 Tipos de Falha</h4><div class="chart-container"><canvas id="chartFalha" style="box-sizing: border-box; display: block; height: 200px; width: 366px;" width="366" height="200"></canvas></div></div>
                     </div>
                 </div>
@@ -2807,11 +2807,11 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         //  CHARTS
         // ================================================================
         function updateCharts() {
-            const ufCount = {};
-            combinedData.forEach(d => { const u = d.uf || 'N/A'; ufCount[u] = (ufCount[u] || 0) + 1; });
-            const sortedUF = Object.keys(ufCount).sort((a, b) => ufCount[b] - ufCount[a]);
-            const uc = ['#cf5f00','#801515','#c2410c','#92400e','#7c3aed','#00695c','#0d47a1','#4a148c','#1b5e20','#283593'];
-            createChart('chartUF', 'bar', sortedUF, sortedUF.map(u => ufCount[u]), uc);
+            const mc = {};
+            combinedData.forEach(d => { if (d.isMissaoCritica) { const n = d.ne || 'N/I'; mc[n] = (mc[n] || 0) + 1; } });
+            const sortedMC = Object.keys(mc).sort((a, b) => mc[b] - mc[a]).slice(0, 10);
+            const mcColors = ['#7c3aed','#6d28d9','#5b21b6','#4c1d95','#a855f7','#8b5cf6','#9333ea','#7e22ce','#6b21a8','#581c87'];
+            createChart('chartUF', 'bar', sortedMC, sortedMC.map(n => mc[n]), mcColors);
 
             const pc = {};
             combinedData.forEach(d => { const p = d.prioridade; pc[p] = (pc[p] || 0) + 1; });
@@ -2820,10 +2820,16 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const pColors = ['#b91c1c','#c2410c','#92400e','#64b5f6','#94a3b8','#d1d1d6'];
             createChart('chartPrioridade', 'bar', pLabels, pLabels.map(p => pc[p]), pColors);
 
-            const sc = {};
-            combinedData.forEach(d => { const s = d.suspensao || 'Nenhuma'; sc[s] = (sc[s] || 0) + 1; });
-            const sortedSusp = Object.keys(sc).sort((a, b) => sc[b] - sc[a]).slice(0, 8);
-            createChart('chartSuspensao', 'bar', sortedSusp, sortedSusp.map(s => sc[s]), '#7c3aed');
+            const regiaoOrder = ['Fixa', 'Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+            const rc = {};
+            combinedData.forEach(d => {
+                const g = getRegraGroup(d);
+                const label = g === 'fixa' ? 'Fixa' : (d.regiao || 'Sem região');
+                rc[label] = (rc[label] || 0) + 1;
+            });
+            const rLabels = regiaoOrder.filter(r => rc[r]);
+            const rColors = ['#7c3aed','#e91e63','#2196f3','#00bcd4','#ff9800','#4caf50','#3f51b5','#90a4ae'];
+            createChart('chartSuspensao', 'bar', rLabels, rLabels.map(r => rc[r]), rColors);
 
             const fc = {};
             combinedData.forEach(d => { const f = d.tipoFalha || 'Não classificado'; fc[f] = (fc[f] || 0) + 1; });
