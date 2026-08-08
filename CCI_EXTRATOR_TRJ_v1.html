@@ -2457,12 +2457,35 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     const key = item.tsk + '|' + item.end_id;
                     if (seenEndIds[key]) return;
                     seenEndIds[key] = true;
-                    if (concSet.has(normalizeEndId(item.tsk)) || concSet.has(item.end_id_norm) || concSet.has(normalizeEndId(item.ne))) {
+                    if (src.name !== 'genesis' && (concSet.has(normalizeEndId(item.tsk)) || concSet.has(item.end_id_norm) || concSet.has(normalizeEndId(item.ne)))) {
                         item.cruzamento = 'concentrador';
                     }
                     combinedData.push(item);
                 });
             });
+
+            const concMatched = [];
+            const concUnmatched = [];
+            Array.from(concSet).forEach(id => {
+                const found = combinedData.some(it =>
+                    it.origem !== 'genesis' &&
+                    (normalizeEndId(it.tsk) === id || it.end_id_norm === id || normalizeEndId(it.ne) === id)
+                );
+                (found ? concMatched : concUnmatched).push(id);
+            });
+            console.log('[concentrador] IDs na planilha:', concSet.size, '| correspondem:', concMatched.length, '| sem correspondência:', concUnmatched.length);
+            console.log('[concentrador] Sem correspondência nas atividades:', concUnmatched);
+            const concSlotStatus = document.getElementById('statusConcentradores');
+            const concSlot = document.getElementById('slotConcentradores');
+            if (concSlotStatus && concSet.size > 0) {
+                const mc = (dataStore.missaoCritica || []).length;
+                concSlotStatus.textContent = '✅ ' + concSet.size + ' IDs | ' + concMatched.length + ' correspondem' +
+                    (mc ? ' | ⚠️ ' + mc + ' MC' : '') +
+                    (concUnmatched.length ? ' | ' + concUnmatched.length + ' sem match' : '');
+                if (concSlot) {
+                    concSlot.title = 'IDs sem correspondência: ' + (concUnmatched.join(', ') || 'nenhum');
+                }
+            }
 
             console.log('📊 Dados combinados:', combinedData.length, 'registros');
             buildCrossReference();
@@ -2501,7 +2524,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             combinedData.forEach(item => {
                 const eid = item.end_id_norm;
-                const inConc = concSet.has(normalizeEndId(item.tsk)) || concSet.has(eid) || concSet.has(normalizeEndId(item.ne));
+                const inConc = item.origem !== 'genesis' && (concSet.has(normalizeEndId(item.tsk)) || concSet.has(eid) || concSet.has(normalizeEndId(item.ne)));
                 const inGenesis = genesisMap[eid] || genesisMap[normalizeEndId(item.ne)] || genesisMap[normalizeEndId(item.tsk)];
 
                 if (inConc) { item.cruzamento = 'concentrador'; item.isConcentrador = true; crossCounts.concentrador++; }
@@ -3057,12 +3080,54 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
 
         function exportCopyText() {
-            const rows = getExportRows();
-            if (!rows.length) { alert('Nenhum registro para copiar.'); return; }
-            const headers = Object.keys(rows[0]);
-            const lines = [headers.join('\t')];
-            rows.forEach(r => lines.push(headers.map(h => String(r[h] ?? '')).join('\t')));
-            const text = lines.join('\n');
+            const items = displayData.slice();
+            if (!items.length) { alert('Nenhum registro para copiar.'); return; }
+
+            const rowText = function(d) {
+                const sla = getSLAInfo(d);
+                const expirado = sla.class === 'cinza' && String(sla.timeLeft).indexOf('Vencido') !== -1;
+                let line = [d.tsk, d.prioridade, d.ne, d.end_id, d.tipoFalha].join(' - ');
+                if (sla.label && sla.label !== '--') {
+                    line += ' - SLA ' + sla.label + ' - Vence em ' + (expirado ? 'Vencido' : sla.timeLeft);
+                }
+                return line;
+            };
+            const slaTime = function(d) {
+                if (!d.slaFim) return Infinity;
+                const t = new Date(d.slaFim).getTime();
+                return isNaN(t) ? Infinity : t;
+            };
+            const sortBySla = function(a, b) { return slaTime(a) - slaTime(b); };
+
+            const SEPARADAS = ['Baixada', 'Zona Oeste', 'Grande Rio', 'Niterói'];
+            const regionOrder = ['Baixada', 'Zona Oeste', 'Grande Rio', 'Niterói', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+
+            const byRegion = {};
+            items.forEach(d => {
+                const r = d.regiao || 'Sem região';
+                (byRegion[r] = byRegion[r] || []).push(d);
+            });
+
+            const sections = [];
+            Object.keys(byRegion).sort((a, b) => {
+                const oa = regionOrder.indexOf(a), ob = regionOrder.indexOf(b);
+                return (oa === -1 ? 99 : oa) - (ob === -1 ? 99 : ob);
+            }).forEach(reg => {
+                const list = byRegion[reg];
+                sections.push('');
+                if (SEPARADAS.indexOf(reg) !== -1) {
+                    const fixa = list.filter(d => getRegraGroup(d) === 'fixa').sort(sortBySla);
+                    const movel = list.filter(d => getRegraGroup(d) === 'movel').sort(sortBySla);
+                    const outros = list.filter(d => getRegraGroup(d) !== 'fixa' && getRegraGroup(d) !== 'movel').sort(sortBySla);
+                    if (fixa.length) sections.push('*' + reg + '* - Fixa', fixa.map(rowText).join('\n'));
+                    if (movel.length) sections.push('*' + reg + '* - Móvel', movel.map(rowText).join('\n'));
+                    if (outros.length) sections.push('*' + reg + '* - Outros', outros.map(rowText).join('\n'));
+                } else {
+                    sections.push('*' + reg + '*', list.slice().sort(sortBySla).map(rowText).join('\n'));
+                }
+            });
+
+            const text = sections.join('\n');
             const btn = document.getElementById('btnExportCopy');
             const original = btn.textContent;
             const done = function() { btn.textContent = '✅ Copiado!'; setTimeout(function() { btn.textContent = original; }, 1800); };
