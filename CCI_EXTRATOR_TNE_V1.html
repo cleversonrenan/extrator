@@ -2005,6 +2005,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             agendadas: [],
             naoagendadas: [],
             genesis: [],
+            genesisRawText: '',
             concentradores: [],
             missaoCritica: []
         };
@@ -2137,10 +2138,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (lines.length < 2) return [];
 
             let headerIdx = -1;
-            for (let i = 0; i < Math.min(lines.length, 10); i++) {
-                const lower = lines[i].toLowerCase();
-                if ((lower.includes('data/hora') || lower.includes('datahora') || lower.includes('ne_id')) &&
-                    (lower.includes('end_id') || lower.includes('tecnologia'))) {
+            for (let i = 0; i < Math.min(lines.length, 12); i++) {
+                const lower = lines[i].toLowerCase().replace(/[\s\-_]/g, '');
+                const hasTime = lower.includes('data/hora') || lower.includes('datahora') || lower.includes('neid');
+                const hasEnd = lower.includes('endid');
+                const hasSite = lower.includes('site') || lower.includes('cidade/uf') || lower.includes('anf');
+                if ((hasTime && (hasEnd || lower.includes('tecnologia'))) || (hasEnd && hasSite)) {
                     headerIdx = i;
                     break;
                 }
@@ -2148,6 +2151,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (headerIdx === -1) headerIdx = 0;
 
             const headers = lines[headerIdx].split('\t').map(h => h.trim());
+            const headerIdxMap = {};
+            headers.forEach((h, idx) => {
+                headerIdxMap[String(h).toUpperCase().replace(/[\s\-_]+/g, '')] = idx;
+            });
             const data = [];
 
             for (let i = headerIdx + 1; i < lines.length; i++) {
@@ -2157,17 +2164,40 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 headers.forEach((h, idx) => {
                     row[h] = (cols[idx] || '').trim();
                 });
+                const pick = (...names) => {
+                    for (const n of names) {
+                        const key = String(n).toUpperCase().replace(/[\s\-_]+/g, '');
+                        const idx = headerIdxMap[key];
+                        if (idx !== undefined && cols[idx] !== undefined && String(cols[idx]).trim() !== '') {
+                            return String(cols[idx]).trim();
+                        }
+                    }
+                    return '';
+                };
 
-                const ne_id = row['NE_ID'] || row['NE ID'] || row['Ne Id'] || '';
-                const end_id = row['END_ID'] || row['End ID'] || row['End ID'] || '';
-                const cidadeUf = row['Cidade/UF'] || row['Cidade'] || '';
+                const end_id = '';
+                let ne_id = pick('NE_ID', 'NE ID', 'Ne Id', 'NE', 'Elemento', 'Network Element', 'Site');
+                if (/^(2G|3G|4G|5G)$/i.test(ne_id)) ne_id = '';
+                if (!ne_id) {
+                    const siteHint = headerIdxMap['SITE'] !== undefined ? headerIdxMap['SITE'] : headerIdxMap['ENDID'];
+                    let best = '', bestD = 1e9;
+                    cols.forEach((c, idx) => {
+                        const v = String(c || '').trim();
+                        if (v && (v.includes(',') || /^[A-Z0-9]+[-_][A-Z0-9]+$/i.test(v) || /^[A-Z]{2}\d{4}$/i.test(v))) {
+                            const d = siteHint !== undefined ? Math.abs(idx - siteHint) : idx;
+                            if (d < bestD) { best = v; bestD = d; }
+                        }
+                    });
+                    if (best) ne_id = best.split(',')[0].trim();
+                }
+                const cidadeUf = pick('Cidade/UF', 'Cidade', 'Cidade UF');
                 const [cidade, uf] = cidadeUf.includes('/') ? cidadeUf.split('/').map(s => s.trim()) : [cidadeUf, ''];
 
                 const obj = {
-                    tsk: end_id || ne_id || 'N/I',
+                    tsk: ne_id || 'N/I',
                     ne: ne_id || 'N/I',
-                    end_id: end_id || 'N/I',
-                    end_id_norm: normalizeEndId(end_id || ne_id),
+                    end_id: '',
+                    end_id_norm: '',
                     cidade: cidade || '',
                     uf: uf || '',
                     prioridade: 'N/A',
@@ -2451,20 +2481,23 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const concSet = new Set((dataStore.concentradores || []).map(id => normalizeEndId(id)));
             const criticalSet = new Set((dataStore.missaoCritica || []).map(id => normalizeEndId(id)));
 
-            const genesisMap = {};
-            (dataStore.genesis || []).forEach(row => {
-                const item = row._preprocessed ? row : processRow(row);
-                if (item.end_id_norm) genesisMap[item.end_id_norm] = true;
-                if (item.ne) genesisMap[normalizeEndId(item.ne)] = true;
-                if (item.tsk) genesisMap[normalizeEndId(item.tsk)] = true;
-            });
+            const genesisSearchLines = (dataStore.genesisRawText || '')
+                .split(/\r?\n/)
+                .map(l => normalizeEndId(l))
+                .filter(l => l.length > 0);
+            const isInGenesisText = (id) => {
+                const key = normalizeEndId(id);
+                if (!key || key.length < 4) return false;
+                return genesisSearchLines.some(line => line.includes(key));
+            };
 
             crossCounts = { fora: 0, verificar: 0, concentrador: 0 };
 
             combinedData.forEach(item => {
                 const eid = item.end_id_norm;
                 const inConc = concSet.has(normalizeEndId(item.tsk)) || concSet.has(eid) || concSet.has(normalizeEndId(item.ne));
-                const inGenesis = genesisMap[eid] || genesisMap[normalizeEndId(item.ne)] || genesisMap[normalizeEndId(item.tsk)];
+                const inGenesis = item.origem === 'genesis' ||
+                    isInGenesisText(eid) || isInGenesisText(item.ne) || isInGenesisText(item.tsk);
 
                 if (inConc) { item.cruzamento = 'concentrador'; item.isConcentrador = true; crossCounts.concentrador++; }
                 else { item.isConcentrador = false; }
@@ -2984,6 +3017,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         if (genesisTa) {
             genesisTa.addEventListener('input', function() {
                 const text = this.value;
+                dataStore.genesisRawText = text.trim();
                 if (!text.trim()) {
                     dataStore.genesis = [];
                     updateSlotStatus('genesis', false);
