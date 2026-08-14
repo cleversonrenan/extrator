@@ -1861,8 +1861,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-filter="noprazo">✅ No Prazo</button>
                     <button class="filter-btn" data-filter="vencidos">❌ Vencidos</button>
                     <div class="filter-separator"></div>
-                    <span class="filter-label" title="Coluna 'Estado' das planilhas de atividades (Concluídos e Cancelados já são excluídos automaticamente)">📋 Andamento:</span>
-                    <button class="filter-btn" data-filter="pendente">🕓 Pendente</button>
+                    <span class="filter-label" title="Coluna 'Estado' das planilhas de atividades (Pendentes, Concluídos e Cancelados já são excluídos automaticamente)">📋 Andamento:</span>
                     <button class="filter-btn" data-filter="iniciada">▶️ Iniciada</button>
                     <button class="filter-btn" data-filter="naoiniciada">⏳ Não Iniciada</button>
                     <div class="filter-separator"></div>
@@ -2068,7 +2067,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         const SLA_KEYS = ['noprazo', 'vencidos'];
         const CRUZ_KEYS = ['cruz-fora', 'cruz-verificar', 'cruz-concentrador'];
         const ANF_KEYS = ['ANF_31', 'ANF_32', 'ANF_33', 'ANF_34', 'ANF_35', 'ANF_37', 'ANF_38', 'Sem ANF'];
-        const ESTADO_KEYS = ['pendente', 'iniciada', 'naoiniciada'];
+        const ESTADO_KEYS = ['iniciada', 'naoiniciada'];
         let currentSort = 'uf';
         let sortAsc = true;
         let _slaInterval = null;
@@ -2532,7 +2531,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     const item = row._preprocessed ? row : processRow(row);
                     item.origem = item.origem || src.name;
                     const estKey = normalizeEstadoStatus(item.status);
-                    if (estKey === 'concluida' || estKey === 'cancelada') return; // excluídos da visualização
+                    if (estKey === 'pendente' || estKey === 'concluida' || estKey === 'cancelada') return; // excluídos da visualização
                     const key = item.tsk + '|' + item.end_id;
                     if (seenEndIds[key]) return;
                     seenEndIds[key] = true;
