@@ -1860,6 +1860,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn regra-group-btn" data-regra-group="movel">Móvel</button>
                     <button class="filter-btn regra-group-btn" data-regra-group="preditiva">Preditivas</button>
                     <div class="filter-separator"></div>
+                    <span class="filter-label">📍 Região:</span>
+                    <button class="filter-btn" data-filter="Baixada">Baixada</button>
+                    <button class="filter-btn" data-filter="Grande Rio">Grande Rio</button>
+                    <button class="filter-btn" data-filter="Niterói">Niterói</button>
+                    <button class="filter-btn" data-filter="Zona Oeste">Zona Oeste</button>
+                    <button class="filter-btn" data-filter="Interior RJ">Interior RJ</button>
+                    <button class="filter-btn" data-filter="Espírito Santo">Espírito Santo</button>
+                    <button class="filter-btn" data-filter="Sem região">Sem região</button>
+                    <div class="filter-separator"></div>
                     <button class="filter-btn" id="btnAtualizar" style="background:var(--accent);color:#fff;border-color:var(--accent);">🔄 Atualizar</button>
                     <div class="filter-separator"></div>
                     <span class="filter-label">📊 Ordenar:</span>
@@ -2734,6 +2743,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             if (selectedEstado.size > 0) {
                 data = data.filter(d => selectedEstado.has(d.estadoKey));
+            }
+
+            if (selectedRegiao.size > 0) {
+                data = data.filter(d => selectedRegiao.has(d.regiao));
             }
 
             if (selectedRegraGroup !== 'todas' && REGRA_GROUPS[selectedRegraGroup]) {
