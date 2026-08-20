@@ -2706,6 +2706,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedPriorities.has(d.prioridade));
             }
 
+            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(d.tsk.trim()));
+
             if (selectedSLA.size === 1) {
                 if (selectedSLA.has('vencidos')) {
                     data = data.filter(d => d.slaFim && !isNaN(new Date(d.slaFim)) && new Date(d.slaFim) < new Date());
@@ -2813,9 +2815,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const cruzHtml = d.cruzamento && d.cruzamento !== '—'
                 ? '<span class="badge ' + (cruzClass[d.cruzamento] || '') + '">' + (cruzLabel[d.cruzamento] || d.cruzamento) + '</span>'
                 : '<span style="color:var(--muted);">—</span>';
-            const mgHtml = d.isMissaoCritica
-                ? '<span title="Missão Crítica: Energia + Sites Dependentes por Tx ≥ 4" style="font-size:16px;">⚠️</span>'
-                : '';
+            let mcHtml = '';
+            if (d.isMissaoCritica && isConc) {
+                mcHtml = '<span title="Missão Crítica + Concentrador" style="font-size:13px;">⚠️ Concentrador</span>';
+            } else if (isConc) {
+                mcHtml = '<span title="Concentrador" style="font-size:13px;">Concentrador</span>';
+            } else if (d.isMissaoCritica) {
+                mcHtml = '<span title="Missão Crítica" style="font-size:16px;">⚠️</span>';
+            }
             const rowPrioClass = { P1: 'row-p1', P2: 'row-p2', P3: 'row-p3', P4: 'row-p4', P5: 'row-p5' }[d.prioridade] || '';
             const rowClass = isConc ? 'row-concentrador' : rowPrioClass;
 
@@ -2828,7 +2835,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><code style="font-size:11px;">' + d.end_id + '</code></td>' +
                 '<td style="font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + d.tipoFalha + '">' + d.tipoFalha + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
-                '<td style="text-align:center;">' + mgHtml + '</td>' +
+                '<td style="text-align:center;">' + mcHtml + '</td>' +
                 '<td><span class="sla-date-cell ' + sla.class + '">' + sla.label + '</span></td>' +
                 '<td><div class="sla-time ' + sla.class + '">' + sla.timeLeft + '</div><div class="sla-bar"><div class="fill ' + sla.class + '" style="width:' + sla.percent + '%;"></div></div></td>' +
                 '</tr>';

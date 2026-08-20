@@ -1831,9 +1831,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
                 <!-- FILTERS -->
                 <div class="filter-bar" id="filterBar">
-                    <span class="filter-label">🗺️ UF:</span>
-                    <button class="filter-btn" data-filter="all">Todos</button>
-                    <span id="ufFilterContainer"></span>
                     <div class="filter-separator"></div>
                     <span class="filter-label">🎯 Prioridade:</span>
                     <button class="filter-btn active p1-active" data-filter="P1">P1</button>
@@ -1847,14 +1844,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-filter="cruz-verificar">🟠 Verificar</button>
                     <button class="filter-btn" data-filter="cruz-concentrador">🟣 Concentrador</button>
                     <div class="filter-separator"></div>
-                    <span class="filter-label">🏷️ Região:</span>
-                    <button class="filter-btn active regiao-active" data-filter="Baixada">Baixada</button>
-                    <button class="filter-btn active regiao-active" data-filter="Grande Rio">Grande Rio</button>
-                    <button class="filter-btn active regiao-active" data-filter="Niterói">Niterói</button>
-                    <button class="filter-btn active regiao-active" data-filter="Zona Oeste">Zona Oeste</button>
-                    <button class="filter-btn active regiao-active" data-filter="Interior RJ">Interior RJ</button>
-                    <button class="filter-btn active regiao-active" data-filter="Espírito Santo">Espírito Santo</button>
-                    <button class="filter-btn active regiao-active" data-filter="Sem região">Sem região</button>
                     <div class="filter-separator"></div>
                     <span class="filter-label">⏱️ SLA:</span>
                     <button class="filter-btn" data-filter="noprazo">✅ No Prazo</button>
@@ -1905,15 +1894,13 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         <table>
                             <thead>
                                 <tr>
-                                    <th data-sort="uf">UF</th>
-                                    <th data-sort="regiao">Região</th>
                                     <th data-sort="tsk">TSK</th>
                                     <th data-sort="prioridade">Prioridade</th>
                                     <th data-sort="ne">NE ID</th>
                                     <th data-sort="end_id">END_ID</th>
                                     <th data-sort="falha">Tipo Falha</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
-                                    <th title="Missão Crítica: Sites Dependentes por Tx ≥ 4 + Falha de Energia (fonte: u_task_evento)" style="text-align:center;">⚠️ MC</th>
+                                    <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                     <th data-sort="sla">SLA (Fim)</th>
                                     <th data-sort="tempo">Tempo Restante</th>
                                 </tr>
@@ -1939,15 +1926,13 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>UF</th>
-                                        <th>Região</th>
                                         <th>TSK</th>
                                         <th>Prioridade</th>
                                         <th>NE ID</th>
                                         <th>END_ID</th>
                                         <th>Tipo Falha</th>
                                         <th>Cruzamento</th>
-                                        <th title="Missão Crítica: Sites Dependentes por Tx ≥ 4 + Falha de Energia (fonte: u_task_evento)" style="text-align:center;">⚠️ MC</th>
+                                        <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                         <th>SLA (Fim)</th>
                                         <th>Tempo Restante</th>
                                     </tr>
@@ -2729,6 +2714,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedPriorities.has(d.prioridade));
             }
 
+            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(d.tsk.trim()));
+
             if (selectedSLA.size === 1) {
                 if (selectedSLA.has('vencidos')) {
                     data = data.filter(d => d.slaFim && !isNaN(new Date(d.slaFim)) && new Date(d.slaFim) < new Date());
@@ -2739,14 +2726,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             if (selectedCruzamento.size > 0) {
                 data = data.filter(d => selectedCruzamento.has(d.cruzamento));
-            }
-
-            if (selectedUF.size > 0) {
-                data = data.filter(d => selectedUF.has(d.uf));
-            }
-
-            if (selectedRegiao.size > 0) {
-                data = data.filter(d => selectedRegiao.has(d.regiao));
             }
 
             if (selectedEstado.size > 0) {
@@ -2766,7 +2745,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     d.cidade.toLowerCase().includes(term) ||
                     d.tecnico.toLowerCase().includes(term) ||
                     d.tipoFalha.toLowerCase().includes(term) ||
-                    d.uf.toLowerCase().includes(term) ||
                     d.bairro.toLowerCase().includes(term)
                 );
             }
@@ -2775,12 +2753,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             data.sort((a, b) => {
                 let valA, valB;
                 switch (currentSort) {
-                    case 'uf': valA = a.uf || ''; valB = b.uf || ''; break;
-                    case 'regiao':
-                        const ro = { 'Baixada': 1, 'Grande Rio': 2, 'Niterói': 3, 'Zona Oeste': 4, 'Interior RJ': 5, 'Espírito Santo': 6, 'Sem região': 7 };
-                        valA = (ro[a.regiao] || 99) + '|' + (a.place || '');
-                        valB = (ro[b.regiao] || 99) + '|' + (b.place || '');
-                        break;
                     case 'prioridade':
                         const pOrder = { 'P1': 1, 'P2': 2, 'P3': 3, 'P4': 4, 'P5': 5, 'N/A': 6 };
                         valA = pOrder[a.prioridade] || 99; valB = pOrder[b.prioridade] || 99;
@@ -2796,7 +2768,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     case 'tempo':
                         const getTempo = (d) => { if (!d.slaFim) return Infinity; const dt = new Date(d.slaFim); return isNaN(dt) ? Infinity : dt - new Date(); };
                         return (getTempo(a) - getTempo(b)) * sortOrder;
-                    default: valA = a.uf || ''; valB = b.uf || '';
+                    default: valA = a.tsk || ''; valB = b.tsk || '';
                 }
                 if (valA < valB) return -1 * sortOrder;
                 if (valA > valB) return 1 * sortOrder;
@@ -2815,19 +2787,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const pc = d.prioridade === 'P1' ? 'badge-p1' : d.prioridade === 'P2' ? 'badge-p2' :
                 d.prioridade === 'P3' ? 'badge-p3' : d.prioridade === 'P4' ? 'badge-p4' : 'badge-p5';
             const sla = getSLAInfo(d);
-            const ufColors = {
-                'MG': ['#f3e5f5','#4a148c'], 'RJ': ['#fff3e0','#e65100'],
-                'ES': ['#e0f2f1','#00695c'], 'BA': ['#e8f5e9','#1b5e20']
-            };
-            const regiaoColors = {
-                'Baixada': ['#fce4ec','#880e4f'], 'Grande Rio': ['#e3f2fd','#0d47a1'],
-                'Niterói': ['#e0f7fa','#00695c'], 'Zona Oeste': ['#fff3e0','#e65100'],
-                'Interior RJ': ['#e8f5e9','#1b5e20'], 'Espírito Santo': ['#e8eaf6','#283593'],
-                'Sem região': ['#eceff1','#37474f']
-            };
-            const defBg = '#f0f0f5', defColor = '#333336';
-            const uCol = ufColors[d.uf] || [defBg, defColor];
-            const tCol = regiaoColors[d.regiao] || [defBg, defColor];
             const isConc = d.isConcentrador || d.cruzamento === 'concentrador';
             const tskColor = isConc ? '#b91c1c' : 'inherit';
             const tskDisplay = '<strong style="font-size:11px;color:' + tskColor + ';">' + d.tsk + '</strong>';
@@ -2837,22 +2796,25 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const cruzHtml = d.cruzamento && d.cruzamento !== '—'
                 ? '<span class="badge ' + (cruzClass[d.cruzamento] || '') + '">' + (cruzLabel[d.cruzamento] || d.cruzamento) + '</span>'
                 : '<span style="color:var(--muted);">—</span>';
-            const mgHtml = d.isMissaoCritica
-                ? '<span title="Missão Crítica: Energia + Sites Dependentes por Tx ≥ 4" style="font-size:16px;">⚠️</span>'
-                : '';
+            let mcHtml = '';
+            if (d.isMissaoCritica && isConc) {
+                mcHtml = '<span title="Missão Crítica + Concentrador" style="font-size:13px;">⚠️ Concentrador</span>';
+            } else if (isConc) {
+                mcHtml = '<span title="Concentrador" style="font-size:13px;">Concentrador</span>';
+            } else if (d.isMissaoCritica) {
+                mcHtml = '<span title="Missão Crítica" style="font-size:16px;">⚠️</span>';
+            }
             const rowPrioClass = { P1: 'row-p1', P2: 'row-p2', P3: 'row-p3', P4: 'row-p4', P5: 'row-p5' }[d.prioridade] || '';
             const rowClass = isConc ? 'row-concentrador' : rowPrioClass;
 
             return '<tr' + (rowClass ? ' class="' + rowClass + '"' : '') + '>' +
-                '<td><span style="font-size:11px;font-weight:600;background:' + uCol[0] + ';color:' + uCol[1] + ';padding:2px 10px;border-radius:10px;display:inline-block;">' + d.uf + '</span></td>' +
-                '<td><span title="' + (d.cm ? 'CM: ' + d.cm + ' · ' : '') + (d.regiao || '') + '" style="font-size:11px;font-weight:600;background:' + tCol[0] + ';color:' + tCol[1] + ';padding:2px 10px;border-radius:10px;display:inline-block;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (d.place || d.regiao || '—') + '</span></td>' +
                 '<td>' + tskDisplay + '</td>' +
                 '<td><span class="badge ' + pc + '">' + d.prioridade + '</span></td>' +
                 '<td><code style="font-size:11px;">' + d.ne + '</code></td>' +
                 '<td><code style="font-size:11px;">' + d.end_id + '</code></td>' +
                 '<td style="font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + d.tipoFalha + '">' + d.tipoFalha + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
-                '<td style="text-align:center;">' + mgHtml + '</td>' +
+                '<td style="text-align:center;">' + mcHtml + '</td>' +
                 '<td><span class="sla-date-cell ' + sla.class + '">' + sla.label + '</span></td>' +
                 '<td><div class="sla-time ' + sla.class + '">' + sla.timeLeft + '</div><div class="sla-bar"><div class="fill ' + sla.class + '" style="width:' + sla.percent + '%;"></div></div></td>' +
                 '</tr>';
@@ -2862,7 +2824,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const tbody = document.getElementById('tableBody');
             const data = displayData.slice(0, 100);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(buildRowHtml).join('');
@@ -2880,7 +2842,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (cc) cc.textContent = '(' + list.length + ')';
             const data = list.slice(0, 100);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(buildRowHtml).join('');
@@ -3150,11 +3112,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         function getExportRows() {
             return displayData.map(d => {
                 const sla = getSLAInfo(d);
+                const isConc = d.isConcentrador || d.cruzamento === 'concentrador';
+                let mc = '';
+                if (d.isMissaoCritica && isConc) mc = '⚠️ Concentrador';
+                else if (isConc) mc = 'Concentrador';
+                else if (d.isMissaoCritica) mc = '⚠️';
                 return {
-                    'UF': d.uf, 'Região': d.regiao, 'Local': d.place, 'TSK': d.tsk, 'Prioridade': d.prioridade,
+                    'TSK': d.tsk, 'Prioridade': d.prioridade,
                     'NE ID': d.ne, 'END_ID': d.end_id, 'Tipo da Falha': d.tipoFalha,
+                    'Cruzamento': d.cruzamento, 'Missão Crítica': mc,
                     'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft,
-                    'Status': d.status, 'Cruzamento': d.cruzamento
+                    'Status': d.status
                 };
             });
         }
@@ -3228,35 +3196,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             };
             const sortBySla = function(a, b) { return slaTime(a) - slaTime(b); };
 
-            const SEPARADAS = ['Baixada', 'Zona Oeste', 'Grande Rio', 'Niterói'];
-            const regionOrder = ['Baixada', 'Zona Oeste', 'Grande Rio', 'Niterói', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+            const sorted = items.slice().sort(sortBySla);
+            const text = sorted.map(rowText).join('\n');
 
-            const byRegion = {};
-            items.forEach(d => {
-                const r = d.regiao || 'Sem região';
-                (byRegion[r] = byRegion[r] || []).push(d);
-            });
-
-            const sections = [];
-            Object.keys(byRegion).sort((a, b) => {
-                const oa = regionOrder.indexOf(a), ob = regionOrder.indexOf(b);
-                return (oa === -1 ? 99 : oa) - (ob === -1 ? 99 : ob);
-            }).forEach(reg => {
-                const list = byRegion[reg];
-                sections.push('');
-                if (SEPARADAS.indexOf(reg) !== -1) {
-                    const fixa = list.filter(d => getRegraGroup(d) === 'fixa').sort(sortBySla);
-                    const movel = list.filter(d => getRegraGroup(d) === 'movel').sort(sortBySla);
-                    const outros = list.filter(d => getRegraGroup(d) !== 'fixa' && getRegraGroup(d) !== 'movel').sort(sortBySla);
-                    if (fixa.length) sections.push('*' + reg + '* - Fixa', fixa.map(rowText).join('\n'));
-                    if (movel.length) sections.push('*' + reg + '* - Móvel', movel.map(rowText).join('\n'));
-                    if (outros.length) sections.push('*' + reg + '* - Outros', outros.map(rowText).join('\n'));
-                } else {
-                    sections.push('*' + reg + '*', list.slice().sort(sortBySla).map(rowText).join('\n'));
-                }
-            });
-
-            const text = sections.join('\n');
             const btn = document.getElementById('btnExportCopy');
             const original = btn.textContent;
             const done = function() { btn.textContent = '✅ Copiado!'; setTimeout(function() { btn.textContent = original; }, 1800); };
