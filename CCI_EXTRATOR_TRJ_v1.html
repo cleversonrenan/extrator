@@ -1898,6 +1898,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="prioridade">Prioridade</th>
                                     <th data-sort="ne">NE ID</th>
                                     <th data-sort="end_id">END_ID</th>
+                                    <th data-sort="uf">UF</th>
+                                    <th data-sort="regiao">Região</th>
                                     <th data-sort="falha">Tipo Falha</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
                                     <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
@@ -1930,6 +1932,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>Prioridade</th>
                                         <th>NE ID</th>
                                         <th>END_ID</th>
+                                        <th>UF</th>
+                                        <th>Região</th>
                                         <th>Tipo Falha</th>
                                         <th>Cruzamento</th>
                                         <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
@@ -2812,6 +2816,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><span class="badge ' + pc + '">' + d.prioridade + '</span></td>' +
                 '<td><code style="font-size:11px;">' + d.ne + '</code></td>' +
                 '<td><code style="font-size:11px;">' + d.end_id + '</code></td>' +
+                '<td style="font-size:11px;">' + (d.uf || '—') + '</td>' +
+                '<td style="font-size:11px;">' + (d.regiao || '—') + '</td>' +
                 '<td style="font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + d.tipoFalha + '">' + d.tipoFalha + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
                 '<td style="text-align:center;">' + mcHtml + '</td>' +
@@ -2824,7 +2830,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const tbody = document.getElementById('tableBody');
             const data = displayData.slice(0, 100);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(buildRowHtml).join('');
@@ -2842,7 +2848,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (cc) cc.textContent = '(' + list.length + ')';
             const data = list.slice(0, 100);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(buildRowHtml).join('');
