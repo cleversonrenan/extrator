@@ -2966,7 +2966,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedPriorities.has(d.prioridade));
             }
 
-            // (removido) filtro /^TSK\d+$/ que escondia registros do Gênesis da tabela
+            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(d.tsk.trim()));
 
             if (selectedSLA.size === 1) {
                 if (selectedSLA.has('vencidos')) {
