@@ -1540,182 +1540,306 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     </script>
     <style>
         :root {
-            --bg: #fef2f2;
+            /* ===== Tema CLARO (padrão) — Sneat-style (Bootstrap 5.3 tokens) ===== */
+            --bg: #fbe3c8;
             --white: #ffffff;
-            --surface: #f7f8fc;
-            --border: #e2e7f0;
-            --border2: #c8d1e3;
-            --accent: #cf5f00;
-            --accent-h: #ca8338;
-            --accent-light: #fff5ed;
-            --accent-mid: #ffdbb5;
-            --green: #801515;
-            --green-light: #fce4e4;
-            --green-btn: #a35616;
-            --red: #b91c1c;
-            --red-light: #fef2f2;
-            --orange: #c2410c;
-            --orange-light: #fff7ed;
-            --yellow: #92400e;
-            --yellow-light: #fffbeb;
-            --purple: #7c3aed;
-            --purple-light: #f5f3ff;
-            --text: #0f172a;
-            --text2: #1e293b;
-            --muted: #64748b;
-            --subtle: #94a3b8;
-            --tag: #e8edf5;
-            --sh-sm: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 12px rgba(15, 23, 42, .06);
-            --sh: 0 2px 8px rgba(15, 23, 42, .07), 0 8px 24px rgba(15, 23, 42, .06);
-            --r: 14px;
-            --r-sm: 9px;
-            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --surface: #f8ead3;
+            --border: #ead9bf;
+            --border2: #dfc9a8;
+            --line: #f3e6d2;
+            --accent: #696cff;
+            --accent-h: #857cff;
+            --on-accent: #ffffff;
+            --accent-light: rgba(105, 108, 255, .08);
+            --accent-mid: rgba(105, 108, 255, .25);
+            --cyan: #5b5ef0;
+            --dim: #8592a3;
+            --green: #3f9e28;
+            --green-light: #eaf8e2;
+            --green-btn: #379400;
+            --red: #e0361b;
+            --red-light: #feece7;
+            --orange: #ef6c0a;
+            --orange-light: #feeee2;
+            --yellow: #bd8500;
+            --yellow-light: #fdf3dc;
+            --teal: #0a95ad;
+            --teal-light: #e0f5f9;
+            --purple: #7a52cc;
+            --purple-light: #f0ebfa;
+            --blue: #2f7de1;
+            --blue-light: #e8f1fc;
+            --text: #384551;
+            --text2: #4c5866;
+            --muted: #646e78;
+            --subtle: #97a3ae;
+            --tag: #f0f1f5;
+            --thead-bg: #ffffff;
+            --hover-row: #f6f7fb;
+            --shadow: 0 0.1875rem 0.5rem 0 rgba(34, 48, 62, .1);
+            --sh-sm: 0 1px 2px rgba(34, 48, 62, .06);
+            --sh: 0 0.25rem 1rem rgba(34, 48, 62, .14);
+            --r: 10px;
+            --r-sm: 6px;
+            --font: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Google Sans', Helvetica, Arial, sans-serif;
+            --mono: 'Cascadia Mono', Consolas, 'Courier New', monospace;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; line-height: 1.5; }
+
+        html[data-theme="dark"] {
+            --bg: #232333;
+            --white: #2b2c40;
+            --surface: #303145;
+            --border: #43445f;
+            --border2: #55567a;
+            --line: #3a3b54;
+            --accent: #696cff;
+            --accent-h: #857cff;
+            --on-accent: #ffffff;
+            --accent-light: rgba(105, 108, 255, .16);
+            --accent-mid: rgba(105, 108, 255, .35);
+            --cyan: #8b8dff;
+            --dim: #9fa0b8;
+            --green: #71dd37;
+            --green-light: rgba(113, 221, 55, .13);
+            --green-btn: #379400;
+            --red: #ff6a52;
+            --red-light: rgba(255, 62, 29, .15);
+            --orange: #ffa14f;
+            --orange-light: rgba(255, 171, 0, .14);
+            --yellow: #ffc94d;
+            --yellow-light: rgba(255, 171, 0, .14);
+            --teal: #2fd0ee;
+            --teal-light: rgba(3, 195, 236, .15);
+            --purple: #b79bf5;
+            --purple-light: rgba(147, 104, 233, .16);
+            --blue: #6ea8ff;
+            --blue-light: rgba(59, 125, 225, .16);
+            --text: #d5d5e2;
+            --text2: #c3c3d2;
+            --muted: #b2b2c4;
+            --subtle: #7c7d99;
+            --tag: #383a52;
+            --thead-bg: #303145;
+            --hover-row: #34364e;
+            --shadow: 0 0.1875rem 0.5rem 0 rgba(0, 0, 0, .3);
+            --sh-sm: 0 1px 2px rgba(0, 0, 0, .25);
+            --sh: 0 0.25rem 1rem rgba(0, 0, 0, .38);
+        }
+
+      * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+    line-height: 1.55;
+
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("fundo.png");
+    background-size: 20%;
+    background-repeat: repeat;
+    opacity: 0.2;
+    z-index: -1;
+    pointer-events: none;
+}
+        html[data-theme="dark"] body { background-image: none; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--subtle); }
+
         .app-container { max-width: 1600px; margin: 0 auto; padding: 20px; }
 
-        .header { background: linear-gradient(135deg, #4a1a0a, #8b3a0a, #cf5f00); color: #fff; padding: 20px 30px; border-radius: var(--r); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: var(--sh); }
-        .header h1 { font-size: 26px; font-weight: 600; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
-        .header h1 small { font-size: 14px; font-weight: 400; opacity: 0.7; letter-spacing: 0; }
-        .header-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .sla-counter { background: rgba(255, 255, 255, 0.1); padding: 6px 16px; border-radius: 20px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .sla-counter span { font-weight: 600; color: #69f0ae; }
+        .header {
+            background: var(--white); color: var(--text);
+            padding: 16px 24px; border-radius: var(--r); box-shadow: var(--sh-sm);
+            margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+        }
+        .header::after { content: ''; position: absolute; }
+        .header h1 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 12px; letter-spacing: .2px; color: var(--text); }
+        .header h1 small { font-size: 11px; font-weight: 500; opacity: .6; }
+        .header h1 img { border-radius: var(--r-sm); }
+        .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .sla-counter {
+            font-family: var(--mono); background: var(--surface); padding: 7px 14px; font-size: 11px;
+            display: inline-flex; align-items: center; gap: 8px; border-radius: var(--r-sm); color: var(--dim);
+        }
+        .sla-counter span { font-weight: 700; color: var(--green); }
+        .sla-counter span.warn { color: var(--orange); }
+        .theme-toggle {
+            font-family: var(--font); font-weight: 500; font-size: 12px; cursor: pointer;
+            color: var(--text2); background: var(--surface); border: 1px solid var(--border2); padding: 7px 14px;
+            border-radius: var(--r-sm); transition: all .15s;
+        }
+        .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
-        .layout { display: flex; flex-direction: column; gap: 20px; }
+        .layout { display: flex; flex-direction: column; gap: 18px; }
         .sidebar { width: 100%; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; }
         .main-content { flex: 1; min-width: 0; }
 
-        .upload-card { background: var(--white); border-radius: var(--r-sm); box-shadow: var(--sh-sm); padding: 16px; border: 1px solid var(--border); }
-        .upload-card h3 { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        /* Cards Sneat: sem borda, sombra suave, radius 10px */
+        .upload-card { background: var(--white); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px; }
+        .upload-card h3 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .upload-card h3::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); flex-shrink: 0; }
         .upload-card .upload-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .upload-slot { display:block; position: relative; background: var(--bg); border: 2px dashed var(--border2); border-radius: var(--r-sm); padding: 14px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .upload-slot:hover { border-color: var(--accent); background: var(--accent-light); }
+        .upload-slot { display:block; position: relative; background: var(--surface); border: 1px dashed var(--border2); border-radius: var(--r); padding: 14px; cursor: pointer; transition: all .18s; text-align: center; }
+        .upload-slot:hover { border-color: var(--accent-h); background: var(--accent-light); }
+        .upload-slot.drag-over { border-color: var(--accent); background: var(--accent-light); box-shadow: 0 0 0 3px var(--accent-mid); }
         .upload-slot.loaded { border-style: solid; border-color: var(--green); background: var(--green-light); cursor: default; }
-        .upload-slot .slot-icon { font-size: 24px; margin-bottom: 6px; }
-        .upload-slot .slot-title { font-size: 12px; font-weight: 600; color: var(--text2); }
-        .upload-slot .slot-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
-        .upload-slot .slot-status { font-size: 10px; font-weight: 600; margin-top: 6px; }
+        .upload-slot .slot-icon { font-size: 22px; margin-bottom: 6px; }
+        .upload-slot .slot-title { font-size: 12.5px; font-weight: 600; color: var(--text); }
+        .upload-slot .slot-sub { font-size: 10.5px; color: var(--dim); margin-top: 2px; }
+        .upload-slot .slot-status { font-family: var(--mono); font-size: 10px; font-weight: 600; margin-top: 6px; }
         .upload-slot .slot-status.ok { color: var(--green); }
-        .upload-slot .slot-status.waiting { color: var(--orange); }
+        .upload-slot .slot-status.waiting { color: var(--subtle); }
         .upload-slot input[type="file"] { display:none; }
         .upload-slot .slot-clear { z-index:2; position:relative; }
         .upload-slot.loaded { pointer-events:none; }
         .upload-slot.loaded .slot-clear { pointer-events:auto; }
-        .upload-slot .slot-clear { display: none; position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 4px; }
+        .upload-slot .slot-clear { display: none; position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: var(--r-sm); }
         .upload-slot.loaded .slot-clear { display: block; }
         .upload-slot .slot-clear:hover { color: var(--red); background: var(--red-light); }
+        .mc-config { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+        .mc-config label { font-size: 11px; font-weight: 500; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+        .mc-config input { width: 58px; background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: var(--mono); font-size: 11px; padding: 5px 8px; outline: none; transition: border .15s, box-shadow .15s; }
+        .mc-config input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
 
         .cross-status { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-        .cross-badge { padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .cross-badge { font-family: var(--mono); padding: 4px 12px; font-size: 10px; font-weight: 600; border-radius: var(--r-sm); border: 1px solid transparent; }
         .cross-badge.fora { background: var(--red-light); color: var(--red); }
         .cross-badge.verificar { background: var(--orange-light); color: var(--orange); }
         .cross-badge.concentrador { background: var(--purple-light); color: var(--purple); }
-        tr.row-concentrador { background: var(--red-light) !important; }
-        tr.row-concentrador:hover { background: #ffd9d6 !important; }
-        tr.row-p1 { background: var(--red-light); }
-        tr.row-p2 { background: var(--orange-light); }
-        tr.row-p3 { background: var(--yellow-light); }
-        tr.row-p4 { background: #e3f2fd; }
-        tr.row-p5 { background: var(--tag); }
-        tr.row-p1:hover { background: #fde3e3; }
-        tr.row-p2:hover { background: #ffeddc; }
-        tr.row-p3:hover { background: #fef3c9; }
-        tr.row-p4:hover { background: #d3e9fb; }
-        tr.row-p5:hover { background: #dbe2ee; }
         .cross-badge.normal { background: var(--green-light); color: var(--green); }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .stat-card { background: var(--white); padding: 12px 16px; border-radius: var(--r-sm); box-shadow: var(--sh-sm); border-left: 4px solid var(--accent); cursor: pointer; transition: all 0.2s; }
+        tr.row-concentrador td { background: var(--purple-light); }
+        tr.row-concentrador:hover td { background: var(--purple-light); box-shadow: inset 0 0 0 999px var(--hover-row); }
+        tr.row-p1 td { box-shadow: inset 3px 0 0 var(--red); background: var(--red-light); }
+        tr.row-p2 td { box-shadow: inset 3px 0 0 var(--orange); background: var(--orange-light); }
+        tr.row-p3 td { box-shadow: inset 3px 0 0 var(--yellow); background: var(--yellow-light); }
+        tr.row-p4 td { box-shadow: inset 3px 0 0 var(--green); background: var(--green-light); }
+        tr.row-p5 td { box-shadow: inset 3px 0 0 var(--teal); background: var(--teal-light); }
+        tr.row-p1:hover td { background: var(--red-light); box-shadow: inset 3px 0 0 var(--red), inset 0 0 0 999px var(--hover-row); }
+        tr.row-p2:hover td { background: var(--orange-light); box-shadow: inset 3px 0 0 var(--orange), inset 0 0 0 999px var(--hover-row); }
+        tr.row-p3:hover td { background: var(--yellow-light); box-shadow: inset 3px 0 0 var(--yellow), inset 0 0 0 999px var(--hover-row); }
+        tr.row-p4:hover td { background: var(--green-light); box-shadow: inset 3px 0 0 var(--green), inset 0 0 0 999px var(--hover-row); }
+        tr.row-p5:hover td { background: var(--teal-light); box-shadow: inset 3px 0 0 var(--teal), inset 0 0 0 999px var(--hover-row); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
+        .stat-card {
+            position: relative; background: var(--white); padding: 14px 16px; border-radius: var(--r);
+            box-shadow: var(--shadow); overflow: hidden;
+            cursor: pointer; transition: transform .15s, box-shadow .15s;
+        }
+        .stat-card::before { content: ''; position: absolute; left: 18px; right: 18px; bottom: 0; height: 3px; border-radius: 99px 99px 0 0; background: linear-gradient(90deg, var(--bc, var(--accent)) 0%, transparent 130%); }
         .stat-card:hover { transform: translateY(-2px); box-shadow: var(--sh); }
-        .stat-card .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        .stat-card .value { font-size: 22px; font-weight: 700; color: var(--text); margin: 2px 0; }
-        .stat-card .sub { font-size: 10px; color: var(--subtle); }
-        .stat-card.p1 { border-left-color: var(--red); }
-        .stat-card.p2 { border-left-color: var(--orange); }
-        .stat-card.p3 { border-left-color: var(--yellow); }
-        .stat-card.p4 { border-left-color: #64b5f6; }
-        .stat-card.p5 { border-left-color: var(--subtle); }
-        .stat-card.sla { border-left-color: var(--green); }
-        .stat-card.sla .value { color: var(--green); }
-        .stat-card.vencidos { border-left-color: var(--red); }
-        .stat-card.vencidos .value { color: var(--red); }
-        .stat-card.active-filter { background: var(--accent-light); box-shadow: 0 0 0 2px var(--accent); }
+        .stat-card .label { font-size: 11.5px; font-weight: 500; color: var(--dim); }
+        .stat-card .value { font-size: 26px; font-weight: 700; color: var(--text); margin: 1px 0; letter-spacing: -.4px; }
+        .stat-card .sub { font-size: 10.5px; color: var(--subtle); }
+        .stat-card.p1 { --bc: var(--red); } .stat-card.p1 .value { color: var(--red); }
+        .stat-card.p2 { --bc: var(--orange); } .stat-card.p2 .value { color: var(--orange); }
+        .stat-card.p3 { --bc: var(--yellow); } .stat-card.p3 .value { color: var(--yellow); }
+        .stat-card.p4 { --bc: var(--green); } .stat-card.p4 .value { color: var(--green); }
+        .stat-card.p5 { --bc: var(--teal); } .stat-card.p5 .value { color: var(--teal); }
+        .stat-card.sla { --bc: var(--green); } .stat-card.sla .value { color: var(--green); }
+        .stat-card.vencidos { --bc: var(--red); } .stat-card.vencidos .value { color: var(--red); }
+        .stat-card.active-filter { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
 
-        .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; padding: 10px 16px; background: var(--white); border-radius: var(--r-sm); box-shadow: var(--sh-sm); }
-        .filter-bar .filter-label { font-weight: 600; color: var(--text2); font-size: 11px; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
-        .filter-btn { padding: 4px 14px; border: 2px solid var(--border); background: var(--white); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.2s; color: var(--text2); }
-        .filter-btn:hover { background: #f5f5f7; border-color: var(--subtle); }
-        .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .filter-btn.p1-active { background: var(--red); color: #fff; border-color: var(--red); }
-        .filter-btn.p2-active { background: var(--orange); color: #fff; border-color: var(--orange); }
-        .filter-btn.p3-active { background: var(--yellow); color: #333; border-color: var(--yellow); }
-        .filter-btn.p4-active { background: #64b5f6; color: #fff; border-color: #64b5f6; }
-        .filter-btn.p5-active { background: var(--subtle); color: #fff; border-color: var(--subtle); }
-        .filter-btn.vencidos-active { background: var(--red); color: #fff; border-color: var(--red); }
-        .filter-btn.noprazo-active { background: var(--green); color: #fff; border-color: var(--green); }
-        .filter-btn.fora-active { background: var(--red); color: #fff; border-color: var(--red); }
-        .filter-btn.verificar-active { background: var(--orange); color: #fff; border-color: var(--orange); }
-        .filter-btn.concentrador-active { background: var(--purple); color: #fff; border-color: var(--purple); }
-.filter-btn.regiao-active { background: #6a1b9a; color: #fff; border-color: #6a1b9a; }
-        .filter-btn.concluida-active { background: #2e7d32; color: #fff; border-color: #2e7d32; }
-        .filter-btn.pendente-active { background: var(--yellow); color: #fff; border-color: var(--yellow); }
-        .filter-btn.iniciada-active { background: #1565c0; color: #fff; border-color: #1565c0; }
-        .filter-btn.cancelada-active { background: var(--muted); color: #fff; border-color: var(--muted); }
-        .filter-btn.naoiniciada-active { background: var(--orange); color: #fff; border-color: var(--orange); }
-        .filter-separator { width: 1px; height: 28px; background: var(--border); margin: 0 6px; }
+        .filter-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; align-items: center; padding: 11px 16px; background: var(--white); border-radius: var(--r); box-shadow: var(--shadow); }
+        .filter-bar .filter-label { font-size: 11px; font-weight: 500; color: var(--dim); margin-right: 2px; }
+        .filter-btn {
+            font-family: var(--font); padding: 5px 14px; border: 1px solid transparent; background: var(--tag); color: var(--text2);
+            cursor: pointer; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); transition: all .15s;
+        }
+        .filter-btn:hover { background: var(--accent-light); color: var(--accent); }
+        .filter-btn.active { background: var(--accent); color: var(--on-accent); }
+        .filter-btn.p1-active { background: var(--red); color: #fff; }
+        .filter-btn.p2-active { background: var(--orange); color: #fff; }
+        .filter-btn.p3-active { background: var(--yellow); color: #fff; }
+        .filter-btn.p4-active { background: var(--green); color: #fff; }
+        .filter-btn.p5-active { background: var(--teal); color: #fff; }
+        .filter-btn.vencidos-active { background: var(--red); color: #fff; }
+        .filter-btn.noprazo-active { background: var(--green); color: #fff; }
+        .filter-btn.fora-active { background: var(--red); color: #fff; }
+        .filter-btn.verificar-active { background: var(--orange); color: #fff; }
+        .filter-btn.concentrador-active { background: var(--purple); color: #fff; }
+        .filter-btn.regiao-active { background: var(--accent-mid); color: var(--accent); }
+        .filter-btn.concluida-active { background: var(--green); color: #fff; }
+        .filter-btn.pendente-active { background: var(--yellow); color: #fff; }
+        .filter-btn.iniciada-active { background: var(--accent); color: var(--on-accent); }
+        .filter-btn.cancelada-active { background: var(--muted); color: #fff; }
+        .filter-btn.naoiniciada-active { background: var(--orange); color: #fff; }
+        .filter-separator { width: 1px; height: 24px; background: var(--line); margin: 0 6px; }
+        #ufFilterContainer { display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
-        .multi-select { position: relative; display: inline-block; }
-        .multi-select-btn { min-width: 200px; text-align: left; display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .multi-caret { font-size: 9px; color: var(--subtle); }
-        .multi-select-panel { position: absolute; top: calc(100% + 6px); left: 0; min-width: 240px; max-width: 340px; max-height: 300px; overflow: auto; background: var(--white); border: 1px solid var(--border2); border-radius: var(--r-sm); box-shadow: var(--sh); padding: 6px; z-index: 1000; }
-        .multi-option { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text2); white-space: nowrap; }
-        .multi-option:hover { background: var(--accent-light); }
-        .multi-option input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
-        .multi-all { font-weight: 700; border-bottom: 1px solid var(--border); margin-bottom: 4px; padding-bottom: 8px; border-radius: 0; }
-        .multi-options { display: flex; flex-direction: column; }
+        .search-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 11px 16px; background: var(--white); border-radius: var(--r); box-shadow: var(--shadow); margin-bottom: 12px; }
+        .search-bar .label { font-size: 11px; font-weight: 500; color: var(--dim); }
+        .search-bar input {
+            flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid var(--border2); border-radius: var(--r-sm); font-family: var(--font);
+            font-size: 12.5px; outline: none; transition: all .15s; background: var(--white); color: var(--text);
+        }
+        .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+        .search-bar input::placeholder { color: var(--subtle); }
 
-        .search-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; background: var(--white); border-radius: var(--r-sm); box-shadow: var(--sh-sm); margin-bottom: 12px; }
-        .search-bar input { flex: 1; min-width: 200px; padding: 8px 14px; border-radius: 20px; border: 2px solid var(--border); font-size: 13px; outline: none; transition: all 0.2s; background: var(--bg); color: var(--text); }
-        .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(207, 95, 0, 0.15); background: var(--white); }
-
-        .table-wrapper { overflow-x: auto; max-height: 520px; overflow-y: auto; border-radius: var(--r-sm); border: 1px solid var(--border); margin-top: 10px; background: var(--white); }
-        table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 12px; }
+        .table-wrapper { overflow-x: auto; max-height: 560px; overflow-y: auto; border-radius: var(--r); margin-top: 10px; background: var(--white); box-shadow: var(--shadow); }
+        table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 12.5px; }
         thead { position: sticky; top: 0; z-index: 10; }
-        th { background: #e8630a; color: #fff; padding: 9px 12px; text-align: left; white-space: nowrap; cursor: pointer; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
-        th:hover { background: #d15600; }
-        td { padding: 7px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12px; white-space: nowrap; }
-        tr:hover { background: var(--accent-light); }
-        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+        th {
+            background: var(--thead-bg); color: var(--text); padding: 11px 14px; text-align: left; white-space: nowrap; cursor: pointer;
+            font-family: var(--font); font-size: 11px; font-weight: 600; letter-spacing: .2px; text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+        th:hover { color: var(--accent); }
+        td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 12.5px; white-space: nowrap; color: var(--text2); }
+        tbody tr { transition: background .1s; }
+        tbody tr:hover td { background: var(--hover-row); }
+        tbody tr:last-child td { border-bottom: none; }
+        td code { font-family: var(--mono); font-size: 11px; color: var(--cyan); }
+        .eve-count { font-family: var(--mono); font-size: 9px; color: var(--accent); margin-left: 3px; }
+        .rep-flag { cursor: help; }
+
+        .badge { display: inline-block; font-family: var(--mono); padding: 3px 10px; font-size: 10px; font-weight: 600; white-space: nowrap; border-radius: var(--r-sm); border: 1px solid transparent; }
         .badge-p1 { background: var(--red-light); color: var(--red); }
         .badge-p2 { background: var(--orange-light); color: var(--orange); }
-        .badge-p3 { background: var(--yellow-light); color: #92400e; }
-        .badge-p4 { background: #e3f2fd; color: #0d47a1; }
-        .badge-p5 { background: var(--tag); color: var(--muted); }
+        .badge-p3 { background: var(--yellow-light); color: var(--yellow); }
+        .badge-p4 { background: var(--green-light); color: var(--green); }
+        .badge-p5 { background: var(--teal-light); color: var(--teal); }
         .badge-fora { background: var(--red-light); color: var(--red); }
         .badge-verificar { background: var(--orange-light); color: var(--orange); }
         .badge-concentrador { background: var(--purple-light); color: var(--purple); }
+        .badge-genesis { background: var(--accent-light); color: var(--accent); }
 
-        .sla-bar { height: 4px; border-radius: 4px; background: var(--border); margin-top: 3px; width: 100%; }
-        .sla-bar .fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
-        .sla-bar .fill.verde { background: #22c55e; }
-        .sla-bar .fill.vermelho { background: #ef4444; }
-        .sla-bar .fill.laranja { background: #f59e0b; }
-        .sla-bar .fill.cinza { background: #9ca3af; }
-        .sla-time { font-size: 11px; font-weight: 600; }
-        .sla-time.verde { color: #15803d; }
-        .sla-time.vermelho { color: #dc2626; font-weight: 700; }
-        .sla-time.laranja { color: #b45309; }
-        .sla-time.cinza { color: #6b7280; }
-        .sla-date-cell { padding: 3px 8px; border-radius: 5px; font-weight: 600; white-space: nowrap; font-size: 11px; }
-        .sla-date-cell.verde { background: #dcfce7; color: #15803d; }
-        .sla-date-cell.vermelho { background: #fee2e2; color: #b91c1c; }
-        .sla-date-cell.laranja { background: #fef3c7; color: #b45309; }
-        .sla-date-cell.cinza { background: #e5e7eb; color: #4b5563; }
+        .sla-bar { height: 4px; background: var(--line); border-radius: 99px; margin-top: 4px; width: 100%; overflow: hidden; }
+        .sla-bar .fill { height: 100%; border-radius: 99px; transition: width .5s; }
+        .sla-bar .fill.verde { background: var(--green); }
+        .sla-bar .fill.vermelho { background: var(--red); }
+        .sla-bar .fill.laranja { background: var(--orange); }
+        .sla-bar .fill.cinza { background: var(--subtle); }
+        .sla-time { font-family: var(--mono); font-size: 11px; font-weight: 600; }
+        .sla-time.verde { color: var(--green); }
+        .sla-time.vermelho { color: var(--red); font-weight: 700; }
+        .sla-time.laranja { color: var(--orange); }
+        .sla-time.cinza { color: var(--muted); }
+        .sla-date-cell { font-family: var(--mono); padding: 3px 9px; font-weight: 600; white-space: nowrap; font-size: 10px; border-radius: var(--r-sm); }
+        .sla-date-cell.verde { background: var(--green-light); color: var(--green); }
+        .sla-date-cell.vermelho { background: var(--red-light); color: var(--red); }
+        .sla-date-cell.laranja { background: var(--orange-light); color: var(--orange); }
+        .sla-date-cell.cinza { background: var(--tag); color: var(--muted); }
 
         .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px; }
-        .chart-box { background: var(--white); padding: 14px; border-radius: var(--r-sm); box-shadow: var(--sh-sm); border: 1px solid var(--border); }
-        .chart-box h4 { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; }
+        .chart-box { background: var(--white); padding: 18px; border-radius: var(--r); box-shadow: var(--shadow); }
+        .chart-box h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
         .chart-container { position: relative; height: 200px; }
 
         .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px; text-align: center; color: var(--muted); }
@@ -1723,16 +1847,25 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         .empty h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
         .empty p { font-size: 13px; color: var(--muted); max-width: 400px; }
 
-        .toolbar-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; background: var(--white); border-radius: var(--r-sm); box-shadow: var(--sh-sm); margin-bottom: 12px; }
-        .toolbar-row .label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .toolbar-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 11px 16px; background: var(--white); border-radius: var(--r); box-shadow: var(--shadow); margin-bottom: 12px; }
+        .toolbar-row .label { font-size: 11px; color: var(--dim); font-weight: 500; margin-right: 4px; }
         .btn-export { border-color: var(--accent); color: var(--accent); }
-        .btn-export:hover { background: var(--accent); color: #fff; }
+        .btn-export:hover { background: var(--accent); color: var(--on-accent); }
+
+        .foot-dots { display: inline-flex; gap: 6px; align-items: center; }
+        .foot-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+        .foot-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulseDot 2s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 
         @media (max-width: 900px) { .upload-card .upload-row { grid-template-columns: repeat(2, 1fr); } .stats-grid { grid-template-columns: repeat(2, 1fr); } .filter-bar { flex-direction: column; align-items: stretch; } .filter-separator { display: none; } }
         @media (max-width: 560px) { .upload-card .upload-row { grid-template-columns: 1fr; } }
 
         .tooltip { position: relative; }
-        .tooltip:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 10px; white-space: nowrap; z-index: 100; }
+        .tooltip:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 5px 11px; font-size: 10.5px; white-space: nowrap; z-index: 100; border-radius: var(--r-sm); font-family: var(--mono); box-shadow: var(--sh); }
+
+        .regra-group-btn { font-family: var(--font); padding: 5px 14px; border: 1px solid transparent; background: var(--tag); color: var(--text2); cursor: pointer; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); transition: all .15s; }
+        .regra-group-btn:hover { background: var(--accent-light); color: var(--accent); }
+        .regra-group-btn.active { background: var(--accent); color: var(--on-accent); }
     </style>
     <style>
       @keyframes rotate360 {
@@ -1750,7 +1883,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         <div class="header">
             <h1><img id="logoImg" src="data:image/png;base64,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" alt="Logo" style="height:34px;width:auto;"> CCI EXTRATOR TRJ <small>v1.0 | Multi-Planilhas </small></h1>
             <div class="header-actions">
-                <div class="sla-counter"> Dados: <span id="dataStatus" style="color:#69f0ae;">Nenhum</span></div>
+                <div class="sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
+                <div class="sla-counter"> Dados: <span id="dataStatus" style="color:var(--green);">Nenhum</span></div>
+                <button class="theme-toggle" id="themeToggle" type="button">☀ CLARO</button>
             </div>
         </div>
 
@@ -1802,6 +1937,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         <input type="file" accept=".xlsx,.xls,.csv,.txt" data-target="concentradores">
                     </label>
                     </div>
+                    <div class="mc-config" title="Regra de Missão Crítica aplicada à planilha de Concentradores">
+                        <label>⚠ MC: Sites Dep. ≥ <input type="number" id="mcMinTx" min="1" max="999" value="4"></label>
+                        <label>Palavra na falha: <input type="text" id="mcFalhaKeyword" value="energia" style="width:110px;"></label>
+                    </div>
                 </div>
 
             </div>
@@ -1812,8 +1951,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 <!-- STATS -->
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card" data-filter="all"><div class="label">📌 Total</div><div class="value" id="totalChamados">0</div><div class="sub">Carregue as planilhas</div></div>
-                    <div class="stat-card p1 active-filter" data-filter="P1"><div class="label">🔴 P1</div><div class="value" id="totalP1">0</div><div class="sub">Críticos</div></div>
-                    <div class="stat-card p2 active-filter" data-filter="P2"><div class="label">🟠 P2</div><div class="value" id="totalP2">0</div><div class="sub">Urgentes</div></div>
+                    <div class="stat-card p1" data-filter="P1"><div class="label">🔴 P1</div><div class="value" id="totalP1">0</div><div class="sub">Críticos</div></div>
+                    <div class="stat-card p2" data-filter="P2"><div class="label">🟠 P2</div><div class="value" id="totalP2">0</div><div class="sub">Urgentes</div></div>
                     <div class="stat-card p3" data-filter="P3"><div class="label">🟡 P3</div><div class="value" id="totalP3">0</div><div class="sub">Média</div></div>
                     <div class="stat-card p4" data-filter="P4"><div class="label">🔵 P4</div><div class="value" id="totalP4">0</div><div class="sub">Baixa</div></div>
                     <div class="stat-card p5" data-filter="P5"><div class="label">⚪ P5</div><div class="value" id="totalP5">0</div><div class="sub">Mínima</div></div>
@@ -1833,8 +1972,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 <div class="filter-bar" id="filterBar">
                     <div class="filter-separator"></div>
                     <span class="filter-label">🎯 Prioridade:</span>
-                    <button class="filter-btn active p1-active" data-filter="P1">P1</button>
-                    <button class="filter-btn active p2-active" data-filter="P2">P2</button>
+                    <button class="filter-btn" data-filter="P1">P1</button>
+                    <button class="filter-btn" data-filter="P2">P2</button>
                     <button class="filter-btn" data-filter="P3">P3</button>
                     <button class="filter-btn" data-filter="P4">P4</button>
                     <button class="filter-btn" data-filter="P5">P5</button>
@@ -1869,6 +2008,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-filter="Espírito Santo">Espírito Santo</button>
                     <button class="filter-btn" data-filter="Sem região">Sem região</button>
                     <div class="filter-separator"></div>
+                    <span class="filter-label">🌎 UF:</span>
+                    <span id="ufFilterContainer"><span style="font-size:10px;color:var(--subtle);">(aparece após carregar dados)</span></span>
+                    <div class="filter-separator"></div>
                     <button class="filter-btn" id="btnAtualizar" style="background:var(--accent);color:#fff;border-color:var(--accent);">🔄 Atualizar</button>
                     <div class="filter-separator"></div>
                     <span class="filter-label">📊 Ordenar:</span>
@@ -1876,6 +2018,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-sort="prioridade">Prioridade</button>
                     <button class="filter-btn" data-sort="sla">SLA</button>
                     <button class="filter-btn" data-sort="falha">Falha</button>
+                    <button class="filter-btn" data-sort="peso" title="Peso na disponibilidade (Gênesis)">Impacto</button>
                     <div class="filter-separator"></div>
                     <button class="filter-btn" id="resetFilters" style="border-color:var(--red);color:var(--red);">🔄 Reset</button>
                 </div>
@@ -1910,13 +2053,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="uf">UF</th>
                                     <th data-sort="regiao">Região</th>
                                     <th data-sort="falha">Tipo Falha</th>
+                                    <th data-sort="peso" title="Peso na disponibilidade (Gênesis)">Peso</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
                                     <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                     <th data-sort="sla">SLA (Fim)</th>
                                     <th data-sort="tempo">Tempo Restante</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
+                            <tbody id="tableBody"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
                         </table>
                     </div>
 
@@ -1944,13 +2088,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>UF</th>
                                         <th>Região</th>
                                         <th>Tipo Falha</th>
+                                        <th>Peso</th>
                                         <th>Cruzamento</th>
                                         <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                         <th>SLA (Fim)</th>
                                         <th>Tempo Restante</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableBodyConc"><tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
+                                <tbody id="tableBodyConc"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -2041,7 +2186,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             TITULO_ALARME: ['Título do Alarme', 'Alarme'],
             DIARIO: ['Diário de Trabalho'],
             NOTA_ABERTURA: ['Nota de Abertura'],
-            PROVEDOR: ['Provedor']
+            PROVEDOR: ['Provedor'],
+            PESO: ['Peso na disponibilidade', 'Peso Ordenar por Peso na disponibilidade', 'Peso'],
+            PREVISAO: ['Previsão', 'Previsao']
         };
 
         // ================================================================
@@ -2089,6 +2236,60 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         let sortAsc = true;
         let _slaInterval = null;
         let crossCounts = { fora: 0, verificar: 0, concentrador: 0 };
+        let eveCounts = {};
+
+        // ================================================================
+        //  CONFIG + PERSISTÊNCIA
+        // ================================================================
+        const CONFIG = { mcMinTx: 4, mcKeyword: 'energia' };
+        function loadConfig() {
+            try {
+                const raw = localStorage.getItem('cci-config');
+                if (raw) {
+                    const c = JSON.parse(raw);
+                    if (c.mcMinTx) CONFIG.mcMinTx = parseInt(c.mcMinTx, 10) || 4;
+                    if (c.mcKeyword !== undefined) CONFIG.mcKeyword = String(c.mcKeyword);
+                }
+            } catch (e) {}
+            const elTx = document.getElementById('mcMinTx');
+            const elKw = document.getElementById('mcFalhaKeyword');
+            if (elTx) elTx.value = CONFIG.mcMinTx;
+            if (elKw) elKw.value = CONFIG.mcKeyword;
+        }
+        function saveConfig() {
+            try { localStorage.setItem('cci-config', JSON.stringify(CONFIG)); } catch (e) {}
+        }
+        function saveGenesisDraft(text) {
+            try { localStorage.setItem('cci-genesis-draft', text); } catch (e) {}
+        }
+
+        // ================================================================
+        //  UTILITIES 2 (escape / css var)
+        // ================================================================
+        function esc(s) {
+            return String(s === null || s === undefined ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function cssVar(name) {
+            const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+            return v || '#888888';
+        }
+        function mixCssVar(name, t) {
+            const c = cssVar(name);
+            const bg = cssVar('--bg');
+            const hex2rgb = (s) => {
+                s = String(s).replace('#', '');
+                if (s.length === 3) s = s.split('').map(x => x + x).join('');
+                return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
+            };
+            try {
+                const a = hex2rgb(c), b = hex2rgb(bg);
+                const k = Math.min(1, Math.max(0, t));
+                const m = a.map((v, i) => Math.round(v + (b[i] - v) * k));
+                return '#' + m.map(v => v.toString(16).padStart(2, '0')).join('');
+            } catch (e) { return c; }
+        }
 
         // ================================================================
         //  UTILITIES
@@ -2114,7 +2315,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (!valor) return null;
             const str = String(valor).trim();
             if (!str) return null;
-            const regex = /^(\d{2})\/(\d{2})\/(\d{2,4})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/;
+            const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
             const match = str.match(regex);
             if (match) {
                 let dia = parseInt(match[1]), mes = parseInt(match[2]) - 1, ano = parseInt(match[3]);
@@ -2142,15 +2343,22 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
 
         function parsePriority(p) {
-            if (!p) return 'N/A';
+            if (p === null || p === undefined) return 'N/A';
             const s = String(p).trim();
-            const match = s.match(/P[1-5]/i);
-            if (match) return match[0].toUpperCase();
-            if (s.includes('1') || s.toLowerCase().includes('alta') || s.toLowerCase().includes('crit')) return 'P1';
-            if (s.includes('2') || s.toLowerCase().includes('urg')) return 'P2';
-            if (s.includes('3') || s.toLowerCase().includes('méd') || s.toLowerCase().includes('med')) return 'P3';
-            if (s.includes('4')) return 'P4';
-            if (s.includes('5') || s.toLowerCase().includes('baixa') || s.toLowerCase().includes('min')) return 'P5';
+            if (!s) return 'N/A';
+            // Formato explícito: P1..P5 (com hífens/espaços opcionais)
+            let m = s.match(/^P\s*[-–]?\s*([1-5])\b/i);
+            if (m) return 'P' + m[1];
+            // Dígito isolado
+            m = s.match(/^([1-5])$/);
+            if (m) return 'P' + m[1];
+            // Palavras-chave (comparação por palavra inteira, não substring solta)
+            const l = s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (/\b(crit|critic[oa]s?|emergencia|altissima)\b/.test(l)) return 'P1';
+            if (/\b(alta|altas|urgente|urgentes)\b/.test(l)) return 'P2';
+            if (/\b(media|medias|moderada)\b/.test(l)) return 'P3';
+            if (/\b(baixa|baixas|minima|minimas)\b/.test(l)) return 'P5';
+            if (/\b(baixa prioridade|normal)\b/.test(l)) return 'P4';
             return 'N/A';
         }
 
@@ -2170,9 +2378,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const hours = Math.floor((diff % 86400000) / 3600000);
                 const minutes = Math.floor((diff % 3600000) / 60000);
                 const H = 3600000;
-                const slaClass = diff <= 3 * H ? 'vermelho' : diff <= 8 * H ? 'laranja' : 'verde';
+                const slaClass = diff <= 1 * H ? 'vermelho' : diff <= 4 * H ? 'laranja' : 'verde';
                 const timeLeft = (days > 0 ? days + 'd ' : '') + hours + 'h ' + minutes + 'm';
-                return { label: formatDateSLA(d.slaFim), timeLeft: timeLeft, class: slaClass, percent: Math.min(100, (diff / 3600000) * 20) };
+                // Barra = fração da janela SLA já consumida (chega a 100% no fim do prazo)
+                const windowMs = (SLA_HOURS[d.prioridade] || 12) * H;
+                const consumed = Math.max(0, Math.min(100, 100 - (diff / windowMs) * 100));
+                return { label: formatDateSLA(d.slaFim), timeLeft: timeLeft, class: slaClass, percent: consumed };
             } else {
                 return { label: formatDateSLA(d.slaFim), timeLeft: '⏰ Vencido', class: 'cinza', percent: 100 };
             }
@@ -2234,9 +2445,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     return '';
                 };
 
-                const end_id = '';
-                const endColHint = headerIdxMap['ENDID'];
                 const ENDID_RE = /^[A-Z]{2,5}[A-Z]{2,}[A-Z0-9]{0,6}[-_]?\d{3,5}$/;
+                const endColHint = headerIdxMap['ENDID'];
                 let endIdx = -1;
                 if (endColHint !== undefined && cols[endColHint] !== undefined && ENDID_RE.test(String(cols[endColHint]).trim().toUpperCase())) {
                     endIdx = endColHint;
@@ -2250,48 +2460,67 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         }
                     });
                 }
-                let ne_id = '';
-                if (endIdx > 0) {
-                    const cell = String(cols[endIdx - 1] || '').trim();
-                    if (cell && !/^(2G|3G|4G|5G)$/i.test(cell)) ne_id = cell.split(',')[0].trim();
-                }
-                if (!ne_id) ne_id = pick('NE_ID', 'NE ID', 'Ne Id', 'NE', 'Elemento', 'Network Element', 'Site');
+
+                // --- Layout TRJ: Horário | Duração | Tier(G/S/B/I) | ANF | Cidades | Tech | Site(rádios) | End_id | ANF | Cidade/UF | Infra | EVE/CRQ | Previsão | Causa | Detalhe | Peso ---
+                const horario = (cols[0] || '').trim();
+                const duracaoCell = (cols[1] || '').trim();
+                const tierFlag = (cols[2] || '').trim().toUpperCase();
+                const siteRaw = endIdx > 0 ? String(cols[endIdx - 1] || '').trim() : '';
+                const end_id = endIdx >= 0 ? String(cols[endIdx] || '').trim() : '';
+                const ne_id = siteRaw.split(',')[0].trim();
+
+                const eve = pick('EVE/CRQ', 'EVECRQ', 'Evento');
+                const causaRaw = pick('Causa');
+                const causaParts = causaRaw.split('/').map(s => s.trim()).filter(Boolean);
+                const tipoCausa = causaParts[0] || '';
+                const detCausa = causaParts.slice(1).join(' / ');
+                const previsao = pick('Previsão', 'Previsao');
+                const detalhe = pick('Detalhe');
+                const infra = pick('Infra', 'Classif. Infra', 'Classificação de Infraestrutura');
+
+                const pesoHeaderKey = Object.keys(headerIdxMap).find(k => k.indexOf('PESO') === 0);
+                const pesoVal = pesoHeaderKey !== undefined ? parseFloat(String(cols[headerIdxMap[pesoHeaderKey]] || '').replace(',', '.')) : NaN;
+
                 const cidadeUf = pick('Cidade/UF', 'Cidade', 'Cidade UF');
                 const [cidade, uf] = cidadeUf.includes('/') ? cidadeUf.split('/').map(s => s.trim()) : [cidadeUf, ''];
 
+                // Linhas de rodapé/legenda sem END_ID e sem EVE são descartadas
+                if (!end_id && !/^((EVE)|(TSK))/i.test(eve)) continue;
+
                 const obj = {
-                    tsk: ne_id || 'N/I',
-                    ne: ne_id || 'N/I',
-                    end_id: '',
-                    end_id_norm: '',
+                    tsk: /^((EVE)|(TSK))/i.test(eve) ? eve : (ne_id || 'N/I'),
+                    ne: siteRaw || ne_id || 'N/I',
+                    end_id: end_id,
+                    end_id_norm: normalizeEndId(end_id),
                     cidade: cidade || '',
                     uf: uf || '',
                     prioridade: 'N/A',
-                    status: row['Status'] || 'Desconhecido',
-                    tecnico: 'Não atribuído',
-                    falha: row['Observação'] || 'Sem descrição',
+                    status: 'Fora do ar (Gênesis)',
+                    tecnico: tierFlag ? 'Tier ' + tierFlag : 'Não atribuído',
+                    falha: detCausa || tipoCausa || 'Sem descrição',
                     solucao: '',
                     suspensao: 'Nenhuma',
                     segmento: 'Outro',
                     repetido: false,
                     lat: null,
                     lng: null,
-                    criacao: row['Data/Hora'] || '',
+                    criacao: horario || '',
                     slaFim: '',
+                    previsao: previsao,
                     entrada: '',
                     saida: '',
-                    duracao: row['Duração'] || '',
-                    tipoFalha: row['Classif. Infra'] || row['Tecnologia'] || 'Não classificado',
-                    regra: 'Sem fila',
-                    uf: uf || '',
-                    cm: row['CM'] || row['Fila'] || '',
-                    regiao: getRegiaoInfo(row['CM'] || row['Fila'] || '').regiao,
-                    place: getRegiaoInfo(row['CM'] || row['Fila'] || '').place,
+                    duracao: duracaoCell || '',
+                    tipoFalha: tipoCausa || infra || 'Não classificado',
+                    peso: isNaN(pesoVal) ? '' : pesoVal,
+                    regra: 'GÊNESIS',
+                    cm: '',
+                    regiao: getRegiaoInfo('').regiao,
+                    place: getRegiaoInfo('').place,
                     provedor: '',
                     bairro: '',
                     nome_ne: '',
                     titulo_alarme: '',
-                    diario: '',
+                    diario: detalhe || '',
                     nota_abertura: '',
                     origem: 'genesis',
                     cruzamento: '—',
@@ -2305,12 +2534,16 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  PROCESS ROW
         // ================================================================
-        function processRow(row) {
+        function buildColMap(sample) {
             const colMap = {};
-            const sample = row;
             for (const [key, names] of Object.entries(COLUMN_MAP)) {
                 colMap[key] = findColumn(sample, names);
             }
+            return colMap;
+        }
+
+        function processRow(row, colMap) {
+            colMap = colMap || buildColMap(row);
 
             const get = (key) => {
                 const col = colMap[key];
@@ -2400,6 +2633,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 saida: get('SAIDA'),
                 duracao: get('DURACAO'),
                 tipoFalha: tipoFalha || 'Não classificado',
+                peso: (() => { const v = parseFloat(String(get('PESO') || '').replace(',', '.')); return isNaN(v) ? '' : v; })(),
+                previsao: get('PREVISAO') || '',
                 regra: get('REGRA') || 'Sem fila',
                 provedor: get('PROVEDOR') || '',
                 bairro: get('BAIRRO') || '',
@@ -2415,38 +2650,54 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  LOAD FILE
         // ================================================================
-        function fixCsvDates(json) {
-            const re = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(.*)$/;
-            const timeRe = /(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i;
-            for (const row of json) {
-                for (const k of Object.keys(row)) {
-                    const v = row[k];
-                    if (typeof v !== 'string') continue;
-                    const s = v.trim();
-                    const m = s.match(re);
-                    if (!m) continue;
-                    const a = parseInt(m[1], 10), b = parseInt(m[2], 10), ano = parseInt(m[3], 10);
-                    const curMes = new Date().getMonth() + 1;
-                    let dia, mes;
-                    if (a === curMes && b !== curMes) { mes = a; dia = b; }
-                    else if (b === curMes && a !== curMes) { mes = b; dia = a; }
-                    else if (a > 12 && b <= 12) { dia = a; mes = b; }
-                    else if (b > 12 && a <= 12) { dia = b; mes = a; }
-                    else { dia = a; mes = b; }
-                    if (!(mes >= 1 && mes <= 12 && dia >= 1 && dia <= 31)) continue;
-                    const tm = m[4].match(timeRe);
-                    let hh = 0, mi = 0, ss = 0;
-                    if (tm) {
-                        hh = parseInt(tm[1], 10); mi = parseInt(tm[2], 10); ss = parseInt(tm[3] || 0, 10);
-                        if (/pm/i.test(tm[4]) && hh < 12) hh += 12;
-                        if (/am/i.test(tm[4]) && hh === 12) hh = 0;
-                    }
-                    const y = ano < 100 ? 2000 + ano : ano;
-                    row[k] = y + '-' + String(mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0') +
-                        'T' + String(hh).padStart(2, '0') + ':' + String(mi).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
-                }
+        // Detecta delimitador de CSV (; , \t |) pela contagem no cabeçalho
+        function detectDelimiter(text) {
+            const firstLine = String(text).split(/\r?\n/, 1)[0] || '';
+            const counts = { ';': 0, ',': 0, '\t': 0, '|': 0 };
+            let inQuotes = false;
+            for (const ch of firstLine) {
+                if (ch === '"') inQuotes = !inQuotes;
+                else if (!inQuotes && counts[ch] !== undefined) counts[ch]++;
             }
-            return json;
+            return Object.keys(counts).reduce((a, b) => counts[b] > counts[a] ? b : a, ';');
+        }
+
+        // Regra de Missão Crítica configurável sobre a planilha de concentradores
+        function applyMissaoCriticaRules(json) {
+            if (!json || !json.length) return { ids: [], criticos: [] };
+            const sample = json[0];
+            const concField = findColumn(sample, ['Número de Ordem', 'TSK', 'Ordem', 'Ticket', 'u_ne_ids', 'ne_ids', 'ID', 'NE ID', 'END_ID', 'end_id', 'id']);
+            const sdField = findColumn(sample, ['Sites Dependentes por Tx', 'Sites Dependentes por TX', 'Sites Dependentes (Total TX)', 'Sites Dependentes']);
+            const falhaField = findColumn(sample, ['Falha']);
+            console.log('[concentradores] Colunas:', Object.keys(sample), '→ campo ID:', concField, '| campo Sites Dependentes:', sdField, '| campo Falha:', falhaField);
+
+            const kw = CONFIG.mcKeyword.trim().toLowerCase();
+            const ids = [];
+            const criticos = [];
+            json.forEach(row => {
+                const idVal = concField ? String(row[concField] || '').trim() : '';
+                const idNorm = normalizeEndId(idVal);
+                if (!idNorm) return;
+                ids.push(idNorm);
+                const sdRaw = sdField ? row[sdField] : '';
+                const sdNum = parseInt(String(sdRaw).replace(/[^\d-]/g, ''), 10);
+                const falhaVal = falhaField ? String(row[falhaField] || '').trim().toLowerCase() : '';
+                if (!isNaN(sdNum) && sdNum >= CONFIG.mcMinTx && (!kw || falhaVal.includes(kw))) {
+                    criticos.push(idNorm);
+                }
+            });
+            return { ids: ids, criticos: criticos };
+        }
+
+        // Decodifica buffer de arquivo tentando UTF-8; se houver bytes
+        // inválidos (acentuação quebrada), cai para Windows-1252.
+        function decodeTextBuffer(buf) {
+            try {
+                return new TextDecoder('utf-8', { fatal: true }).decode(buf);
+            } catch (e) {
+                try { return new TextDecoder('windows-1252').decode(buf); }
+                catch (e2) { return new TextDecoder('utf-8').decode(buf); }
+            }
         }
 
         function loadFile(file, target) {
@@ -2456,35 +2707,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     try {
                         const data = new Uint8Array(e.target.result);
                         const isXlsx = /\.(xlsx|xls)$/i.test(file.name);
-                        const workbook = XLSX.read(data, isXlsx ? { type: 'array', cellDates: true } : { type: 'array', cellDates: false, raw: true });
+                        // XLSX é binário; texto/CSV é decodificado com detecção de encoding
+                        const workbook = isXlsx
+                            ? XLSX.read(data, { type: 'array', cellDates: true })
+                            : XLSX.read(decodeTextBuffer(data), { type: 'string', raw: true, FS: detectDelimiter(decodeTextBuffer(data)) });
                         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                         const json = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
                         if (json.length === 0) { reject(new Error('Planilha vazia')); return; }
-                        if (!isXlsx) fixCsvDates(json);
 
                         if (target === 'concentradores') {
-                            const concField = findColumn(json[0], ['Número de Ordem', 'TSK', 'Ordem', 'Ticket', 'u_ne_ids', 'ne_ids', 'ID', 'NE ID', 'END_ID', 'end_id', 'id']);
-                            const sdField = findColumn(json[0], ['Sites Dependentes por Tx', 'Sites Dependentes por TX', 'Sites Dependentes (Total TX)', 'Sites Dependentes']);
-                            const falhaField = findColumn(json[0], ['Falha']);
-                            console.log('[concentradores] Colunas:', Object.keys(json[0]), '→ campo ID:', concField, '| campo Sites Dependentes:', sdField, '| campo Falha:', falhaField);
-                            const ids = json.map(row => {
-                                const val = concField ? String(row[concField] || '').trim() : '';
-                                return normalizeEndId(val);
-                            }).filter(Boolean);
-
-                            // Marcador de Missão Crítica (MC): Sites Dependentes por Tx >= 4 E Falha = Energia
-                            const criticos = [];
-                            json.forEach(row => {
-                                const idVal = concField ? String(row[concField] || '').trim() : '';
-                                const idNorm = normalizeEndId(idVal);
-                                if (!idNorm) return;
-                                const sdRaw = sdField ? row[sdField] : '';
-                                const sdNum = parseInt(String(sdRaw).replace(/[^\d-]/g, ''), 10);
-                                const falhaVal = falhaField ? String(row[falhaField] || '').trim().toLowerCase() : '';
-                                if (!isNaN(sdNum) && sdNum >= 4 && falhaVal.includes('energia')) {
-                                    criticos.push(idNorm);
-                                }
-                            });
+                            dataStore.concRaw = json; // guarda para reaplicar regra de MC quando a config mudar
+                            const { ids, criticos } = applyMissaoCriticaRules(json);
                             dataStore.concentradores = ids;
                             dataStore.missaoCritica = criticos;
                             const statusInfo = ids.length + ' IDs' + (criticos.length ? ' | ⚠️ ' + criticos.length + ' Missão Crítica' : '');
@@ -2547,8 +2780,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             sources.forEach(src => {
                 if (!src.data.length) return;
+                const srcColMap = buildColMap(src.data[0]);
                 src.data.forEach(row => {
-                    const item = row._preprocessed ? row : processRow(row);
+                    const item = row._preprocessed ? row : processRow(row, srcColMap);
                     item.origem = item.origem || src.name;
                     const estKey = normalizeEstadoStatus(item.status);
                     if (estKey === 'concluida' || estKey === 'cancelada') return; // excluídos da visualização
@@ -2586,8 +2820,13 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             }
 
             console.log('📊 Dados combinados:', combinedData.length, 'registros');
+            eveCounts = {};
+            combinedData.forEach(it => {
+                if (it.origem === 'genesis' && it.tsk && it.tsk !== 'N/I') eveCounts[it.tsk] = (eveCounts[it.tsk] || 0) + 1;
+            });
             buildCrossReference();
             if (combinedData.length > 0) processCombinedData();
+            if (typeof window.showTrust === 'function') window.showTrust();
         }
 
         // Normaliza os valores de "Estado" vindos das planilhas de atividades (com variações de
@@ -2727,7 +2966,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedPriorities.has(d.prioridade));
             }
 
-            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(d.tsk.trim()));
+            // (removido) filtro /^TSK\d+$/ que escondia registros do Gênesis da tabela
 
             if (selectedSLA.size === 1) {
                 if (selectedSLA.has('vencidos')) {
@@ -2778,6 +3017,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         const getSla = (d) => { if (!d.slaFim) return Infinity; const dt = new Date(d.slaFim); return isNaN(dt) ? Infinity : dt - new Date(); };
                         return (getSla(a) - getSla(b)) * sortOrder;
                     case 'falha': valA = a.tipoFalha || ''; valB = b.tipoFalha || ''; break;
+                    case 'peso':
+                        const getP = (d) => (d.peso === '' || d.peso === null || d.peso === undefined) ? -1 : (parseFloat(d.peso) || 0);
+                        return (getP(a) - getP(b)) * sortOrder;
+                    case 'uf': valA = a.uf || ''; valB = b.uf || ''; break;
                     case 'tsk': valA = a.tsk || ''; valB = b.tsk || ''; break;
                     case 'ne': valA = a.ne || ''; valB = b.ne || ''; break;
                     case 'cruzamento': valA = a.cruzamento || ''; valB = b.cruzamento || ''; break;
@@ -2800,24 +3043,39 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (ec) ec.textContent = displayData.length;
         }
 
-        function buildRowHtml(d) {
+        function buildRowHtml(d, isConcTable) {
             const pc = d.prioridade === 'P1' ? 'badge-p1' : d.prioridade === 'P2' ? 'badge-p2' :
                 d.prioridade === 'P3' ? 'badge-p3' : d.prioridade === 'P4' ? 'badge-p4' : 'badge-p5';
             const sla = getSLAInfo(d);
             const isConc = d.isConcentrador || d.cruzamento === 'concentrador';
-            const tskColor = isConc ? '#b91c1c' : 'inherit';
-            const tskDisplay = '<strong style="font-size:11px;color:' + tskColor + ';">' + d.tsk + '</strong>';
+            const tskColor = isConc ? 'var(--red)' : 'inherit';
+            const repFlag = d.repetido ? '<span class="rep-flag" title="Ticket reincidente (coluna Repetido)">🔁</span>' : '';
+            const eveN = d.origem === 'genesis' && eveCounts[d.tsk] > 1
+                ? '<span class="eve-count" title="' + esc(d.tsk) + ' afeta ' + eveCounts[d.tsk] + ' sites">×' + eveCounts[d.tsk] + '</span>'
+                : '';
+            const tskDisplay = '<strong style="font-size:11px;color:' + tskColor + ';">' + esc(d.tsk) + '</strong>' + eveN + repFlag;
 
             const cruzLabel = { 'fora': '🔴 Fora', 'verificar': '🟠 Verificando', 'concentrador': '🟣 Concentrador', '—': '—' };
             const cruzClass = { 'fora': 'badge-fora', 'verificar': 'badge-verificar', 'concentrador': 'badge-concentrador' };
-            const cruzHtml = d.cruzamento && d.cruzamento !== '—'
-                ? '<span class="badge ' + (cruzClass[d.cruzamento] || '') + '">' + (cruzLabel[d.cruzamento] || d.cruzamento) + '</span>'
+            let cruzHtml;
+            if (d.cruzamento && d.cruzamento !== '—') {
+                cruzHtml = '<span class="badge ' + (cruzClass[d.cruzamento] || '') + '">' + (cruzLabel[d.cruzamento] || esc(d.cruzamento)) + '</span>';
+            } else if (d.origem === 'genesis') {
+                cruzHtml = '<span class="badge badge-genesis" title="Registro vindo do texto do Gênesis">GÊNESIS</span>';
+            } else {
+                cruzHtml = '<span style="color:var(--muted);">—</span>';
+            }
+            const pesoDisplay = (d.peso !== '' && d.peso !== null && d.peso !== undefined)
+                ? '<strong style="font-family:var(--mono);color:' + (parseFloat(d.peso) >= 50 ? 'var(--red)' : parseFloat(d.peso) >= 25 ? 'var(--orange)' : 'inherit') + ';">' + esc(d.peso) + '</strong>'
                 : '<span style="color:var(--muted);">—</span>';
+            const tip = [d.falha, d.diario].filter(Boolean).join(' — ').slice(0, 400);
             let mcHtml = '';
             if (d.isMissaoCritica && isConc) {
-                mcHtml = '<span title="Missão Crítica + Concentrador" style="font-size:13px;">⚠️ Concentrador</span>';
+                mcHtml = isConcTable
+                    ? '<span title="Missão Crítica" style="font-size:16px;">⚠️</span>'
+                    : '<span title="Missão Crítica + Concentrador" style="font-size:13px;">⚠️ Concentrador</span>';
             } else if (isConc) {
-                mcHtml = '<span title="Concentrador" style="font-size:13px;">Concentrador</span>';
+                mcHtml = isConcTable ? '' : '<span title="Concentrador" style="font-size:13px;">Concentrador</span>';
             } else if (d.isMissaoCritica) {
                 mcHtml = '<span title="Missão Crítica" style="font-size:16px;">⚠️</span>';
             }
@@ -2826,12 +3084,13 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             return '<tr' + (rowClass ? ' class="' + rowClass + '"' : '') + '>' +
                 '<td>' + tskDisplay + '</td>' +
-                '<td><span class="badge ' + pc + '">' + d.prioridade + '</span></td>' +
-                '<td><code style="font-size:11px;">' + d.ne + '</code></td>' +
-                '<td><code style="font-size:11px;">' + d.end_id + '</code></td>' +
-                '<td style="font-size:11px;">' + (d.uf || '—') + '</td>' +
-                '<td style="font-size:11px;">' + (d.regiao || '—') + '</td>' +
-                '<td style="font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + d.tipoFalha + '">' + d.tipoFalha + '</td>' +
+                '<td><span class="badge ' + pc + '">' + esc(d.prioridade) + '</span></td>' +
+                '<td><code style="font-size:11px;" title="' + esc(d.ne) + '">' + esc(d.ne.length > 28 ? d.ne.slice(0, 28) + '…' : d.ne) + '</code></td>' +
+                '<td><code style="font-size:11px;">' + esc(d.end_id) + '</code></td>' +
+                '<td style="font-size:11px;">' + esc(d.uf || '—') + '</td>' +
+                '<td style="font-size:11px;">' + esc(d.regiao || '—') + '</td>' +
+                '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + esc(tip) + '">' + esc(d.tipoFalha) + '</td>' +
+                '<td style="text-align:right;padding-right:16px;">' + pesoDisplay + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
                 '<td style="text-align:center;">' + mcHtml + '</td>' +
                 '<td><span class="sla-date-cell ' + sla.class + '">' + sla.label + '</span></td>' +
@@ -2841,12 +3100,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
         function updateTable() {
             const tbody = document.getElementById('tableBody');
-            const data = displayData.slice(0, 100);
+            const LIMIT = 500;
+            const data = displayData.slice(0, LIMIT);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(buildRowHtml).join('');
+            let html = data.map(buildRowHtml).join('');
+            if (displayData.length > LIMIT) {
+                html += '<tr><td colspan="12" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
+            }
+            tbody.innerHTML = html;
         }
 
         function updateConcTable() {
@@ -2859,12 +3123,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 .sort((a, b) => (concPrio[a.prioridade] || 99) - (concPrio[b.prioridade] || 99) || slaTime(a) - slaTime(b));
             const cc = document.getElementById('concCount');
             if (cc) cc.textContent = '(' + list.length + ')';
-            const data = list.slice(0, 100);
+            const data = list.slice(0, 500);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(buildRowHtml).join('');
+            tbody.innerHTML = data.map(function(d) { return buildRowHtml(d, true); }).join('');
         }
 
         // ================================================================
@@ -2913,17 +3177,19 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const mc = {};
             combinedData.forEach(d => { if (d.isMissaoCritica) { const n = d.ne || 'N/I'; mc[n] = (mc[n] || 0) + 1; } });
             const sortedMC = Object.keys(mc).sort((a, b) => mc[b] - mc[a]).slice(0, 10);
-            const mcColors = ['#7c3aed','#6d28d9','#5b21b6','#4c1d95','#a855f7','#8b5cf6','#9333ea','#7e22ce','#6b21a8','#581c87'];
+            const mcColors = Array.from({ length: sortedMC.length }, (_, i) => mixCssVar('--purple', i * 0.07));
             createChart('chartUF', 'bar', sortedMC, sortedMC.map(n => mc[n]), mcColors);
 
             const pc = {};
             combinedData.forEach(d => { const p = d.prioridade; pc[p] = (pc[p] || 0) + 1; });
             const pOrder = ['P1','P2','P3','P4','P5','N/A'];
+            const pVarMap = { P1: '--red', P2: '--orange', P3: '--yellow', P4: '--green', P5: '--teal', 'N/A': '--subtle' };
             const pLabels = pOrder.filter(p => pc[p]);
-            const pColors = ['#b91c1c','#c2410c','#92400e','#64b5f6','#94a3b8','#d1d1d6'];
+            const pColors = pLabels.map(p => cssVar(pVarMap[p]));
             createChart('chartPrioridade', 'pie', pLabels, pLabels.map(p => pc[p]), pColors);
 
             const regiaoOrder = ['Fixa', 'Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+            const rVars = ['--purple', '--red', '--blue', '--cyan', '--orange', '--green', '--accent', '--subtle'];
             const rc = {};
             combinedData.forEach(d => {
                 const g = getRegraGroup(d);
@@ -2931,13 +3197,19 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 rc[label] = (rc[label] || 0) + 1;
             });
             const rLabels = regiaoOrder.filter(r => rc[r]);
-            const rColors = ['#7c3aed','#e91e63','#2196f3','#00bcd4','#ff9800','#4caf50','#3f51b5','#90a4ae'];
+            const rColors = rLabels.map(r => cssVar(rVars[regiaoOrder.indexOf(r)] || '--muted'));
             createChart('chartSuspensao', 'pie', rLabels, rLabels.map(r => rc[r]), rColors);
 
             const fc = {};
             combinedData.forEach(d => { const f = d.tipoFalha || 'Não classificado'; fc[f] = (fc[f] || 0) + 1; });
             const sortedFalha = Object.keys(fc).sort((a, b) => fc[b] - fc[a]).slice(0, 8);
-            createChart('chartFalha', 'bar', sortedFalha, sortedFalha.map(f => fc[f]), '#b91c1c');
+            createChart('chartFalha', 'bar', sortedFalha, sortedFalha.map(f => fc[f]), cssVar('--red'));
+        }
+
+        // Reconstrói todos os gráficos com as cores do tema atual
+        function rebuildChartsForTheme() {
+            if (!combinedData.length) return;
+            updateCharts();
         }
 
         function createChart(id, type, labels, data, colors) {
@@ -2963,7 +3235,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         function toggleSet(set, val) { if (set.has(val)) set.delete(val); else set.add(val); }
 
         function handleFilterToggle(val) {
-            if (val === 'all') { selectedUF.clear(); updateUFFilters(); selectedPriorities.clear(); selectedCruzamento.clear(); selectedRegiao.clear(); selectedEstado.clear(); }
+            if (val === 'all') { selectedUF.clear(); updateUFFilters(); selectedPriorities.clear(); selectedCruzamento.clear(); selectedRegiao.clear(); selectedEstado.clear(); selectedSLA.clear(); }
             else if (PRIORITY_KEYS.includes(val)) { toggleSet(selectedPriorities, val); }
             else if (SLA_KEYS.includes(val)) { toggleSet(selectedSLA, val); }
             else if (CRUZ_KEYS.includes(val)) {
@@ -2980,7 +3252,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             document.querySelectorAll('.filter-btn[data-filter]').forEach(b => {
                 const v = b.dataset.filter;
                 let isActive = false;
-                if (v === 'all') isActive = selectedUF.size === 0 && selectedPriorities.size === 0 && selectedRegiao.size === 0;
+                if (v === 'all') isActive = selectedUF.size === 0 && selectedPriorities.size === 0 && selectedRegiao.size === 0 && selectedCruzamento.size === 0 && selectedEstado.size === 0 && selectedSLA.size === 0;
                 else if (PRIORITY_KEYS.includes(v)) isActive = selectedPriorities.has(v);
                 else if (SLA_KEYS.includes(v)) isActive = selectedSLA.has(v);
                 else if (CRUZ_KEYS.includes(v)) {
@@ -2998,7 +3270,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             document.querySelectorAll('.stat-card[data-filter]').forEach(card => {
                 const v = card.dataset.filter;
                 let isActive = false;
-                if (v === 'all') isActive = selectedPriorities.size === 0 && selectedUF.size === 0 && selectedSLA.size === 0;
+                if (v === 'all') isActive = selectedPriorities.size === 0 && selectedUF.size === 0 && selectedSLA.size === 0 && selectedCruzamento.size === 0 && selectedEstado.size === 0;
                 else if (PRIORITY_KEYS.includes(v)) isActive = selectedPriorities.has(v);
                 else if (SLA_KEYS.includes(v)) isActive = selectedSLA.has(v);
                 card.classList.toggle('active-filter', isActive);
@@ -3012,7 +3284,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         document.querySelectorAll('.filter-btn[data-sort]').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (currentSort === this.dataset.sort) sortAsc = !sortAsc;
-                else { currentSort = this.dataset.sort; sortAsc = true; }
+                else { currentSort = this.dataset.sort; sortAsc = this.dataset.sort === 'peso' ? false : true; }
                 document.querySelectorAll('.filter-btn[data-sort]').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 applyFiltersAndSort();
@@ -3033,7 +3305,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             th.addEventListener('click', function() {
                 const key = this.dataset.sort;
                 if (currentSort === key) sortAsc = !sortAsc;
-                else { currentSort = key; sortAsc = true; }
+                else { currentSort = key; sortAsc = key === 'peso' ? false : true; }
                 document.querySelectorAll('.filter-btn[data-sort]').forEach(b => b.classList.toggle('active', b.dataset.sort === key));
                 applyFiltersAndSort();
                 updateSortIndicators();
@@ -3080,6 +3352,16 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             });
         });
 
+        // Forçar a abertura do seletor de arquivos ao clicar no slot (Chrome)
+        document.querySelectorAll('.upload-slot[data-type]:not([data-type="genesis"])').forEach(slot => {
+            slot.addEventListener('click', function(e) {
+                if (this.classList.contains('loaded')) return;
+                if (e.target.closest('.slot-clear')) return;
+                const input = this.querySelector('input[type="file"]');
+                if (input) { e.preventDefault(); input.click(); }
+            });
+        });
+
         document.querySelectorAll('.slot-clear').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -3087,11 +3369,11 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const parent = this.closest('.upload-slot');
                 const type = parent.dataset.type;
                 dataStore[type] = type === 'concentradores' ? [] : [];
-                if (type === 'concentradores') dataStore.missaoCritica = [];
+                if (type === 'concentradores') { dataStore.missaoCritica = []; dataStore.concRaw = null; }
                 const input = parent.querySelector('input[type="file"]');
                 if (input) input.value = '';
                 const ta = parent.querySelector('textarea');
-                if (ta) ta.value = '';
+                if (ta) { ta.value = ''; saveGenesisDraft(''); }
                 updateSlotStatus(type, false);
                 if (type !== 'concentradores') {
                     checkCrossData();
@@ -3106,6 +3388,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         if (genesisTa) {
             genesisTa.addEventListener('input', function() {
                 const text = this.value;
+                saveGenesisDraft(text); // rascunho persistido entre sessões
                 dataStore.genesisRawText = text.trim();
                 if (!text.trim()) {
                     dataStore.genesis = [];
@@ -3123,7 +3406,56 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     updateSlotStatus('genesis', false);
                 }
             });
+
+            // Restaura rascunho salvo da última sessão
+            try {
+                const draft = localStorage.getItem('cci-genesis-draft');
+                if (draft && draft.trim()) {
+                    genesisTa.value = draft;
+                    genesisTa.dispatchEvent(new Event('input'));
+                }
+            } catch (e) {}
         }
+
+        // ================================================================
+        //  CONFIG: REGRA DE MISSÃO CRÍTICA + TEMA
+        // ================================================================
+        const mcTxInput = document.getElementById('mcMinTx');
+        const mcKwInput = document.getElementById('mcFalhaKeyword');
+        let mcDebounce = null;
+        function onMcConfigChange() {
+            CONFIG.mcMinTx = parseInt(mcTxInput.value, 10) || 4;
+            CONFIG.mcKeyword = mcKwInput.value;
+            saveConfig();
+            clearTimeout(mcDebounce);
+            mcDebounce = setTimeout(() => {
+                if (dataStore.concRaw && dataStore.concRaw.length) {
+                    const { ids, criticos } = applyMissaoCriticaRules(dataStore.concRaw);
+                    dataStore.concentradores = ids;
+                    dataStore.missaoCritica = criticos;
+                    rebuildCombinedData();
+                }
+            }, 400);
+        }
+        if (mcTxInput) mcTxInput.addEventListener('input', onMcConfigChange);
+        if (mcKwInput) mcKwInput.addEventListener('input', onMcConfigChange);
+
+        // Alternador de tema claro/escuro
+        const themeBtn = document.getElementById('themeToggle');
+        function setTheme(t, save) {
+            document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+            if (themeBtn) themeBtn.textContent = t === 'light' ? '🌙 ESCURO' : '☀ CLARO';
+            if (save) { try { localStorage.setItem('cci-theme', t); } catch (e) {} }
+            Chart.defaults.color = cssVar('--muted');
+            Chart.defaults.borderColor = cssVar('--border');
+            if (combinedData.length || Object.keys(charts).length) {
+                rebuildChartsForTheme();
+            }
+        }
+        if (themeBtn) themeBtn.addEventListener('click', () => {
+            const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            setTheme(cur === 'light' ? 'dark' : 'light', true);
+        });
 
         // ================================================================
         //  EXPORT
@@ -3138,10 +3470,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 else if (d.isMissaoCritica) mc = '⚠️';
                 return {
                     'TSK': d.tsk, 'Prioridade': d.prioridade,
-                    'NE ID': d.ne, 'END_ID': d.end_id, 'Tipo da Falha': d.tipoFalha,
+                    'NE ID': d.ne, 'END_ID': d.end_id,
+                    'Técnico': d.tecnico || '', 'Cidade': d.cidade || '', 'UF': d.uf || '',
+                    'Tipo da Falha': d.tipoFalha, 'Falha': d.falha || '',
+                    'Repetido': d.repetido ? 'Sim' : '',
+                    'Peso na Disp.': d.peso !== '' ? d.peso : '',
+                    'Origem': d.origem === 'genesis' ? 'Gênesis' : (d.origem || ''),
+                    'Provedor': d.provedor || '', 'Região': d.regiao || '',
+                    'Status': d.status, 'Previsão (Gên.)': d.previsao || '',
+                    'Diário de Trabalho': d.diario || '', 'Nota de Abertura': d.nota_abertura || '',
                     'Cruzamento': d.cruzamento, 'Missão Crítica': mc,
-                    'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft,
-                    'Status': d.status
+                    'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft
                 };
             });
         }
@@ -3199,24 +3538,50 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const items = displayData.slice();
             if (!items.length) { alert('Nenhum registro para copiar.'); return; }
 
-            const rowText = function(d) {
-                const sla = getSLAInfo(d);
-                const expirado = sla.class === 'cinza' && String(sla.timeLeft).indexOf('Vencido') !== -1;
-                let line = [d.tsk, d.prioridade, d.ne, d.end_id, d.tipoFalha].join(' - ');
-                if (sla.label && sla.label !== '--') {
-                    line += ' - SLA ' + sla.label + ' - Vence em ' + (expirado ? 'Vencido' : sla.timeLeft);
-                }
-                return line;
-            };
+            const regiaoOrder = ['Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+
+            const grouped = {};
+            items.forEach(d => {
+                const regiao = d.regiao || 'Sem região';
+                const rg = getRegraGroup(d);
+                const tipo = rg === 'fixa' ? 'Fixa' : (rg === 'movel' ? 'Móvel' : (rg === 'preditiva' ? 'Preditiva' : 'Outro'));
+                const key = regiao + '|' + tipo;
+                if (!grouped[key]) grouped[key] = { regiao: regiao, tipo: tipo, items: [] };
+                grouped[key].items.push(d);
+            });
+
+            const sortedKeys = Object.keys(grouped).sort((a, b) => {
+                const ra = grouped[a].regiao, rb = grouped[b].regiao;
+                const ia = regiaoOrder.indexOf(ra), ib = regiaoOrder.indexOf(rb);
+                if (ia !== ib) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+                return grouped[a].tipo.localeCompare(grouped[b].tipo);
+            });
+
             const slaTime = function(d) {
                 if (!d.slaFim) return Infinity;
                 const t = new Date(d.slaFim).getTime();
                 return isNaN(t) ? Infinity : t;
             };
-            const sortBySla = function(a, b) { return slaTime(a) - slaTime(b); };
 
-            const sorted = items.slice().sort(sortBySla);
-            const text = sorted.map(rowText).join('\n');
+            let lines = ['*P1 e P2 no prazo no momento.*', ''];
+
+            sortedKeys.forEach(key => {
+                const g = grouped[key];
+                if (!g.items.length) return;
+                g.items.sort((a, b) => slaTime(a) - slaTime(b));
+                lines.push('*' + g.regiao + ' - ' + g.tipo + '*');
+                g.items.forEach(d => {
+                    const sla = getSLAInfo(d);
+                    const slaFimFmt = sla.label && sla.label !== '--' ? sla.label : 's/ SLA';
+                    const tempoRestante = sla.timeLeft && sla.timeLeft !== '--' ? sla.timeLeft : '';
+                    let line = [d.tsk, d.prioridade, d.ne, d.tipoFalha, 'SLA (' + slaFimFmt + ')'].join(' - ');
+                    if (tempoRestante) line += ' ' + tempoRestante;
+                    lines.push(line);
+                });
+                lines.push('');
+            });
+
+            const text = lines.join('\n');
 
             const btn = document.getElementById('btnExportCopy');
             const original = btn.textContent;
@@ -3272,46 +3637,174 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  INIT
         // ================================================================
-        console.log('🚀 CCI EXTRATOR TRJ v1.0');
+        loadConfig();
+        try {
+            const savedTheme = localStorage.getItem('cci-theme') || 'light';
+            setTheme(savedTheme, false);
+        } catch (e) { setTheme('dark', false); }
+        console.log('🚀 CCI EXTRATOR TRJ v1.1');
         console.log('💡 Faça upload das 4 planilhas');
         console.log('📊 Genesis → Cruzamento automático (não está no Genesis = Verificar, está no Genesis = Fora)');
         console.log('🏭 Concentradores → Marcação automática');
         console.log('🗺️ TRJ: Baixada | Grande Rio | Niterói | Zona Oeste | Interior RJ | Espírito Santo');
-    </script>
+    
+        // ================================================================
+        //  TRUST -- Alertas de SLA (5 atividades mais proximas de estourar)
+        // ================================================================
+        (function() {
+            var TRUST_INTERVAL = 5 * 60 * 1000;
+            var TRUST_VISIBLE = 60 * 1000;
+            var TRUST_REFRESH = 60 * 1000;
+
+            var trustStyle = document.createElement('style');
+            trustStyle.textContent =
+                '#trustWindow{position:fixed;right:18px;bottom:18px;width:340px;max-height:52vh;background:var(--white);' +
+                'border-radius:14px;box-shadow:var(--sh);z-index:99999;font-family:inherit;' +
+                'display:none;flex-direction:column;overflow:hidden;border:1px solid var(--border);}' +
+                '#trustWindow.open{display:flex;}' +
+                '#trustHeader{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;' +
+                'background:linear-gradient(135deg,var(--accent),var(--accent-h));color:#fff;font-weight:700;font-size:13px;' +
+                'gap:10px;}' +
+                '#trustClose{cursor:pointer;background:rgba(255,255,255,.22);border:none;border-radius:7px;color:#fff;' +
+                'font-size:15px;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
+                'font-family:inherit;font-weight:700;}' +
+                '#trustClose:hover{background:rgba(255,255,255,.4);}' +
+                '#trustBody{padding:8px 10px;overflow-y:auto;}' +
+                '.trust-empty{color:var(--muted);font-size:12px;text-align:center;padding:18px 8px;}' +
+                '.trust-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:9px;margin-bottom:6px;font-size:11px;}' +
+                '.trust-prio{min-width:26px;text-align:center;font-weight:800;font-size:11px;border-radius:6px;padding:2px 4px;}' +
+                '.trust-info{flex:1;min-width:0;}' +
+                '.trust-tsk{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+                '.trust-sub{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+                '.trust-time{font-weight:700;white-space:nowrap;font-size:11px;}';
+            document.head.appendChild(trustStyle);
+
+            function trustEsc(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+                    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+                });
+            }
+
+            var trustWin = document.createElement('div');
+            trustWin.id = 'trustWindow';
+            trustWin.innerHTML =
+                '<div id="trustHeader"><span>Próximos vencimentos</span>' +
+                '<button id="trustClose" type="button" title="Fechar">X</button></div>' +
+                '<div id="trustBody"></div>';
+            document.body.appendChild(trustWin);
+
+            var trustHideTimer = null;
+
+            function trustPriorityColor(p) {
+                switch (p) {
+                    case 'P1': return [cssVar('--red'), cssVar('--red-light')];
+                    case 'P2': return [cssVar('--orange'), cssVar('--orange-light')];
+                    case 'P3': return [cssVar('--yellow'), cssVar('--yellow-light')];
+                    case 'P4': return [cssVar('--green'), cssVar('--green-light')];
+                    case 'P5': return [cssVar('--teal'), cssVar('--teal-light')];
+                    default:   return [cssVar('--muted'), cssVar('--tag')];
+                }
+            }
+
+            function trustHide() {
+                if (trustHideTimer) { clearTimeout(trustHideTimer); trustHideTimer = null; }
+                if (trustWin) trustWin.classList.remove('open');
+            }
+
+            function trustShow() {
+                if (typeof combinedData === 'undefined') return;
+                var list = combinedData || [];
+                var now = new Date().getTime();
+                var withSla = [];
+                for (var i = 0; i < list.length; i++) {
+                    var d = list[i];
+                    if (!d || !d.slaFim) continue;
+                    var t = new Date(d.slaFim).getTime();
+                    if (isNaN(t)) continue;
+                    var rem = t - now;
+                    if (rem <= 0) continue;
+                    withSla.push({ d: d, rem: rem });
+                }
+                withSla.sort(function(a, b) { return a.rem - b.rem; });
+                var top5 = withSla.slice(0, 5);
+                var bodyEl = trustWin.querySelector('#trustBody');
+                if (top5.length === 0) {
+                    if (trustWin.classList.contains('open')) trustHide();
+                    return;
+                }
+                var html = '';
+                for (var j = 0; j < top5.length; j++) {
+                    var it = top5[j].d;
+                    var rem = top5[j].rem;
+                    var pc = trustPriorityColor(it.prioridade);
+                    var mi = Math.floor(rem / 60000);
+                    var timeTxt = Math.floor(mi / 60) + 'h ' + (mi % 60) + 'm';
+                    html += '<div class="trust-item" style="background:' + pc[1] + ';">' +
+                        '<span class="trust-prio" style="background:' + pc[0] + ';color:#fff;">' + (it.prioridade || 'N/A') + '</span>' +
+                        '<span class="trust-info">' +
+                        '<div class="trust-tsk">' + trustEsc(it.tsk) + '</div>' +
+                        '<div class="trust-sub">' + trustEsc(it.ne || '') + ' | ' + trustEsc(it.tipoFalha || '') + '</div>' +
+                        '</span>' +
+                        '<span class="trust-time" style="color:' + pc[0] + ';">' + timeTxt + '</span>' +
+                        '</div>';
+                }
+                bodyEl.innerHTML = html;
+                trustWin.classList.add('open');
+                if (trustHideTimer) clearTimeout(trustHideTimer);
+                trustHideTimer = setTimeout(trustHide, TRUST_VISIBLE);
+            }
+
+            var trustClose = document.getElementById('trustClose');
+            if (trustClose) trustClose.addEventListener('click', trustHide);
+
+            window.showTrust = trustShow;
+            window.hideTrust = trustHide;
+
+            setInterval(trustShow, TRUST_INTERVAL);
+
+            // Atualiza automaticamente o vencimento/SLA da tabela principal
+            setInterval(function() {
+                if (typeof displayData !== 'undefined' && displayData.length > 0) {
+                    if (typeof updateTable === 'function') updateTable();
+                    if (typeof updateConcTable === 'function') updateConcTable();
+                    if (typeof window.showTrust === 'function') window.showTrust();
+                }
+            }, TRUST_REFRESH);
+        })();</script>
 
 
 </body>
 
-  <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid #a35616;padding-top:2rem;">
+  <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid var(--border);padding-top:2rem;">
 
   <!-- linha laranja centralizada no topo -->
-  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,99,10,.33),transparent)"></div>
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-mid),transparent)"></div>
 
   <!-- label da seção -->
   <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:#a35616"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8630a;font-weight:600">Desenvolvido por</span>
-    <div style="width:28px;height:1px;background:#a35616"></div>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
+    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Desenvolvido por</span>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
   </div>
 
   <!-- cards de crédito -->
   <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
 
-    <div style="display:flex;align-items:center;gap:13px;background:#600c03;border:1px solid #a35616;border-radius:16px;padding:13px 18px;min-width:240px">
-      <div style="width:38px;height:38px;border-radius:50%;background:#1a1200;border:1px solid rgba(232,99,10,.2);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;color:#e8630a;flex-shrink:0">CR</div>
+    <div style="display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:13px 18px;min-width:240px">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--tag);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;color:var(--accent);flex-shrink:0">CR</div>
       <div style="display:flex;flex-direction:column;gap:2px">
-        <span style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;color:#f0ede8;line-height:1">Cleverson Renan</span>
-        <a href="mailto:cleversonrenan@gmail.com" style="font-size:11px;color:#bbbbbb;text-decoration:none">cleversonrenan@gmail.com</a>
+        <span style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;color:var(--text);line-height:1">Cleverson Renan</span>
+        <a href="mailto:cleversonrenan@gmail.com" style="font-size:11px;color:var(--muted);text-decoration:none">cleversonrenan@gmail.com</a>
       </div>
     </div>
 
   <!-- rodapé inferior (mantém o original) -->
-  <div style="width:100%;display:flex;align-items:center;justify-content:center;border-top:1px solid #0f2035;padding-top:1.25rem;flex-wrap:wrap;gap:12px">
+  <div style="width:100%;display:flex;align-items:center;justify-content:center;border-top:1px solid var(--border);padding-top:1.25rem;flex-wrap:wrap;gap:12px">
    
 	<div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:#a35616"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8630a;font-weight:600">Plataforma TLP TRJ · 2026</span>
-    <div style="width:28px;height:1px;background:#a35616"></div>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
+    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Plataforma TLP TRJ · 2026</span>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
   </div>
 	
 	

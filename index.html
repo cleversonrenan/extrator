@@ -5,57 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI EXTRATOR</title>
     <style>
-        :root {
-            --bg: #fef2f2;
+:root {
+            --bg: #fbe3c8;
             --white: #ffffff;
-            --surface: #f7f8fc;
-            --border: #e2e7f0;
-            --border2: #c8d1e3;
-            --accent: #cf5f00;
-            --accent-h: #ca8338;
-            --accent-light: #fff5ed;
-            --accent-mid: #ffdbb5;
-            --green: #801515;
-            --green-light: #fce4e4;
-            --green-btn: #a35616;
-            --red: #b91c1c;
-            --red-light: #fef2f2;
-            --orange: #c2410c;
-            --orange-light: #fff7ed;
-            --yellow: #92400e;
-            --yellow-light: #fffbeb;
-            --purple: #7c3aed;
-            --purple-light: #f5f3ff;
-            --text: #0f172a;
-            --text2: #1e293b;
-            --muted: #64748b;
-            --subtle: #94a3b8;
-            --tag: #e8edf5;
-            --sh-sm: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 12px rgba(15, 23, 42, .06);
-            --sh: 0 2px 8px rgba(15, 23, 42, .07), 0 8px 24px rgba(15, 23, 42, .06);
-            --r: 14px;
-            --r-sm: 9px;
-            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --surface: #f8ead3;
+            --border: #ead9bf;
+            --border2: #dfc9a8;
+            --line: #f3e6d2;
+            --accent: #696cff;
+            --accent-h: #857cff;
+            --on-accent: #ffffff;
+            --accent-light: rgba(105, 108, 255, .08);
+            --accent-mid: rgba(105, 108, 255, .25);
+            --text: #384551;
+            --text2: #4c5866;
+            --muted: #646e78;
+            --subtle: #97a3ae;
+            --tag: #f7e8d1;
+            --green: #3f9e28;
+            --red: #e0361b;
+            --sh-sm: 0 1px 2px rgba(34, 48, 62, .06);
+            --sh: 0 0.25rem 1rem rgba(34, 48, 62, .14);
+            --r: 10px;
+            --r-sm: 6px;
+            --font: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; line-height: 1.5; display: flex; flex-direction: column; }
+        body { background-color: var(--bg); background-image: url("fundo.png"); background-size: 50%; background-repeat: repeat; color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; line-height: 1.5; display: flex; flex-direction: column; }
         .app-container { max-width: 1600px; margin: 0 auto; padding: 20px; width: 100%; flex: 1; display: flex; flex-direction: column; }
 
-        .header { background: linear-gradient(135deg, #4a1a0a, #8b3a0a, #cf5f00); color: #fff; padding: 20px 30px; border-radius: var(--r); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: var(--sh); }
-        .header h1 { font-size: 26px; font-weight: 600; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
-        .header h1 small { font-size: 14px; font-weight: 400; opacity: 0.7; letter-spacing: 0; }
+        .header { background: var(--white); color: var(--text); padding: 16px 24px; border-radius: var(--r); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: var(--sh-sm); }
+        .header h1 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 12px; letter-spacing: -.3px; }
+        .header h1 small { font-size: 12px; font-weight: 500; opacity: .6; }
+        .header h1 img { border-radius: var(--r-sm); }
 
-        .lead { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 48px 20px 64px; }
-        .lead h2 { font-size: 24px; font-weight: 700; color: var(--text2); letter-spacing: -0.3px; }
+        .lead { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 40px 20px 56px; }
+        .lead h2 { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
         .lead-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px; width: 100%; max-width: 900px; }
-        .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 34px 26px 30px; text-align: center; cursor: pointer; text-decoration: none; color: var(--text2); box-shadow: var(--sh); transition: all 0.2s ease; display: block; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(207, 95, 0, .22); border-color: var(--accent); }
-        .card .initials { width: 198px; height: 132px; display: block; object-fit: cover; margin: 0 auto 18px; }
-        .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-        .card p { font-size: 13px; color: var(--muted); line-height: 1.45; }
-        .card .go { margin-top: 18px; display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0.4px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; width: 100%; max-width: 960px; }
+        .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 26px 22px 24px; text-align: center; cursor: pointer; text-decoration: none; color: var(--text); box-shadow: var(--sh-sm); transition: all .18s; display: block; }
+        .card:hover { transform: translateY(-3px); box-shadow: var(--sh); border-color: var(--accent); }
+        .card .initials { width: 198px; height: 132px; object-fit: cover; margin: 0 auto 16px; display: block; }
+        .card h3 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+        .card p { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+        .card .go { margin-top: 14px; display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .4px; }
         .card:hover .go { text-decoration: underline; }
+
+        .foot-dots { display: inline-flex; gap: 6px; align-items: center; }
+        .foot-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
+        .foot-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulseDot 2s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
     </style>
 <style>
       @keyframes rotate360 {
@@ -110,36 +109,36 @@
         </div>
     </div>
 
-    <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid #a35616;padding-top:2rem;">
+    <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid var(--border);padding-top:2rem;">
 
   <!-- linha laranja centralizada no topo -->
-  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,99,10,.33),transparent)"></div>
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-mid),transparent)"></div>
 
   <!-- label da seção -->
   <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:#a35616"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8630a;font-weight:600">Desenvolvido por</span>
-    <div style="width:28px;height:1px;background:#a35616"></div>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
+    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Desenvolvido por</span>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
   </div>
 
   <!-- cards de crédito -->
   <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
 
-    <div style="display:flex;align-items:center;gap:13px;background:#600c03;border:1px solid #a35616;border-radius:16px;padding:13px 18px;min-width:240px">
-      <div style="width:38px;height:38px;border-radius:50%;background:#1a1200;border:1px solid rgba(232,99,10,.2);display:flex;align-items:center;justify-content:center;font-family:&#39;Outfit&#39;,sans-serif;font-weight:700;font-size:13px;color:#e8630a;flex-shrink:0">CR</div>
+    <div style="display:flex;align-items:center;gap:13px;background:var(--white);border:1px solid var(--border);box-shadow:var(--sh-sm);border-radius:16px;padding:13px 18px;min-width:240px">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--tag);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:700;font-size:13px;color:var(--accent);flex-shrink:0">CR</div>
       <div style="display:flex;flex-direction:column;gap:2px">
-        <span style="font-family:&#39;Outfit&#39;,sans-serif;font-weight:600;font-size:13.5px;color:#f0ede8;line-height:1">Cleverson Renan</span>
-        <a href="mailto:cleversonrenan@gmail.com" style="font-size:11px;color:#bbbbbb;text-decoration:none">cleversonrenan@gmail.com</a>
+        <span style="font-family:var(--font);font-weight:600;font-size:13.5px;color:var(--text);line-height:1">Cleverson Renan</span>
+        <a href="mailto:cleversonrenan@gmail.com" style="font-size:11px;color:var(--muted);text-decoration:none">cleversonrenan@gmail.com</a>
       </div>
     </div>
 
   <!-- rodapé inferior -->
-  <div style="width:100%;display:flex;align-items:center;justify-content:center;border-top:1px solid #0f2035;padding-top:1.25rem;flex-wrap:wrap;gap:12px">
+  <div style="width:100%;display:flex;align-items:center;justify-content:center;border-top:1px solid var(--border);padding-top:1.25rem;flex-wrap:wrap;gap:12px">
 
 	<div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:#a35616"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#e8630a;font-weight:600">Plataforma TLP · 2026</span>
-    <div style="width:28px;height:1px;background:#a35616"></div>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
+    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Plataforma TLP · 2026</span>
+    <div style="width:28px;height:1px;background:var(--subtle)"></div>
   </div>
 
     <div class="foot-dots">
