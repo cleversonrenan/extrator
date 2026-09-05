@@ -2024,7 +2024,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 <!-- TOOLBAR -->
                 <div class="toolbar-row">
                     <span class="label">📤 Exportar (<span id="exportCount">0</span> registros):</span>
-                    <button class="filter-btn btn-export" id="btnExportXLSX">📊 XLSX</button>
+                    <button type="button" class="filter-btn btn-export" id="btnExportXLSX">📊 XLSX</button>
                     <button class="filter-btn btn-export" id="btnExportCopy">📋 Copiar</button>
                 </div>
 
@@ -2839,7 +2839,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 data = data.filter(d => selectedPriorities.has(d.prioridade));
             }
 
-            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(d.tsk.trim()));
+            data = data.filter(d => d.tsk && /^TSK\d+$/i.test(String(d.tsk).trim()));
 
             if (selectedSLA.size === 1) {
                 if (selectedSLA.has('vencidos')) {
