@@ -3282,6 +3282,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
 
         function exportXLSX() {
+            try {
             const rows = getExportRows();
             if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
             const headers = Object.keys(rows[0]);
@@ -3327,7 +3328,26 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Relatorio_TNE');
             const ts = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-            XLSX.writeFile(wb, 'relatorio_TNE_' + ts + '.xlsx');
+            downloadXlsx(wb, 'relatorio_TNE_' + ts + '.xlsx');
+            } catch (err) {
+                alert('Erro ao exportar XLSX: ' + (err && err.message || err) + '. Use o botão Copiar como alternativa.');
+            }
+        }
+
+        function downloadXlsx(wb, filename) {
+            try {
+                const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                if (window.navigator && navigator.msSaveBlob) { navigator.msSaveBlob(blob, filename); return; }
+                const url = (window.URL || window.webkitURL).createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = filename; a.rel = 'noopener';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() { (window.URL || window.webkitURL).revokeObjectURL(url); if (a.parentNode) a.parentNode.removeChild(a); }, 500);
+            } catch (err) {
+                alert('Erro ao exportar XLSX: ' + (err && err.message || err) + '. Use o botão Copiar como alternativa.');
+            }
         }
 
         function exportCopyText() {
