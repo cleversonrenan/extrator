@@ -77,6 +77,11 @@ body::before {
         .card .go { margin-top: 14px; display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .4px; }
         .card:hover .go { text-decoration: underline; }
 
+        .sync-btn { display: inline-block; line-height: 0; cursor: pointer; transition: transform .18s; border-radius: var(--r); }
+        .sync-btn img { max-width: 360px; width: 100%; height: auto; border-radius: var(--r); box-shadow: var(--sh-sm); border: 1px solid var(--border); transition: all .18s; }
+        .sync-btn:hover { transform: translateY(-3px); }
+        .sync-btn:hover img { box-shadow: var(--sh); border-color: var(--accent); }
+
         .foot-dots { display: inline-flex; gap: 6px; align-items: center; }
         .foot-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); }
         .foot-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulseDot 2s infinite; }
@@ -133,9 +138,8 @@ body::before {
                 </a>
             </div>
             <div style="display:flex;justify-content:center;margin-top:22px">
-                <a class="card" href="https://fabioesgoncalves.github.io/Conversor/" style="display:inline-flex;align-items:center;gap:14px;justify-content:center;max-width:360px;padding:18px 30px;cursor:pointer;">
-                    <span style="font-size:15px;font-weight:700;color:var(--text)">Sincronização de Notas</span>
-                    <span class="go" style="margin:0">Abrir →</span>
+                <a class="sync-btn" href="https://fabioesgoncalves.github.io/Conversor/" title="Sincronização de Notas">
+                    <img src="sincronizacao.png" alt="Sincronização de Notas">
                 </a>
             </div>
         </div>
