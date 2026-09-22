@@ -2184,7 +2184,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             BAIRRO: ['Bairro'],
             NOME_NE: ['Nome do NE'],
             TITULO_ALARME: ['Título do Alarme', 'Alarme'],
-            DIARIO: ['Diário de Trabalho'],
+
             NOTA_ABERTURA: ['Nota de Abertura'],
             PROVEDOR: ['Provedor'],
             PESO: ['Peso na disponibilidade', 'Peso Ordenar por Peso na disponibilidade', 'Peso'],
@@ -2520,7 +2520,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     bairro: '',
                     nome_ne: '',
                     titulo_alarme: '',
-                    diario: detalhe || '',
+
                     nota_abertura: '',
                     origem: 'genesis',
                     cruzamento: '—',
@@ -2640,7 +2640,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 bairro: get('BAIRRO') || '',
                 nome_ne: get('NOME_NE') || '',
                 titulo_alarme: get('TITULO_ALARME') || '',
-                diario: get('DIARIO') || '',
+
                 nota_abertura: get('NOTA_ABERTURA') || '',
                 origem: '',
                 cruzamento: '—'
@@ -3068,7 +3068,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const pesoDisplay = (d.peso !== '' && d.peso !== null && d.peso !== undefined)
                 ? '<strong style="font-family:var(--mono);color:' + (parseFloat(d.peso) >= 50 ? 'var(--red)' : parseFloat(d.peso) >= 25 ? 'var(--orange)' : 'inherit') + ';">' + esc(d.peso) + '</strong>'
                 : '<span style="color:var(--muted);">—</span>';
-            const tip = [d.falha, d.diario].filter(Boolean).join(' — ').slice(0, 400);
+            const tip = String(d.falha || '').slice(0, 400);
             let mcHtml = '';
             if (d.isMissaoCritica && isConc) {
                 mcHtml = isConcTable
@@ -3478,7 +3478,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     'Origem': d.origem === 'genesis' ? 'Gênesis' : (d.origem || ''),
                     'Provedor': d.provedor || '', 'Região': d.regiao || '',
                     'Status': d.status, 'Previsão (Gên.)': d.previsao || '',
-                    'Diário de Trabalho': d.diario || '', 'Nota de Abertura': d.nota_abertura || '',
+                    'Nota de Abertura': d.nota_abertura || '',
                     'Cruzamento': d.cruzamento, 'Missão Crítica': mc,
                     'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft
                 };
