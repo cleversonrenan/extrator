@@ -1707,6 +1707,9 @@ body::before {
         .upload-slot input[type="file"] { display:none; }
         .upload-slot .slot-clear { z-index:2; position:relative; }
         .upload-slot.loaded { pointer-events:none; }
+        #slotAgendadas.loaded { pointer-events:auto; cursor:pointer; }
+        #slotAgendadas.loaded.max-files { pointer-events:none; cursor:default; }
+        #slotAgendadas.loaded .slot-clear { pointer-events:auto; }
         .upload-slot.loaded .slot-clear { pointer-events:auto; }
         .upload-slot .slot-clear { display: none; position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: var(--r-sm); }
         .upload-slot.loaded .slot-clear { display: block; }
@@ -1902,9 +1905,9 @@ body::before {
                         <button class="slot-clear" id="clearAgendadas" type="button">×</button>
                         <div class="slot-icon"></div>
                         <div class="slot-title">📋 Agendadas</div>
-                        <div class="slot-sub">Atividades programadas (TRJ_FMMT)</div>
+                        <div class="slot-sub">Atividades programadas (até 2 planilhas)</div>
                         <div class="slot-status waiting" id="statusAgendadas">⏳ Aguardando arquivo</div>
-                        <input type="file" accept=".csv,.xlsx,.xls" data-target="agendadas">
+                        <input type="file" accept=".csv,.xlsx,.xls" data-target="agendadas" multiple>
                     </label>
 
                     <label class="upload-slot" id="slotNaoAgendadas" data-type="naoagendadas">
@@ -2196,6 +2199,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         let dataStore = {
             agendadas: [],
+            agendadasArquivos: [],
             naoagendadas: [],
             genesis: [],
             genesisRawText: '',
@@ -2725,6 +2729,19 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                             console.log('[concentradores] Carregado:', ids.length, 'IDs, amostra:', ids.slice(0, 5));
                             console.log('[missaoCritica] Marcados:', criticos.length, 'itens, amostra:', criticos.slice(0, 5));
                             resolve(ids);
+                        } else if (target === 'agendadas') {
+                            if (dataStore.agendadasArquivos.length >= 2) {
+                                reject(new Error('Limite de 2 planilhas agendadas atingido'));
+                                return;
+                            }
+                            dataStore.agendadas = dataStore.agendadas.concat(json);
+                            dataStore.agendadasArquivos.push(file.name);
+                            const quantidade = dataStore.agendadasArquivos.length;
+                            updateSlotStatus('agendadas', true, quantidade + '/2 arquivos • ' + dataStore.agendadas.length + ' registros');
+                            const slotAgendadas = document.getElementById('slotAgendadas');
+                            if (slotAgendadas) slotAgendadas.classList.toggle('max-files', quantidade >= 2);
+                            console.log('[agendadas] Acumulado:', quantidade, 'arquivos,', dataStore.agendadas.length, 'linhas');
+                            resolve(json);
                         } else {
                             dataStore[target] = json;
                             updateSlotStatus(target, true, json.length + ' registros, ' + Object.keys(json[0]).length + ' colunas');
@@ -3340,14 +3357,29 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         document.querySelectorAll('.upload-slot input[type="file"]').forEach(input => {
             input.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
                 const target = this.dataset.target;
-                loadFile(file, target).then(() => {
+                let files = Array.from(e.target.files || []);
+                if (!files.length) return;
+                if (target === 'agendadas') {
+                    const restantes = 2 - dataStore.agendadasArquivos.length;
+                    if (restantes <= 0) {
+                        alert('Já foram carregadas 2 planilhas em Agendadas. Use × para limpar e trocar os arquivos.');
+                        this.value = '';
+                        return;
+                    }
+                    if (files.length > restantes) {
+                        alert('Agendadas aceita no máximo 2 planilhas. Serão carregados apenas ' + restantes + ' arquivo(s).');
+                        files = files.slice(0, restantes);
+                    }
+                } else {
+                    files = files.slice(0, 1);
+                }
+                files.reduce((chain, file) => chain.then(() => loadFile(file, target)), Promise.resolve()).then(() => {
+                    this.value = '';
                     checkCrossData();
                 }).catch(err => {
                     alert('Erro ao carregar ' + target + ': ' + err.message);
-                    updateSlotStatus(target, false);
+                    if (target !== 'agendadas' || dataStore.agendadasArquivos.length === 0) updateSlotStatus(target, false);
                 });
             });
         });
@@ -3355,7 +3387,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // Forçar a abertura do seletor de arquivos ao clicar no slot (Chrome)
         document.querySelectorAll('.upload-slot[data-type]:not([data-type="genesis"])').forEach(slot => {
             slot.addEventListener('click', function(e) {
-                if (this.classList.contains('loaded')) return;
+                if (this.classList.contains('loaded') && (this.dataset.type !== 'agendadas' || dataStore.agendadasArquivos.length >= 2)) return;
                 if (e.target.closest('.slot-clear')) return;
                 const input = this.querySelector('input[type="file"]');
                 if (input) { e.preventDefault(); input.click(); }
@@ -3369,6 +3401,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const parent = this.closest('.upload-slot');
                 const type = parent.dataset.type;
                 dataStore[type] = type === 'concentradores' ? [] : [];
+                if (type === 'agendadas') {
+                    dataStore.agendadasArquivos = [];
+                    parent.classList.remove('max-files');
+                }
                 if (type === 'concentradores') { dataStore.missaoCritica = []; dataStore.concRaw = null; }
                 const input = parent.querySelector('input[type="file"]');
                 if (input) input.value = '';
@@ -3647,7 +3683,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const fileInput = this.querySelector('input[type="file"]');
                 if (fileInput && e.dataTransfer.files.length > 0) {
                     const dt = new DataTransfer();
-                    dt.items.add(e.dataTransfer.files[0]);
+                    const limite = this.dataset.type === 'agendadas' ? Math.min(e.dataTransfer.files.length, 2) : 1;
+                    for (let i = 0; i < limite; i++) dt.items.add(e.dataTransfer.files[i]);
                     fileInput.files = dt.files;
                     fileInput.dispatchEvent(new Event('change'));
                 }
