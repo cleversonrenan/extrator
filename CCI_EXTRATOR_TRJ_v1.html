@@ -2009,6 +2009,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <button class="filter-btn" data-filter="Zona Oeste">Zona Oeste</button>
                     <button class="filter-btn" data-filter="Interior RJ">Interior RJ</button>
                     <button class="filter-btn" data-filter="Espírito Santo">Espírito Santo</button>
+                    <button class="filter-btn" data-filter="Campos dos Goytacazes">Campos dos Goytacazes</button>
                     <button class="filter-btn" data-filter="Sem região">Sem região</button>
                     <div class="filter-separator"></div>
                     <span class="filter-label">🌎 UF:</span>
@@ -2120,7 +2121,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             'Niterói': ['TRJ-RJ-BXD01-NIT02'],
             'Zona Oeste': ['TRJ-RJ-ZNO01-ZOE02'],
             'Interior RJ': ['TRJ-RJ-INT01-CBF01', 'TRJ-RJ-INT01-NFB03', 'TRJ-RJ-INT01-PET04', 'TRJ-RJ-INT01-VRD05', 'TRJ-RJ-ZNO01-ANG01'],
-            'Espírito Santo': ['TRJ-ES-EPS01-CIM01', 'TRJ-ES-EPS01-SMT02', 'TRJ-ES-EPS01-VIT03', 'TRJ-RJ-INT01-CPS02']
+            'Espírito Santo': ['TRJ-ES-EPS01-CIM01', 'TRJ-ES-EPS01-SMT02', 'TRJ-ES-EPS01-VIT03'],
+            'Campos dos Goytacazes': ['TRJ-RJ-INT01-CPS02']
         };
 
         const REGIAO_PLACE = {
@@ -2157,7 +2159,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             return { regiao: 'Sem região', place: '' };
         }
 
-        const REGIAO_LABELS = { 'Baixada': 'Baixada', 'Grande Rio': 'Grande Rio', 'Niterói': 'Niterói', 'Zona Oeste': 'Zona Oeste', 'Interior RJ': 'Interior RJ', 'Espírito Santo': 'Espírito Santo' };
+        const REGIAO_LABELS = { 'Baixada': 'Baixada', 'Grande Rio': 'Grande Rio', 'Niterói': 'Niterói', 'Zona Oeste': 'Zona Oeste', 'Interior RJ': 'Interior RJ', 'Espírito Santo': 'Espírito Santo', 'Campos dos Goytacazes': 'Campos dos Goytacazes' };
 
         // ================================================================
         //  COLUMN MAPPING
@@ -2236,7 +2238,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         const SLA_HOURS = { P1: 4, P2: 6, P3: 12, P4: 24, P5: 48 };
         const SLA_KEYS = ['noprazo', 'vencidos'];
         const CRUZ_KEYS = ['cruz-fora', 'cruz-verificar', 'cruz-concentrador'];
-        const REGIAO_KEYS = ['Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Sem região'];
+        const REGIAO_KEYS = ['Baixada', 'Grande Rio', 'Niterói', 'Zona Oeste', 'Interior RJ', 'Espírito Santo', 'Campos dos Goytacazes', 'Sem região'];
         const ESTADO_KEYS = ['pendente', 'iniciada', 'naoiniciada'];
         let currentSort = 'uf';
         let sortAsc = true;
