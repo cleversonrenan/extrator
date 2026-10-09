@@ -1911,12 +1911,211 @@ body::before {
           transform: rotate(360deg);
         }
       }
+    </style>
+    <style id="cci-modern-ui">
+        :root {
+            --bg: #edf5ff;
+            --white: rgba(255, 255, 255, .94);
+            --surface: #f5f9ff;
+            --border: #cbdcf2;
+            --border2: #a9c6e8;
+            --line: #dfeaf7;
+            --accent: #087cf0;
+            --accent-h: #0067d8;
+            --accent-light: rgba(8, 124, 240, .10);
+            --accent-mid: rgba(8, 124, 240, .28);
+            --cyan: #119cff;
+            --orange: #f06400;
+            --orange-light: rgba(255, 105, 0, .12);
+            --purple: #087cf0;
+            --purple-light: rgba(8, 124, 240, .12);
+            --blue: #087cf0;
+            --blue-light: rgba(8, 124, 240, .12);
+            --red: #e62929;
+            --red-light: rgba(230, 41, 41, .12);
+            --yellow: #b77700;
+            --yellow-light: rgba(245, 174, 0, .16);
+            --green: #079447;
+            --green-light: rgba(7, 148, 71, .12);
+            --teal: #147ed1;
+            --teal-light: rgba(20, 126, 209, .12);
+            --text: #0b1d36;
+            --text2: #263c59;
+            --muted: #526982;
+            --subtle: #7d91a9;
+            --tag: #e8f1fb;
+            --thead-bg: #f7fbff;
+            --hover-row: #eef7ff;
+            --shadow: 0 14px 34px rgba(23, 74, 128, .10);
+            --sh-sm: 0 5px 16px rgba(23, 74, 128, .08);
+            --sh: 0 18px 42px rgba(23, 74, 128, .16);
+            --r: 14px;
+            --r-sm: 9px;
+        }
+        html[data-theme="dark"] {
+            --bg: #061426;
+            --white: rgba(10, 28, 49, .94);
+            --surface: #0e2743;
+            --border: #1b4169;
+            --border2: #285b8c;
+            --line: #163654;
+            --accent: #1597ff;
+            --accent-h: #58bbff;
+            --accent-light: rgba(21, 151, 255, .15);
+            --accent-mid: rgba(21, 151, 255, .38);
+            --cyan: #38b4ff;
+            --orange: #ff6a00;
+            --orange-light: rgba(255, 106, 0, .15);
+            --purple: #1597ff;
+            --purple-light: rgba(21, 151, 255, .15);
+            --blue: #1597ff;
+            --blue-light: rgba(21, 151, 255, .15);
+            --red: #ff4b45;
+            --red-light: rgba(255, 75, 69, .15);
+            --yellow: #ffc333;
+            --yellow-light: rgba(255, 195, 51, .15);
+            --green: #23cf72;
+            --green-light: rgba(35, 207, 114, .14);
+            --teal: #4ab7ff;
+            --teal-light: rgba(74, 183, 255, .14);
+            --text: #f2f7ff;
+            --text2: #d6e5f5;
+            --muted: #9eb4cb;
+            --subtle: #6f89a4;
+            --tag: #143451;
+            --thead-bg: #0d2946;
+            --hover-row: #102f50;
+            --shadow: 0 16px 38px rgba(0, 0, 0, .28);
+            --sh-sm: 0 6px 18px rgba(0, 0, 0, .22);
+            --sh: 0 20px 48px rgba(0, 0, 0, .38);
+        }
+        body { background: var(--bg); }
+        body::before {
+            background:
+                radial-gradient(circle at 12% 8%, rgba(8,124,240,.13), transparent 32%),
+                radial-gradient(circle at 88% 12%, rgba(255,106,0,.10), transparent 28%),
+                linear-gradient(135deg, transparent 0 48%, rgba(8,124,240,.035) 48% 49%, transparent 49% 100%);
+            background-size: auto, auto, 36px 36px;
+            opacity: 1;
+        }
+        html[data-theme="dark"] body::before {
+            background:
+                radial-gradient(circle at 12% 6%, rgba(21,151,255,.16), transparent 31%),
+                radial-gradient(circle at 88% 10%, rgba(255,106,0,.12), transparent 28%),
+                linear-gradient(135deg, transparent 0 49%, rgba(21,151,255,.04) 49% 50%, transparent 50% 100%);
+            background-size: auto, auto, 34px 34px;
+        }
+        .app-container { width: 100%; max-width: none; padding: 14px; }
+        .header {
+            position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 18px;
+            padding: 13px 17px; margin-bottom: 10px; background: linear-gradient(120deg, var(--white), var(--surface));
+            box-shadow: var(--shadow); gap: 12px;
+        }
+        .header::before {
+            content: ''; position: absolute; inset: 0 auto 0 0; width: 5px;
+            background: linear-gradient(180deg, var(--accent), var(--orange)); box-shadow: 0 0 18px var(--accent);
+        }
+        .header h1 { min-width: max-content; font-size: 18px; letter-spacing: -.2px; }
+        .header h1 img { height: 30px !important; filter: saturate(1.15) contrast(1.05); }
+        .header h1 small { display: block; color: var(--muted); letter-spacing: .7px; text-transform: uppercase; }
+        .cci-regional-nav { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+        .cci-regional-nav a { min-width: 54px; padding: 6px 12px; border-radius: 9px; color: var(--muted); font: 700 11px var(--font); text-decoration: none; text-align: center; transition: .2s ease; }
+        .cci-regional-nav a:hover { color: var(--accent); background: var(--accent-light); }
+        .cci-regional-nav a.active { color: #fff; background: linear-gradient(135deg, var(--accent), #055fc9); box-shadow: 0 5px 18px var(--accent-mid); }
+        .cci-live { display: inline-flex; align-items: center; gap: 8px; color: var(--orange); font: 800 10px var(--font); letter-spacing: .7px; white-space: nowrap; }
+        .cci-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px var(--orange-light), 0 0 14px var(--orange); animation: cciLive 1.8s ease-out infinite; }
+        .header-actions { margin-left: auto; }
+        .sla-counter { border: 1px solid var(--border); background: var(--surface); padding: 7px 10px; }
+        .theme-toggle { border-color: var(--accent-mid); background: var(--accent-light); color: var(--accent); font-weight: 700; }
+        .cci-pulse-panel {
+            min-height: 76px; display: grid; grid-template-columns: 175px 1fr 190px; align-items: center; gap: 14px;
+            position: relative; overflow: hidden; margin-bottom: 12px; padding: 10px 16px; border: 1px solid var(--border);
+            border-radius: 18px; background: linear-gradient(115deg, var(--white), var(--surface)); box-shadow: var(--sh-sm);
+        }
+        .cci-pulse-copy { position: relative; z-index: 2; display: flex; flex-direction: column; }
+        .cci-pulse-copy strong { color: var(--text); font-size: 14px; }
+        .cci-pulse-copy span { color: var(--muted); font-size: 10px; }
+        .cci-pulse-track { height: 54px; position: relative; }
+        .cci-pulse-track svg { width: 100%; height: 100%; overflow: visible; }
+        .cci-wave-blue, .cci-wave-orange { fill: none; stroke-linecap: round; stroke-width: 3; stroke-dasharray: 11 7; animation: cciFlow 7s linear infinite; }
+        .cci-wave-blue { stroke: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
+        .cci-wave-orange { stroke: var(--orange); stroke-width: 2; animation-direction: reverse; filter: drop-shadow(0 0 5px var(--orange)); }
+        .cci-pulse-state { display: flex; align-items: center; justify-content: flex-end; gap: 7px; color: var(--accent); font-size: 9px; font-weight: 800; letter-spacing: .5px; }
+        .cci-pulse-state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+        .upload-card, .filter-bar, .search-bar, .toolbar-row, .chart-box, .table-wrapper, #crossInfoBar {
+            border: 1px solid var(--border); background: var(--white); box-shadow: var(--sh-sm);
+        }
+        .upload-card { position: relative; overflow: hidden; padding: 16px; }
+        .upload-card h3 { font-size: 15px; }
+        .upload-card h3::before { background: linear-gradient(180deg, var(--accent), var(--orange)); box-shadow: 0 0 12px var(--accent-mid); }
+        .upload-slot { min-height: 124px; border-color: var(--border2); background: linear-gradient(145deg, var(--surface), var(--white)); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+        .upload-slot:hover, .upload-slot.drag-over { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 12px 26px var(--accent-light); }
+        .upload-slot::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--orange)); opacity: .65; }
+        .stats-grid { gap: 10px; }
+        .stat-card { border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(145deg, var(--white), var(--surface)); box-shadow: var(--sh-sm); }
+        .stat-card::after { content: ''; position: absolute; width: 58px; height: 58px; right: -18px; top: -22px; border-radius: 50%; background: var(--accent-light); filter: blur(2px); }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--accent-mid); }
+        .filter-bar { padding: 10px 12px; border-radius: 14px; }
+        .filter-btn { border-radius: 8px; }
+        .filter-btn.active { box-shadow: 0 5px 14px var(--accent-mid); }
+        .search-bar, .toolbar-row { border-radius: 14px; }
+        .search-bar input { background: var(--surface); border-color: var(--border); }
+        .chart-box { border-radius: 16px; }
+        .chart-box h4 { font-size: 14px; }
+        .table-wrapper { border-radius: 15px; }
+        .calls-table thead { box-shadow: 0 1px 0 var(--border), 0 6px 18px rgba(0,0,0,.05); }
+        .calls-table th { color: var(--muted); }
+        .calls-table tbody tr { position: relative; }
+        .calls-table tbody tr:hover { box-shadow: inset 3px 0 0 var(--accent); }
+        .calls-table .sla-bar .fill { box-shadow: 0 0 8px currentColor; }
+        .badge { border-radius: 99px; }
+        .badge-p1 { background: var(--red-light); color: var(--red); border-color: rgba(230,41,41,.25); }
+        .badge-p2 { background: var(--orange-light); color: var(--orange); border-color: rgba(255,106,0,.28); }
+        .badge-p3 { background: var(--yellow-light); color: var(--yellow); border-color: rgba(245,174,0,.30); }
+        .badge-p4 { background: var(--green-light); color: var(--green); border-color: rgba(7,148,71,.26); }
+        .badge-p5 { background: var(--teal-light); color: var(--teal); border-color: rgba(20,126,209,.25); }
+        .calls-table th:nth-child(1), .calls-table td:nth-child(1) { width: 10%; }
+        .calls-table th:nth-child(2), .calls-table td:nth-child(2) { width: 7%; }
+        .calls-table th:nth-child(3), .calls-table td:nth-child(3) { width: 11%; }
+        .calls-table th:nth-child(4), .calls-table td:nth-child(4) { width: 11%; }
+        .calls-table th:nth-child(5), .calls-table td:nth-child(5) { width: 14%; }
+        .calls-table th:nth-child(6), .calls-table td:nth-child(6) { width: 11%; }
+        .calls-table th:nth-child(7), .calls-table td:nth-child(7) { width: 10%; }
+        .calls-table th:nth-child(8), .calls-table td:nth-child(8) { width: 8%; }
+        .calls-table th:nth-child(9), .calls-table td:nth-child(9) { width: 9%; }
+        .calls-table th:nth-child(10), .calls-table td:nth-child(10) { width: 9%; }
+        .calls-table td:first-child { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+        @keyframes cciFlow { to { stroke-dashoffset: -180; } }
+        @keyframes cciLive { 0% { box-shadow: 0 0 0 0 var(--orange-light), 0 0 10px var(--orange); } 70% { box-shadow: 0 0 0 8px transparent, 0 0 17px var(--orange); } 100% { box-shadow: 0 0 0 0 transparent, 0 0 10px var(--orange); } }
+        @media (max-width: 1180px) {
+            .header { align-items: flex-start; }
+            .cci-regional-nav { order: 3; }
+            .cci-live { order: 4; }
+            .cci-pulse-panel { grid-template-columns: 145px 1fr; }
+            .cci-pulse-state { display: none; }
+        }
+        @media (max-width: 760px) {
+            .cci-pulse-panel { grid-template-columns: 1fr; }
+            .cci-pulse-track { height: 42px; }
+            .calls-table { min-width: 980px; }
+            .table-wrapper { overflow-x: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .cci-wave-blue, .cci-wave-orange, .cci-live-dot { animation: none !important; }
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
     </style></head>
 <body>
     <div class="app-container">
 
         <div class="header">
             <h1><img id="logoImg" src="data:image/png;base64,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" alt="Logo" style="height:34px;width:auto;"> CCI EXTRATOR TRJ <small>v1.0 | Multi-Planilhas </small></h1>
+            <nav class="cci-regional-nav" aria-label="Alternar regional">
+                <a class="active" href="CCI_EXTRATOR_TRJ_v1.html" aria-current="page">TRJ</a>
+                <a href="CCI_EXTRATOR_TMG_V1.html">TMG</a>
+                <a href="CCI_EXTRATOR_TNE_V1.html">TNE</a>
+            </nav>
+            <div class="cci-live"><span class="cci-live-dot"></span>OPERAÇÃO AO VIVO</div>
             <div class="header-actions">
                 <div class="sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
                 <div class="sla-counter"> Dados: <span id="dataStatus" style="color:var(--green);">Nenhum</span></div>
@@ -1925,13 +2124,24 @@ body::before {
             </div>
         </div>
 
+        <section class="cci-pulse-panel" aria-label="Pulso CCI: dados em movimento">
+            <div class="cci-pulse-copy"><strong>Pulso CCI</strong><span>Dados em movimento, operação em sintonia.</span></div>
+            <div class="cci-pulse-track" aria-hidden="true">
+                <svg viewBox="0 0 1000 70" preserveAspectRatio="none">
+                    <path class="cci-wave-blue" d="M0 36 C65 5 110 66 175 34 S285 8 350 36 S455 65 525 32 S640 7 710 37 S825 62 1000 28" />
+                    <path class="cci-wave-orange" d="M0 46 C80 66 125 12 205 43 S325 64 395 28 S515 10 585 44 S700 61 775 29 S900 8 1000 42" />
+                </svg>
+            </div>
+            <div class="cci-pulse-state">INTEGRAÇÃO CONTÍNUA</div>
+        </section>
+
         <div class="layout">
 
             <!-- SIDEBAR -->
             <div class="sidebar" id="sidebar">
 
                 <div class="upload-card">
-                    <h3> Upload de Planilhas</h3>
+                    <h3> Central de Dados <small style="font-weight:500;color:var(--muted);font-size:10px;">Arquivos e integrações que alimentam a operação</small></h3>
 
                     <div class="upload-row">
                     <label class="upload-slot" id="slotAgendadas" data-type="agendadas">
@@ -2076,7 +2286,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 <!-- TABLE -->
                 <div id="mainContent">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-                        <h3 style="font-size:16px;font-weight:600;">📋 Chamados</h3>
+                        <h3 style="font-size:16px;font-weight:700;">📋 Chamados em Movimento</h3>
                         <span style="font-size:11px;color:var(--muted);">Atualizado: <span id="lastUpdate">--</span> | <span id="rowCount">0</span> registros</span>
                     </div>
                     <div class="table-wrapper">
@@ -2087,17 +2297,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="prioridade">Prioridade</th>
                                     <th data-sort="ne">NE ID</th>
                                     <th data-sort="end_id">END_ID</th>
-                                    <th data-sort="uf">UF</th>
                                     <th data-sort="place">CM</th>
                                     <th data-sort="falha">Tipo Falha</th>
-                                    <th data-sort="peso" title="Peso na disponibilidade (Gênesis)">Peso</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
                                     <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                     <th data-sort="sla">SLA (Fim)</th>
                                     <th data-sort="tempo">Tempo Restante</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
+                            <tbody id="tableBody"><tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
                         </table>
                     </div>
 
@@ -2122,17 +2330,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>Prioridade</th>
                                         <th>NE ID</th>
                                         <th>END_ID</th>
-                                        <th>UF</th>
                                         <th>CM</th>
                                         <th>Tipo Falha</th>
-                                        <th>Peso</th>
                                         <th>Cruzamento</th>
                                         <th title="Missão Crítica / Concentrador" style="text-align:center;">⚠️ Missão Crítica</th>
                                         <th>SLA (Fim)</th>
                                         <th>Tempo Restante</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableBodyConc"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
+                                <tbody id="tableBodyConc"><tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -3327,9 +3533,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             } else {
                 cruzHtml = '<span style="color:var(--muted);">—</span>';
             }
-            const pesoDisplay = (d.peso !== '' && d.peso !== null && d.peso !== undefined)
-                ? '<strong style="font-family:var(--mono);color:' + (parseFloat(d.peso) >= 50 ? 'var(--red)' : parseFloat(d.peso) >= 25 ? 'var(--orange)' : 'inherit') + ';">' + esc(d.peso) + '</strong>'
-                : '<span style="color:var(--muted);">—</span>';
             const tip = String(d.falha || '').slice(0, 400);
             let mcHtml = '';
             if (d.isMissaoCritica && isConc) {
@@ -3353,10 +3556,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><span class="badge ' + pc + '">' + esc(d.prioridade) + '</span></td>' +
                 '<td><code style="font-size:11px;" title="' + esc(d.ne) + '">' + esc(d.ne.length > 28 ? d.ne.slice(0, 28) + '…' : d.ne) + '</code></td>' +
                 '<td><code style="font-size:11px;">' + esc(d.end_id) + '</code></td>' +
-                '<td style="font-size:11px;">' + esc(d.uf || '—') + '</td>' +
                 '<td style="font-size:10px;" title="' + esc(d.place || '') + '">' + esc(d.place || '—') + correctionFlag + editRegionButton + '</td>' +
                 '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + esc(tip) + '">' + esc(d.tipoFalha) + '</td>' +
-                '<td style="text-align:right;padding-right:16px;">' + pesoDisplay + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
                 '<td style="text-align:center;">' + mcHtml + '</td>' +
                 '<td><span class="sla-date-cell ' + sla.class + '">' + sla.label + '</span></td>' +
@@ -3369,12 +3570,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const LIMIT = 500;
             const data = displayData.slice(0, LIMIT);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
             let html = data.map(buildRowHtml).join('');
             if (displayData.length > LIMIT) {
-                html += '<tr><td colspan="12" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
+                html += '<tr><td colspan="10" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
             }
             tbody.innerHTML = html;
         }
@@ -3391,7 +3592,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (cc) cc.textContent = '(' + list.length + ')';
             const data = list.slice(0, 500);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(function(d) { return buildRowHtml(d, true); }).join('');
