@@ -1904,6 +1904,7 @@ body::before {
             <div class="header-actions">
                 <div class="sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
                 <div class="sla-counter"> Dados: <span id="dataStatus" style="color:var(--green);">Nenhum</span></div>
+                <div class="sla-counter" title="Situação do banco compartilhado de correções"> Correções: <span id="regionSyncStatus">local</span></div>
                 <button class="theme-toggle" id="themeToggle" type="button">☀ CLARO</button>
             </div>
         </div>
@@ -2161,7 +2162,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             </datalist>
             <label for="regionEditReason">Motivo da correção</label>
             <input id="regionEditReason" placeholder="Ex.: END_ID cadastrado na regional incorreta">
-            <div class="modal-note">A correção será salva neste navegador, reaplicada pelo END_ID nas próximas leituras e incluída no XLSX exportado.</div>
+            <div class="modal-note" id="regionEditStorageNote">A correção será reaplicada pelo END_ID nas próximas leituras e incluída no XLSX exportado.</div>
             <div class="modal-actions">
                 <button type="button" class="danger" id="regionEditRestore">Restaurar automático</button>
                 <button type="button" id="regionEditCancel">Cancelar</button>
@@ -2272,6 +2273,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         let combinedData = [];
         let displayData = [];
         let regionOverrides = {};
+        let regionCorrectionsApiUrl = '';
+        let regionCorrectionsOnline = false;
         let editingRegionEndId = '';
         let charts = {};
         let selectedPriorities = new Set();
@@ -2451,6 +2454,112 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             } catch (e) {
                 alert('Não foi possível salvar a correção neste navegador.');
             }
+        }
+
+        function setRegionSyncStatus(state, detail) {
+            const status = document.getElementById('regionSyncStatus');
+            const note = document.getElementById('regionEditStorageNote');
+            const labels = {
+                connected: 'conectado',
+                syncing: 'sincronizando…',
+                offline: 'offline',
+                local: 'local'
+            };
+            const colors = {
+                connected: 'var(--green)',
+                syncing: 'var(--yellow)',
+                offline: 'var(--red)',
+                local: 'var(--muted)'
+            };
+            if (status) {
+                status.textContent = labels[state] || state;
+                status.style.color = colors[state] || 'inherit';
+                status.title = detail || '';
+            }
+            if (note) {
+                note.textContent = state === 'connected'
+                    ? 'A correção será salva no banco compartilhado, reaplicada pelo END_ID e incluída no XLSX exportado.'
+                    : 'O banco compartilhado não está disponível. A correção será preservada neste navegador.';
+            }
+        }
+
+        async function configureRegionCorrections() {
+            try {
+                const response = await fetch('corrections-config.json', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Configuração não encontrada');
+                const config = await response.json();
+                const apiUrl = String(config.apiUrl || '').trim().replace(/\/$/, '');
+                if (!/^https:\/\//i.test(apiUrl)) {
+                    setRegionSyncStatus('local', 'O banco compartilhado ainda não foi publicado.');
+                    return;
+                }
+                regionCorrectionsApiUrl = apiUrl;
+                await syncRegionOverrides();
+            } catch (error) {
+                setRegionSyncStatus('local', 'Usando a cópia deste navegador.');
+            }
+        }
+
+        async function syncRegionOverrides() {
+            if (!regionCorrectionsApiUrl) return;
+            setRegionSyncStatus('syncing');
+            const localBeforeSync = { ...regionOverrides };
+            try {
+                const response = await fetch(regionCorrectionsApiUrl + '/api/corrections', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Falha ao consultar o banco');
+                const payload = await response.json();
+                const remote = {};
+                for (const row of payload.corrections || []) {
+                    const key = normalizeEndId(row.end_id);
+                    if (!key) continue;
+                    remote[key] = {
+                        regiao: row.region,
+                        subarea: row.subarea,
+                        motivo: row.reason || '',
+                        atualizadoEm: row.updated_at || ''
+                    };
+                }
+
+                // Migra automaticamente correções antigas que existiam apenas neste navegador.
+                const localOnly = Object.keys(localBeforeSync).filter(key => !remote[key]);
+                regionOverrides = { ...localBeforeSync, ...remote };
+                saveRegionOverrides();
+                regionCorrectionsOnline = true;
+                setRegionSyncStatus('connected');
+                if (combinedData.length) rebuildCombinedData();
+                for (const key of localOnly.slice(0, 20)) {
+                    try { await putRegionOverride(key, localBeforeSync[key]); } catch (error) { /* tenta novamente no próximo acesso */ }
+                }
+            } catch (error) {
+                regionCorrectionsOnline = false;
+                setRegionSyncStatus('offline', 'Sem conexão com o banco. Os dados locais continuam disponíveis.');
+            }
+        }
+
+        async function putRegionOverride(endId, override) {
+            if (!regionCorrectionsApiUrl) return false;
+            const response = await fetch(regionCorrectionsApiUrl + '/api/corrections/' + encodeURIComponent(endId), {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(override)
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error || 'Não foi possível salvar no banco.');
+            regionCorrectionsOnline = true;
+            setRegionSyncStatus('connected');
+            return true;
+        }
+
+        async function deleteRegionOverride(endId) {
+            if (!regionCorrectionsApiUrl) return false;
+            const response = await fetch(regionCorrectionsApiUrl + '/api/corrections/' + encodeURIComponent(endId), {
+                method: 'DELETE'
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(payload.error || 'Não foi possível restaurar no banco.');
+            regionCorrectionsOnline = true;
+            setRegionSyncStatus('connected');
+            return true;
         }
 
         function applyRegionOverride(item) {
@@ -3493,7 +3602,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         document.getElementById('regionEditModal').addEventListener('click', function(e) {
             if (e.target === this) closeRegionEditor();
         });
-        document.getElementById('regionEditSave').addEventListener('click', function() {
+        document.getElementById('regionEditSave').addEventListener('click', async function() {
             if (!editingRegionEndId) return;
             const regiao = document.getElementById('regionEditRegion').value.trim();
             const subarea = document.getElementById('regionEditSubarea').value.trim();
@@ -3502,22 +3611,51 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 alert('Informe a região e a subárea que devem ser aplicadas.');
                 return;
             }
-            regionOverrides[editingRegionEndId] = {
+            const endId = editingRegionEndId;
+            const override = {
                 regiao: regiao,
                 subarea: subarea,
                 motivo: motivo,
                 atualizadoEm: new Date().toISOString()
             };
+            this.disabled = true;
+            this.textContent = 'Salvando…';
+            regionOverrides[endId] = override;
             saveRegionOverrides();
-            closeRegionEditor();
-            rebuildCombinedData();
+            try {
+                if (regionCorrectionsApiUrl) await putRegionOverride(endId, override);
+                closeRegionEditor();
+                rebuildCombinedData();
+            } catch (error) {
+                regionCorrectionsOnline = false;
+                setRegionSyncStatus('offline', error.message);
+                closeRegionEditor();
+                rebuildCombinedData();
+                alert(error.message + '\n\nA correção ficou salva neste navegador e será sincronizada em uma próxima abertura.');
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Salvar correção';
+            }
         });
-        document.getElementById('regionEditRestore').addEventListener('click', function() {
+        document.getElementById('regionEditRestore').addEventListener('click', async function() {
             if (!editingRegionEndId) return;
-            delete regionOverrides[editingRegionEndId];
-            saveRegionOverrides();
-            closeRegionEditor();
-            rebuildCombinedData();
+            const endId = editingRegionEndId;
+            this.disabled = true;
+            this.textContent = 'Restaurando…';
+            try {
+                if (regionCorrectionsApiUrl) await deleteRegionOverride(endId);
+                delete regionOverrides[endId];
+                saveRegionOverrides();
+                closeRegionEditor();
+                rebuildCombinedData();
+            } catch (error) {
+                regionCorrectionsOnline = false;
+                setRegionSyncStatus('offline', error.message);
+                alert(error.message + '\n\nA correção não foi removida para evitar divergência com o banco compartilhado.');
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Restaurar automático';
+            }
         });
 
         // ================================================================
@@ -3866,6 +4004,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         //  INIT
         // ================================================================
         loadRegionOverrides();
+        configureRegionCorrections();
         loadConfig();
         try {
             const savedTheme = localStorage.getItem('cci-theme') || 'light';

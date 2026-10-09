@@ -1,0 +1,4 @@
+corrections-api/node_modules/
+corrections-api/.wrangler/
+.dev.vars
+*.log

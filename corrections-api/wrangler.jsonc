@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cci-correcoes",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "vars": {
+    "ALLOWED_ORIGINS": "https://cleversonrenan.github.io",
+    "MAX_WRITES_PER_10_MINUTES": "30"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cci-correcoes",
+      "database_id": "COLOQUE_AQUI_O_ID_DO_BANCO"
+    }
+  ]
+}
