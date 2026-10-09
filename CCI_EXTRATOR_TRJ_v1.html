@@ -1660,7 +1660,7 @@ body::before {
         ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--subtle); }
 
-        .app-container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        .app-container { width: 100%; max-width: none; margin: 0 auto; padding: 14px; }
 
         .header {
             background: var(--white); color: var(--text);
@@ -1811,16 +1811,32 @@ body::before {
         .search-bar input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
         .search-bar input::placeholder { color: var(--subtle); }
 
-        .table-wrapper { overflow-x: auto; max-height: 560px; overflow-y: auto; border-radius: var(--r); margin-top: 10px; background: var(--white); box-shadow: var(--shadow); }
-        table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        .table-wrapper { overflow-x: hidden; max-height: 560px; overflow-y: auto; border-radius: var(--r); margin-top: 10px; background: var(--white); box-shadow: var(--shadow); }
+        table { width: 100%; min-width: 0; table-layout: fixed; border-collapse: collapse; font-size: 11px; }
         thead { position: sticky; top: 0; z-index: 10; }
         th {
-            background: var(--thead-bg); color: var(--text); padding: 11px 14px; text-align: left; white-space: nowrap; cursor: pointer;
-            font-family: var(--font); font-size: 11px; font-weight: 600; letter-spacing: .2px; text-transform: uppercase;
+            background: var(--thead-bg); color: var(--text); padding: 9px 5px; text-align: left; white-space: normal; cursor: pointer;
+            font-family: var(--font); font-size: 9.5px; line-height: 1.15; font-weight: 600; letter-spacing: 0; text-transform: uppercase;
             border-bottom: 1px solid var(--border);
         }
         th:hover { color: var(--accent); }
-        td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 12.5px; white-space: nowrap; color: var(--text2); }
+        td { padding: 7px 5px; border-bottom: 1px solid var(--line); vertical-align: middle; font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text2); }
+        .calls-table th:nth-child(1), .calls-table td:nth-child(1) { width: 8%; }
+        .calls-table th:nth-child(2), .calls-table td:nth-child(2) { width: 7%; }
+        .calls-table th:nth-child(3), .calls-table td:nth-child(3) { width: 10%; }
+        .calls-table th:nth-child(4), .calls-table td:nth-child(4) { width: 10%; }
+        .calls-table th:nth-child(5), .calls-table td:nth-child(5) { width: 4%; }
+        .calls-table th:nth-child(6), .calls-table td:nth-child(6) { width: 13%; }
+        .calls-table th:nth-child(7), .calls-table td:nth-child(7) { width: 10%; }
+        .calls-table th:nth-child(8), .calls-table td:nth-child(8) { width: 5%; }
+        .calls-table th:nth-child(9), .calls-table td:nth-child(9) { width: 9%; }
+        .calls-table th:nth-child(10), .calls-table td:nth-child(10) { width: 8%; }
+        .calls-table th:nth-child(11), .calls-table td:nth-child(11) { width: 8%; }
+        .calls-table th:nth-child(12), .calls-table td:nth-child(12) { width: 8%; }
+        .calls-table .badge { padding: 3px 6px; }
+        .calls-table .region-corrected { margin-left: 3px; padding: 1px 3px; font-size: 0; }
+        .calls-table .region-corrected::after { content: '✓'; font-size: 9px; }
+        .calls-table .region-edit-btn { margin-left: 3px; padding: 1px 3px; }
         tbody tr { transition: background .1s; }
         tbody tr:hover td { background: var(--hover-row); }
         tbody tr:last-child td { border-bottom: none; }
@@ -2064,7 +2080,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         <span style="font-size:11px;color:var(--muted);">Atualizado: <span id="lastUpdate">--</span> | <span id="rowCount">0</span> registros</span>
                     </div>
                     <div class="table-wrapper">
-                        <table>
+                        <table class="calls-table">
                             <thead>
                                 <tr>
                                     <th data-sort="tsk">TSK</th>
@@ -2072,8 +2088,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="ne">NE ID</th>
                                     <th data-sort="end_id">END_ID</th>
                                     <th data-sort="uf">UF</th>
-                                    <th data-sort="regiao">Região</th>
-                                    <th data-sort="place">Subárea</th>
+                                    <th data-sort="place">CM</th>
                                     <th data-sort="falha">Tipo Falha</th>
                                     <th data-sort="peso" title="Peso na disponibilidade (Gênesis)">Peso</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
@@ -2082,7 +2097,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="tempo">Tempo Restante</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
+                            <tbody id="tableBody"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
                         </table>
                     </div>
 
@@ -2100,7 +2115,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                             <h4>🟣 Concentradores <span id="concCount" style="font-weight:400;font-size:12px;color:var(--muted);">(0)</span></h4>
                         </div>
                         <div class="table-wrapper">
-                            <table>
+                            <table class="calls-table">
                                 <thead>
                                     <tr>
                                         <th>TSK</th>
@@ -2108,8 +2123,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>NE ID</th>
                                         <th>END_ID</th>
                                         <th>UF</th>
-                                        <th>Região</th>
-                                        <th>Subárea</th>
+                                        <th>CM</th>
                                         <th>Tipo Falha</th>
                                         <th>Peso</th>
                                         <th>Cruzamento</th>
@@ -2118,7 +2132,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>Tempo Restante</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableBodyConc"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
+                                <tbody id="tableBodyConc"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -3340,8 +3354,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><code style="font-size:11px;" title="' + esc(d.ne) + '">' + esc(d.ne.length > 28 ? d.ne.slice(0, 28) + '…' : d.ne) + '</code></td>' +
                 '<td><code style="font-size:11px;">' + esc(d.end_id) + '</code></td>' +
                 '<td style="font-size:11px;">' + esc(d.uf || '—') + '</td>' +
-                '<td style="font-size:11px;">' + esc(d.regiao || '—') + '</td>' +
-                '<td style="font-size:11px;">' + esc(d.place || '—') + correctionFlag + editRegionButton + '</td>' +
+                '<td style="font-size:10px;" title="' + esc(d.place || '') + '">' + esc(d.place || '—') + correctionFlag + editRegionButton + '</td>' +
                 '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + esc(tip) + '">' + esc(d.tipoFalha) + '</td>' +
                 '<td style="text-align:right;padding-right:16px;">' + pesoDisplay + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
@@ -3356,12 +3369,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const LIMIT = 500;
             const data = displayData.slice(0, LIMIT);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
             let html = data.map(buildRowHtml).join('');
             if (displayData.length > LIMIT) {
-                html += '<tr><td colspan="13" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
+                html += '<tr><td colspan="12" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
             }
             tbody.innerHTML = html;
         }
@@ -3378,7 +3391,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (cc) cc.textContent = '(' + list.length + ')';
             const data = list.slice(0, 500);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(function(d) { return buildRowHtml(d, true); }).join('');
