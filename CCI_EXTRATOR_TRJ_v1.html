@@ -2055,6 +2055,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="end_id">END_ID</th>
                                     <th data-sort="uf">UF</th>
                                     <th data-sort="regiao">Região</th>
+                                    <th data-sort="place">Subárea</th>
                                     <th data-sort="falha">Tipo Falha</th>
                                     <th data-sort="peso" title="Peso na disponibilidade (Gênesis)">Peso</th>
                                     <th data-sort="cruzamento">Cruzamento</th>
@@ -2063,7 +2064,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                     <th data-sort="tempo">Tempo Restante</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableBody"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
+                            <tbody id="tableBody"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr></tbody>
                         </table>
                     </div>
 
@@ -2090,6 +2091,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>END_ID</th>
                                         <th>UF</th>
                                         <th>Região</th>
+                                        <th>Subárea</th>
                                         <th>Tipo Falha</th>
                                         <th>Peso</th>
                                         <th>Cruzamento</th>
@@ -2098,7 +2100,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                                         <th>Tempo Restante</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableBodyConc"><tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
+                                <tbody id="tableBodyConc"><tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -2131,10 +2133,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             'TRJ-RJ-INT01-PET04': 'Petrópolis',
             'TRJ-RJ-INT01-VRD05': 'Volta Redonda',
             'TRJ-RJ-ZNO01-ANG01': 'Angra dos Reis / Costa Verde',
-            'TRJ-ES-EPS01-CIM01': 'Cachoeiro de Itapemirim',
-            'TRJ-ES-EPS01-SMT02': 'São Mateus',
-            'TRJ-ES-EPS01-VIT03': 'Vitória / Grande Vitória',
-            'TRJ-RJ-INT01-CPS02': 'Campos dos Goytacazes'
+            'TRJ-ES-EPS01-CIM01': 'CIM - Cachoeiro de Itapemirim',
+            'TRJ-ES-EPS01-SMT02': 'SMT - São Mateus',
+            'TRJ-ES-EPS01-VIT03': 'VIT - Grande Vitória',
+            'TRJ-RJ-INT01-CPS02': 'CPS - Campos dos Goytacazes'
         };
 
         function normalizeCM(cm) {
@@ -3016,6 +3018,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     d.ne.toLowerCase().includes(term) ||
                     d.end_id.toLowerCase().includes(term) ||
                     d.cidade.toLowerCase().includes(term) ||
+                    d.place.toLowerCase().includes(term) ||
                     d.tecnico.toLowerCase().includes(term) ||
                     d.tipoFalha.toLowerCase().includes(term) ||
                     d.bairro.toLowerCase().includes(term)
@@ -3038,6 +3041,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                         const getP = (d) => (d.peso === '' || d.peso === null || d.peso === undefined) ? -1 : (parseFloat(d.peso) || 0);
                         return (getP(a) - getP(b)) * sortOrder;
                     case 'uf': valA = a.uf || ''; valB = b.uf || ''; break;
+                    case 'regiao': valA = a.regiao || ''; valB = b.regiao || ''; break;
+                    case 'place': valA = a.place || ''; valB = b.place || ''; break;
                     case 'tsk': valA = a.tsk || ''; valB = b.tsk || ''; break;
                     case 'ne': valA = a.ne || ''; valB = b.ne || ''; break;
                     case 'cruzamento': valA = a.cruzamento || ''; valB = b.cruzamento || ''; break;
@@ -3106,6 +3111,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><code style="font-size:11px;">' + esc(d.end_id) + '</code></td>' +
                 '<td style="font-size:11px;">' + esc(d.uf || '—') + '</td>' +
                 '<td style="font-size:11px;">' + esc(d.regiao || '—') + '</td>' +
+                '<td style="font-size:11px;">' + esc(d.place || '—') + '</td>' +
                 '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + esc(tip) + '">' + esc(d.tipoFalha) + '</td>' +
                 '<td style="text-align:right;padding-right:16px;">' + pesoDisplay + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
@@ -3120,12 +3126,12 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const LIMIT = 500;
             const data = displayData.slice(0, LIMIT);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
             let html = data.map(buildRowHtml).join('');
             if (displayData.length > LIMIT) {
-                html += '<tr><td colspan="12" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
+                html += '<tr><td colspan="13" style="text-align:center;padding:10px;color:var(--orange);">⚠ Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — refine os filtros ou exporte para ver o restante.</td></tr>';
             }
             tbody.innerHTML = html;
         }
@@ -3142,7 +3148,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (cc) cc.textContent = '(' + list.length + ')';
             const data = list.slice(0, 500);
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map(function(d) { return buildRowHtml(d, true); }).join('');
@@ -3512,7 +3518,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     'Repetido': d.repetido ? 'Sim' : '',
                     'Peso na Disp.': d.peso !== '' ? d.peso : '',
                     'Origem': d.origem === 'genesis' ? 'Gênesis' : (d.origem || ''),
-                    'Provedor': d.provedor || '', 'Região': d.regiao || '',
+                    'Provedor': d.provedor || '', 'Região': d.regiao || '', 'Subárea': d.place || '',
                     'Status': d.status, 'Previsão (Gên.)': d.previsao || '',
                     'Nota de Abertura': d.nota_abertura || '',
                     'Cruzamento': d.cruzamento, 'Missão Crítica': mc,
