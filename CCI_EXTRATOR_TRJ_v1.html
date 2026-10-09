@@ -1729,6 +1729,22 @@ body::before {
         tr.row-concentrador td { background: var(--purple-light); }
         tr.row-concentrador:hover td { background: var(--purple-light); box-shadow: inset 0 0 0 999px var(--hover-row); }
         tr.row-p1 td { box-shadow: inset 3px 0 0 var(--red); background: var(--red-light); }
+        .region-edit-btn { margin-left:6px; padding:2px 6px; border:1px solid var(--border2); border-radius:5px; background:var(--surface); color:var(--accent); cursor:pointer; font-size:11px; }
+        .region-edit-btn:hover { border-color:var(--accent); background:var(--accent-light); }
+        .region-corrected { display:inline-block; margin-left:5px; padding:2px 5px; border-radius:5px; background:var(--orange-light); color:var(--orange); font-size:9px; font-weight:700; }
+        .region-modal-overlay { position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(15,23,42,.58); }
+        .region-modal-overlay[hidden] { display:none; }
+        .region-modal { width:min(520px,100%); background:var(--white); border:1px solid var(--border); border-radius:var(--r); box-shadow:0 24px 70px rgba(0,0,0,.25); padding:22px; }
+        .region-modal h3 { margin:0 0 5px; font-size:17px; color:var(--text); }
+        .region-modal .modal-id { margin-bottom:16px; font-family:var(--mono); font-size:11px; color:var(--muted); }
+        .region-modal label { display:block; margin-top:12px; font-size:11px; font-weight:600; color:var(--dim); }
+        .region-modal select, .region-modal input { width:100%; margin-top:5px; padding:9px 10px; border:1px solid var(--border2); border-radius:var(--r-sm); background:var(--surface); color:var(--text); font-family:var(--font); }
+        .region-modal select:focus, .region-modal input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-light); }
+        .region-modal .modal-note { margin-top:12px; font-size:10px; line-height:1.45; color:var(--muted); }
+        .region-modal .modal-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:18px; }
+        .region-modal .modal-actions button { padding:8px 12px; border:1px solid var(--border2); border-radius:var(--r-sm); background:var(--surface); color:var(--text); cursor:pointer; font-weight:600; }
+        .region-modal .modal-actions .primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+        .region-modal .modal-actions .danger { color:var(--red); border-color:var(--red); }
         tr.row-p2 td { box-shadow: inset 3px 0 0 var(--orange); background: var(--orange-light); }
         tr.row-p3 td { box-shadow: inset 3px 0 0 var(--yellow); background: var(--yellow-light); }
         tr.row-p4 td { box-shadow: inset 3px 0 0 var(--green); background: var(--green-light); }
@@ -2111,6 +2127,49 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         </div>
     </div>
 
+    <div class="region-modal-overlay" id="regionEditModal" hidden>
+        <div class="region-modal" role="dialog" aria-modal="true" aria-labelledby="regionEditTitle">
+            <h3 id="regionEditTitle">Editar região do chamado</h3>
+            <div class="modal-id">END_ID: <strong id="regionEditEndId">—</strong></div>
+            <label for="regionEditRegion">Região aplicada</label>
+            <select id="regionEditRegion">
+                <option>Baixada</option>
+                <option>Grande Rio</option>
+                <option>Niterói</option>
+                <option>Zona Oeste</option>
+                <option>Interior RJ</option>
+                <option>Espírito Santo</option>
+                <option>Campos dos Goytacazes</option>
+                <option>Sem região</option>
+            </select>
+            <label for="regionEditSubarea">Subárea aplicada</label>
+            <input id="regionEditSubarea" list="regionSubareaOptions" placeholder="Ex.: CPS - Campos dos Goytacazes">
+            <datalist id="regionSubareaOptions">
+                <option value="CPS - Campos dos Goytacazes">
+                <option value="SMT - São Mateus">
+                <option value="CIM - Cachoeiro de Itapemirim">
+                <option value="VIT - Grande Vitória">
+                <option value="Baixada Fluminense">
+                <option value="Grande Rio">
+                <option value="Niterói">
+                <option value="Zona Oeste">
+                <option value="Cabo Frio">
+                <option value="Nova Friburgo">
+                <option value="Petrópolis">
+                <option value="Volta Redonda">
+                <option value="Angra dos Reis / Costa Verde">
+            </datalist>
+            <label for="regionEditReason">Motivo da correção</label>
+            <input id="regionEditReason" placeholder="Ex.: END_ID cadastrado na regional incorreta">
+            <div class="modal-note">A correção será salva neste navegador, reaplicada pelo END_ID nas próximas leituras e incluída no XLSX exportado.</div>
+            <div class="modal-actions">
+                <button type="button" class="danger" id="regionEditRestore">Restaurar automático</button>
+                <button type="button" id="regionEditCancel">Cancelar</button>
+                <button type="button" class="primary" id="regionEditSave">Salvar correção</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ================================================================
         //  REGIAO MAP (TRJ: agrupado por macro-região, origem: coluna CM)
@@ -2212,6 +2271,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         };
         let combinedData = [];
         let displayData = [];
+        let regionOverrides = {};
+        let editingRegionEndId = '';
         let charts = {};
         let selectedPriorities = new Set();
         let selectedSLA = new Set();
@@ -2373,6 +2434,59 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         function normalizeEndId(id) {
             if (!id) return '';
             return String(id).trim().toUpperCase().replace(/[\s\-_]+/g, '');
+        }
+
+        function loadRegionOverrides() {
+            try {
+                const saved = localStorage.getItem('cci-trj-region-overrides-v1');
+                regionOverrides = saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                regionOverrides = {};
+            }
+        }
+
+        function saveRegionOverrides() {
+            try {
+                localStorage.setItem('cci-trj-region-overrides-v1', JSON.stringify(regionOverrides));
+            } catch (e) {
+                alert('Não foi possível salvar a correção neste navegador.');
+            }
+        }
+
+        function applyRegionOverride(item) {
+            if (item.regiaoOriginal === undefined) item.regiaoOriginal = item.regiao || '';
+            if (item.subareaOriginal === undefined) item.subareaOriginal = item.place || '';
+            item.regiao = item.regiaoOriginal;
+            item.place = item.subareaOriginal;
+            item.regiaoCorrigida = false;
+            item.correcaoMotivo = '';
+
+            const key = normalizeEndId(item.end_id);
+            const override = key ? regionOverrides[key] : null;
+            if (!override) return;
+
+            item.regiao = override.regiao || item.regiaoOriginal;
+            item.place = override.subarea || item.subareaOriginal;
+            item.regiaoCorrigida = true;
+            item.correcaoMotivo = override.motivo || '';
+        }
+
+        function closeRegionEditor() {
+            editingRegionEndId = '';
+            document.getElementById('regionEditModal').hidden = true;
+        }
+
+        function openRegionEditor(endId) {
+            const key = normalizeEndId(endId);
+            const item = combinedData.find(d => normalizeEndId(d.end_id) === key);
+            if (!key || !item) return;
+            editingRegionEndId = key;
+            document.getElementById('regionEditEndId').textContent = item.end_id;
+            document.getElementById('regionEditRegion').value = item.regiao || 'Sem região';
+            document.getElementById('regionEditSubarea').value = item.place || '';
+            document.getElementById('regionEditReason').value = item.correcaoMotivo || '';
+            document.getElementById('regionEditModal').hidden = false;
+            document.getElementById('regionEditRegion').focus();
         }
 
         function getSLAInfo(d) {
@@ -2805,6 +2919,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 src.data.forEach(row => {
                     const item = row._preprocessed ? row : processRow(row, srcColMap);
                     item.origem = item.origem || src.name;
+                    applyRegionOverride(item);
                     const estKey = normalizeEstadoStatus(item.status);
                     if (estKey === 'concluida' || estKey === 'cancelada') return; // excluídos da visualização
                     const key = item.tsk + '|' + item.end_id;
@@ -3105,6 +3220,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             }
             const rowPrioClass = { P1: 'row-p1', P2: 'row-p2', P3: 'row-p3', P4: 'row-p4', P5: 'row-p5' }[d.prioridade] || '';
             const rowClass = isConc ? 'row-concentrador' : rowPrioClass;
+            const correctionFlag = d.regiaoCorrigida ? '<span class="region-corrected" title="' + esc(d.correcaoMotivo || 'Correção manual') + '">CORRIGIDO</span>' : '';
+            const editRegionButton = d.end_id && d.end_id !== 'N/I'
+                ? '<button type="button" class="region-edit-btn" data-end-id="' + esc(d.end_id) + '" title="Corrigir região e subárea">✏️</button>'
+                : '';
 
             return '<tr' + (rowClass ? ' class="' + rowClass + '"' : '') + '>' +
                 '<td>' + tskDisplay + '</td>' +
@@ -3113,7 +3232,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 '<td><code style="font-size:11px;">' + esc(d.end_id) + '</code></td>' +
                 '<td style="font-size:11px;">' + esc(d.uf || '—') + '</td>' +
                 '<td style="font-size:11px;">' + esc(d.regiao || '—') + '</td>' +
-                '<td style="font-size:11px;">' + esc(d.place || '—') + '</td>' +
+                '<td style="font-size:11px;">' + esc(d.place || '—') + correctionFlag + editRegionButton + '</td>' +
                 '<td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + esc(tip) + '">' + esc(d.tipoFalha) + '</td>' +
                 '<td style="text-align:right;padding-right:16px;">' + pesoDisplay + '</td>' +
                 '<td>' + cruzHtml + '</td>' +
@@ -3360,6 +3479,47 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             applyFiltersAndSort(); updateStats(); updateCharts();
         });
 
+        ['tableBody', 'tableBodyConc'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function(e) {
+                const button = e.target.closest('.region-edit-btn');
+                if (!button) return;
+                e.preventDefault();
+                e.stopPropagation();
+                openRegionEditor(button.dataset.endId);
+            });
+        });
+
+        document.getElementById('regionEditCancel').addEventListener('click', closeRegionEditor);
+        document.getElementById('regionEditModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRegionEditor();
+        });
+        document.getElementById('regionEditSave').addEventListener('click', function() {
+            if (!editingRegionEndId) return;
+            const regiao = document.getElementById('regionEditRegion').value.trim();
+            const subarea = document.getElementById('regionEditSubarea').value.trim();
+            const motivo = document.getElementById('regionEditReason').value.trim();
+            if (!regiao || !subarea) {
+                alert('Informe a região e a subárea que devem ser aplicadas.');
+                return;
+            }
+            regionOverrides[editingRegionEndId] = {
+                regiao: regiao,
+                subarea: subarea,
+                motivo: motivo,
+                atualizadoEm: new Date().toISOString()
+            };
+            saveRegionOverrides();
+            closeRegionEditor();
+            rebuildCombinedData();
+        });
+        document.getElementById('regionEditRestore').addEventListener('click', function() {
+            if (!editingRegionEndId) return;
+            delete regionOverrides[editingRegionEndId];
+            saveRegionOverrides();
+            closeRegionEditor();
+            rebuildCombinedData();
+        });
+
         // ================================================================
         //  FILE UPLOAD HANDLERS
         // ================================================================
@@ -3520,7 +3680,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     'Repetido': d.repetido ? 'Sim' : '',
                     'Peso na Disp.': d.peso !== '' ? d.peso : '',
                     'Origem': d.origem === 'genesis' ? 'Gênesis' : (d.origem || ''),
-                    'Provedor': d.provedor || '', 'Região': d.regiao || '', 'Subárea': d.place || '',
+                    'Provedor': d.provedor || '',
+                    'Região original': d.regiaoOriginal || d.regiao || '', 'Subárea original': d.subareaOriginal || d.place || '',
+                    'Região': d.regiao || '', 'Subárea': d.place || '',
+                    'Correção manual': d.regiaoCorrigida ? 'Sim' : '', 'Motivo da correção': d.correcaoMotivo || '',
                     'Status': d.status, 'Previsão (Gên.)': d.previsao || '',
                     'Nota de Abertura': d.nota_abertura || '',
                     'Cruzamento': d.cruzamento, 'Missão Crítica': mc,
@@ -3702,6 +3865,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  INIT
         // ================================================================
+        loadRegionOverrides();
         loadConfig();
         try {
             const savedTheme = localStorage.getItem('cci-theme') || 'light';
