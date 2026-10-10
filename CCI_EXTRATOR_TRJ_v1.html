@@ -2272,7 +2272,7 @@ body::before {
 
   @keyframes v3Blink { 50%{opacity:.38;transform:scale(.82)} } @keyframes v3Spin{to{transform:rotate(360deg)}}
   @media (max-width:1250px){
-    .app-container{padding-left:78px !important}.v3-command-rail{left:7px;width:58px}.v3-rail-btn{width:47px}.header h1{font-size:17px !important}.header h1 small{display:none !important}.cci-regional-nav,.region-nav{min-width:210px}.header-actions .sla-counter:first-child{display:none !important}.chart-grid.v3-analytics-grid{grid-template-columns:1.45fr .8fr .72fr !important}.stats-grid{grid-template-columns:repeat(4,1fr) !important}.stat-card{height:61px !important;min-height:61px !important}.upload-card{height:174px}.mc-config{display:none !important}
+    .app-container{padding-left:78px !important}.v3-command-rail{left:7px;width:58px}.v3-rail-btn{width:47px}.header h1{font-size:17px !important}.header h1 small{display:none !important}.cci-regional-nav,.region-nav{min-width:210px}.header-actions .next-sla-counter{display:none !important}.chart-grid.v3-analytics-grid{grid-template-columns:1.45fr .8fr .72fr !important}.stats-grid{grid-template-columns:repeat(4,1fr) !important}.stat-card{height:61px !important;min-height:61px !important}.upload-card{height:174px}.mc-config{display:none !important}
   }
   @media (max-width:900px){
     .app-container{padding:8px !important}.v3-command-rail{position:static;width:auto;height:54px;flex-direction:row;margin-bottom:8px;padding:5px}.v3-rail-btn{min-height:42px;width:auto;min-width:62px}.v3-rail-spacer{flex:1}.header{position:relative !important;flex-wrap:wrap !important}.header h1{width:100%}.cci-regional-nav,.region-nav{margin-left:0 !important}.cci-live,.live-indicator{margin-left:auto}.header-actions{width:100%}.upload-card{height:auto;padding-bottom:61px !important}.upload-card .upload-row{grid-template-columns:repeat(2,1fr) !important}.chart-grid.v3-analytics-grid{grid-template-columns:1fr 1fr !important}.v3-signals-panel{grid-column:1/-1}.stats-grid{grid-template-columns:repeat(4,1fr) !important}.v3-table-tools{flex-wrap:wrap}.v3-table-tools .search-bar{flex-basis:100%}
@@ -2310,7 +2310,7 @@ body::before {
   html[data-ui="command-v3"] .pulse-energy,
   html[data-ui="command-v3"] .v3-spark,
   html[data-ui="command-v3"] .v3-brand-logo { filter:none !important; }
-  html[data-ui="command-v3"] .header h1 img.v3-brand-logo { width:72px !important; height:27px !important; flex:0 0 72px !important; border-radius:0 !important; }
+  html[data-ui="command-v3"] .header h1 img.v3-brand-logo { width:72px !important; height:27px !important; flex:0 0 72px !important; padding:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important; object-fit:contain !important; }
 </style>
 <!-- CCI_COMMAND_V3_CSS_END -->
 </head>
@@ -2338,7 +2338,7 @@ body::before {
                 <a href="CCI_EXTRATOR_TNE_V1.html">TNE</a>
             </nav>
             <div class="header-actions">
-                <div class="sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
+                <div class="sla-counter next-sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
                 <div class="sla-counter"> Dados: <span id="dataStatus" style="color:var(--green);">Nenhum</span></div>
                 <div class="sla-counter" title="Situação do banco compartilhado de correções"> Correções: <span id="regionSyncStatus">local</span></div>
                 <button class="theme-toggle" id="themeToggle" type="button">☀ CLARO</button>
