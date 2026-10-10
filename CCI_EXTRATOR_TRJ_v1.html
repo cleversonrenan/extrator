@@ -4,6 +4,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI EXTRATOR TRJ v1.0</title>
+    <link rel="icon" type="image/png" href="trj.png">
     <script>
     /*! cpexcel.js (C) 2013-present SheetJS -- http://sheetjs.com */
 /*jshint -W100 */
@@ -2278,6 +2279,7 @@ body::before {
   }
   @media (max-width:620px){.upload-card .upload-row{grid-template-columns:1fr !important}.chart-grid.v3-analytics-grid{grid-template-columns:1fr !important}.v3-signals-panel{grid-column:auto}.stats-grid{grid-template-columns:repeat(2,1fr) !important}.cci-pulse-panel,.pulse-strip,.pulse-cci{grid-template-columns:95px 1fr !important}.cci-pulse-state,.pulse-meta,.pulse-cci small{display:none !important}}
   @media (prefers-reduced-motion:reduce){.v3-sla-orbit::before,.v3-rail-signal{animation:none !important}}
+  *,*::before,*::after{box-sizing:border-box}.app-container{padding:8px 8px 24px 82px !important}.header{min-height:54px !important;padding:6px 10px !important;gap:8px !important;overflow:visible !important}.header h1{min-width:0 !important;gap:7px !important}.header h1 img.v3-brand-logo{display:block !important;width:39px;height:39px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 0 9px rgba(0,140,255,.35));flex:0 0 39px}.upload-card{height:164px;padding:9px 10px 57px !important}.upload-card .upload-row{gap:6px !important}.upload-slot{padding:7px 24px 7px 43px !important}.chart-grid.v3-analytics-grid{gap:6px !important}.v3-analytics-grid .chart-box,.v3-signals-panel{padding:8px 9px !important}.stats-grid{gap:5px !important}.stat-card{padding:7px 8px !important}.v3-table-tools{min-height:50px;align-items:stretch !important;gap:6px !important}.v3-table-tools .search-bar,.v3-table-tools .toolbar-row{height:auto !important;min-height:50px !important;padding:6px 9px !important;overflow:visible !important}.v3-table-tools .toolbar-row{display:flex !important;flex-wrap:wrap !important;align-content:center !important}#mainContent{padding:7px !important}.calls-table{width:100% !important;min-width:0 !important;table-layout:fixed !important}.calls-table th,.calls-table td{padding:5px 4px !important;overflow-wrap:anywhere}.calls-table th:nth-child(4),.calls-table td:nth-child(4){width:5.5% !important}.calls-table th:nth-child(10),.calls-table td:nth-child(10){width:6% !important}
 </style>
 <!-- CCI_COMMAND_V3_CSS_END -->
 </head>
@@ -2304,7 +2306,6 @@ body::before {
                 <a href="CCI_EXTRATOR_TMG_V1.html">TMG</a>
                 <a href="CCI_EXTRATOR_TNE_V1.html">TNE</a>
             </nav>
-            <div class="cci-live"><span class="cci-live-dot"></span>OPERAÇÃO AO VIVO</div>
             <div class="header-actions">
                 <div class="sla-counter">⏱ Próximo SLA: <span id="slaTime">--</span></div>
                 <div class="sla-counter"> Dados: <span id="dataStatus" style="color:var(--green);">Nenhum</span></div>
@@ -4628,9 +4629,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
   function n(id){ return document.getElementById(id); }
   function number(id){ const el=n(id); return el ? (parseInt(String(el.textContent).replace(/\D/g,''),10)||0) : 0; }
   function brand(){
-    const h=document.querySelector('.header h1'); if(!h || h.querySelector('.v3-brand-bars')) return;
+    const h=document.querySelector('.header h1'); if(!h || h.querySelector('.v3-brand-logo')) return;
     const match=document.title.match(/\b(TRJ|TMG|TNE)\b/i), region=match?match[1].toUpperCase():'CCI';
-    h.innerHTML='<span class="v3-brand-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>CCI EXTRATOR <strong style="color:var(--v3-orange)">'+region+'</strong></span><small>v1.0 · MULTI-PLANILHAS</small>';
+    document.documentElement.dataset.region=region;
+    h.innerHTML='<img class="v3-brand-logo" src="'+region.toLowerCase()+'.png" alt="Logo '+region+'"><span>CCI EXTRATOR <strong style="color:var(--v3-orange)">'+region+'</strong></span><small>v1.0 · MULTI-PLANILHAS</small>';
   }
   function signalRow(cls,icon,title,sub,id){ return '<div class="v3-signal '+cls+'"><span class="v3-signal-icon">'+icon+'</span><span class="v3-signal-copy"><b>'+title+'</b><small>'+sub+'</small></span><strong class="v3-signal-value" id="'+id+'">0</strong><i class="v3-spark"></i></div>'; }
   function buildAnalytics(){
