@@ -4178,14 +4178,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const byAnf = {};
             items.forEach(d => { const a = d.anf || 'Sem ANF'; (byAnf[a] = byAnf[a] || []).push(d); });
 
-            const p12Vencidos = combinedData.filter(function(d) {
-                if (d.prioridade !== 'P1' && d.prioridade !== 'P2') return false;
-                const sla = getSLAInfo(d);
-                return sla.class === 'cinza' && String(sla.timeLeft).indexOf('Vencido') !== -1;
-            }).length;
-            const p12Status = p12Vencidos
-                ? '*Atenção: ' + p12Vencidos + (p12Vencidos === 1 ? ' chamado P1/P2 vencido' : ' chamados P1/P2 vencidos') + ' no momento.*'
-                : '*P1 e P2 no prazo no momento.*';
+            const p12Status = '*P1 e P2 na fila no momento.*';
             const sections = [p12Status];
             Object.keys(byAnf).sort((a, b) => {
                 const oa = anfOrder.indexOf(a), ob = anfOrder.indexOf(b);
