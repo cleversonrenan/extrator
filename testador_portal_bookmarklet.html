@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instalar Testador de Alarmes (Bookmarklet)</title>
+<style>
+  :root{
+    --bg:#0B1220;--panel:#121B2E;--panel-2:#0F1729;--border:#22304A;
+    --text:#E6EDF5;--muted:#8FA1B8;--accent:#3E8EF7;--green:#33C481;--red:#E4483C;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;line-height:1.6;
+    display:flex;justify-content:center;padding:40px 16px;
+  }
+  .wrap{max-width:720px;width:100%;}
+  header{
+    padding:24px 28px;border:1px solid var(--border);border-radius:10px;
+    background:var(--panel);margin-bottom:20px;
+  }
+  header h1{font-size:19px;margin:0 0 6px;font-weight:600;}
+  header p{color:var(--muted);font-size:13px;margin:0;}
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:22px 26px;margin-bottom:20px;
+  }
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+    margin:0 0 14px;font-weight:600;}
+  ol{margin:0;padding-left:20px;}
+  ol li{margin-bottom:12px;}
+  code{
+    background:var(--panel-2);border:1px solid var(--border);border-radius:5px;
+    padding:1px 6px;font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;
+  }
+  .bookmark-slot{
+    display:flex;align-items:center;justify-content:center;
+    border:2px dashed var(--border);border-radius:10px;
+    padding:26px;margin:16px 0;text-align:center;background:var(--panel-2);
+  }
+  a.drag{
+    display:inline-block;background:var(--accent);color:#fff;text-decoration:none;
+    font-weight:700;border-radius:8px;padding:14px 26px;font-size:15px;
+    box-shadow:0 4px 14px rgba(62,142,247,.35);
+    cursor:grab;user-select:none;
+  }
+  a.drag .small{display:block;font-weight:400;font-size:11px;opacity:.85;margin-top:4px;}
+  a.drag:hover{filter:brightness(1.08);}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  button{
+    cursor:pointer;border:1px solid var(--border);background:var(--panel-2);color:var(--text);
+    border-radius:7px;padding:9px 14px;font-size:13px;
+  }
+  button:hover{border-color:var(--accent);}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+  button.primary:hover{filter:brightness(1.08);}
+  .hint{color:var(--muted);font-size:12px;margin-top:10px;}
+  .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;
+    background:#332A0C;color:#F2B90C;margin-left:6px;vertical-align:middle;}
+  #statusMsg{font-size:13px;margin-top:10px;min-height:18px;}
+  #statusMsg.ok{color:var(--green);}
+  #statusMsg.err{color:var(--red);}
+  .signature-footer{
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"product credit" "license contacts";
+    align-items:center;
+    gap:4px 24px;
+    margin-top:18px;
+    padding:14px 18px 12px 22px;
+    overflow:hidden;
+    background:linear-gradient(112deg,rgba(62,142,247,.12) 0 64%,rgba(242,139,45,.11) 64% 100%);
+    border:1px solid rgba(62,142,247,.3);
+    border-left:4px solid #3E8EF7;
+    border-radius:9px 2px 9px 2px;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.45;
+  }
+  .signature-footer::after{
+    content:"";
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:72px;
+    height:3px;
+    background:#F28B2D;
+  }
+  .signature-footer__product{
+    grid-area:product;
+    color:#9CC6FF;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .signature-footer__product span{color:#F6A657;}
+  .signature-footer__credit{grid-area:credit;text-align:right;white-space:nowrap;}
+  .signature-footer__credit span{color:#F6A657;text-transform:uppercase;letter-spacing:.09em;font-size:9px;}
+  .signature-footer__credit strong{color:var(--text);font-weight:650;}
+  .signature-footer__contacts{grid-area:contacts;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+  .signature-footer__contacts .divider{color:#F28B2D;}
+  .signature-footer a{color:inherit;text-decoration:none;}
+  .signature-footer a:hover{color:var(--text);}
+  .signature-footer__license{grid-area:license;justify-self:start;color:#9CC6FF!important;font-weight:700;letter-spacing:.06em;}
+  @media (max-width:600px){
+    .signature-footer{grid-template-columns:1fr;grid-template-areas:"product" "credit" "contacts" "license";gap:5px;}
+    .signature-footer__credit{text-align:left;white-space:normal;}
+    .signature-footer__contacts{justify-content:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Instalar Testador de Alarmes no Portal</h1>
+    <p>Instalação única. Depois é só abrir o portal e clicar no favorito — sem Tampermonkey, sem colar script toda vez.<span class="tag">versão 1.9</span></p>
+  </header>
+
+  <div class="card">
+    <h2>Como instalar (1 minuto)</h2>
+    <ol>
+      <li><b>Arraste o botão azul abaixo</b> para a barra de favoritos do seu navegador (Ctrl+Shift+B para mostrar a barra).</li>
+      <li>Abra o portal <code>tim-access-portal-prd.133e5xtaze4h...</code> e <b>clique no favorito</b> que acabou de criar.</li>
+      <li>Um painel "Testador de Alarmes" aparece no canto do portal. Adicione até três planilhas e clique em <b>Testar acumuladas</b>, ou cole END_ID e clique em <b>Iniciar</b>.</li>
+    </ol>
+
+    <div class="bookmark-slot">
+      <a class="drag" id="bookmark" href="javascript:void(0)">▶ Testador de Alarmes<span class="small">arraste para a barra de favoritos</span></a>
+    </div>
+
+    <div class="btn-row">
+      <button id="btnCopy">Copiar link do bookmarklet</button>
+    </div>
+    <div class="hint">Se preferir: copie o link e cole no campo de URL ao criar um favorito manualmente (Ctrl+Shift+D).</div>
+    <div id="statusMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>O que ele faz</h2>
+    <ol>
+      <li>Digita cada <code>END_ID</code> no chat do portal.</li>
+      <li><b>Aguarda a resposta real</b> (a que contém "ALARMES NETCOOL PARA O END_ID ...") e ignora as mensagens de aguardo ("Vou verificar...") e de feedback.</li>
+      <li>Só então classifica a linha como <span style="color:var(--red);font-weight:700;">ALARME</span> ou <span style="color:var(--green);font-weight:700;">NORMAL</span> na tabela.</li>
+      <li>Exporta a planilha <code>.xlsx</code> com uma aba para Todos, Com Alarme, Normalizados e Pendentes.</li>
+      <li>Adicione até três arquivos de uma vez ou aos poucos; as linhas serão acumuladas. O relatório preserva <b>Tipo da Falha</b> da origem.</li>
+      <li>Na planilha importada, tenta <code>END_ID alarme</code>, depois <code>NE ID alarme</code> e, se necessário, <code>TSK validar</code>. Após a resposta da TSK, seleciona <b>Sim</b> para registrar no ticket.</li>
+    </ol>
+  </div>
+
+<footer class="signature-footer" aria-label="Créditos e licença">
+  <div class="signature-footer__product">Instalador do Testador <span>· 2026</span></div>
+  <div class="signature-footer__credit"><span>Adaptado por</span> <strong>Cleverson Renan</strong></div>
+  <div class="signature-footer__contacts">
+    <a href="mailto:cleversonrenan@gmail.com">cleversonrenan@gmail.com</a>
+    <span class="divider" aria-hidden="true">/</span>
+    <a href="https://wa.me/5521983600686" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp: (21) 98360-0686">WhatsApp (21) 98360-0686</a>
+  </div>
+  <a class="signature-footer__license" href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="license noopener noreferrer" aria-label="Licença CC0 1.0 Universal">CC0 1.0</a>
+</footer>
+</div>
+
+<script type="text/plain" id="appCode">
+(function () {
+  "use strict";
+  if (window.__TAT_BM_LOADED__) return;
+  window.__TAT_BM_LOADED__ = true;
+  function boot() {
+    var SELECTOR_INPUT = "#btn-input";
+    var SELECTOR_SEND = "#btn-chat";
+    var SELECTOR_RESPONSE = ".all-copy.format-text";
+    var DELAY_BETWEEN_MS = 700;
+    var RESPONSE_TIMEOUT_MS = 90000;
+    var POLL_INTERVAL_MS = 400;
+    var RETRY_ROUNDS = 2;
+
+    var IGNORE_PATTERNS = [
+      "vou verificar", "vou consultar", "aguarde", "pode levar um tempo",
+      "te informo assim que", "feedbacks", "feedback", "minha ajuda foi",
+      "foi util", "duvidas clique", "repetir a consulta", "inserir o log na tarefa"
+    ];
+
+    var LS_KEYWORDS = "alarmTester.keywords.v2";
+    var LS_SESSION = "alarmTester.session.v2";
+
+    var DEFAULT_KEYWORDS = {
+      alarme: ["alarme", "alarmado", "alarmando", "critico", "falha", "indisponivel", "offline", "rompimento"],
+      normal: ["normalizado", "sem alarme", "restabelecido", "comunicando", "ativo"]
+    };
+
+    var STOPWORDS = {};
+    ["de","da","do","das","dos","com","sem","para","por","em","no","na","nos","nas",
+     "o","a","os","as","e","ou","um","uma","que","foi","esta","está","ja","já",
+     "status","end_id","endid","code","codigo","código","portal","teste","testado",
+     "site","link","resposta","id"].forEach(function (w) { STOPWORDS[w] = true; });
+
+    var keywords = loadKeywords();
+    var rows = loadSession();
+    var running = false;
+    var importing = false;
+    var MAX_SPREADSHEETS = 3;
+    var stopRequested = false;
+    var clickedTicketButtons = new WeakSet();
+    var clickedSegmentButtons = new WeakSet();
+
+    function loadKeywords() {
+      try { var raw = localStorage.getItem(LS_KEYWORDS); if (raw) return JSON.parse(raw); } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_KEYWORDS));
+    }
+    function saveKeywords() { localStorage.setItem(LS_KEYWORDS, JSON.stringify(keywords)); renderKeywords(); }
+    function loadSession() {
+      try { var raw = localStorage.getItem(LS_SESSION); if (raw) return JSON.parse(raw); } catch (e) {}
+      return [];
+    }
+    function saveSession() { localStorage.setItem(LS_SESSION, JSON.stringify(rows)); }
+
+    function normalize(str) {
+      return (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+    function parseList(text) {
+      var lines = text.split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
+      var seen = {}; var out = [];
+      lines.forEach(function (l) {
+        var key = l.toUpperCase();
+        if (!seen[key]) { seen[key] = true; out.push(l); }
+      });
+      return out;
+    }
+    function flatten(el) {
+      var text = el.innerText || el.textContent || "";
+      return text.trim().replace(/\s*\n+\s*/g, " | ").replace(/\s{2,}/g, " ");
+    }
+    function safeFlatten(node) {
+      var direct = flatten(node);
+      var parent = node.parentElement;
+      if (parent && parent !== document.body) {
+        var siblings = parent.querySelectorAll(SELECTOR_RESPONSE);
+        if (siblings.length === 1) {
+          var whole = flatten(parent);
+          if (whole.length > direct.length) return whole;
+        }
+      }
+      return direct;
+    }
+    function cryptoId() { return "r" + Math.random().toString(36).slice(2, 10); }
+
+    function classify(responseText) {
+      var norm = normalize(responseText);
+      if (!norm) return null;
+      if (norm.indexOf("sem alarme") !== -1) return "normal";
+      if (norm.indexOf("alarmes netcool") !== -1) return "alarme";
+      var phrases = [];
+      keywords.alarme.forEach(function (k) { phrases.push({ label: "alarme", phrase: normalize(k) }); });
+      keywords.normal.forEach(function (k) { phrases.push({ label: "normal", phrase: normalize(k) }); });
+      phrases.sort(function (a, b) { return b.phrase.length - a.phrase.length; });
+      for (var i = 0; i < phrases.length; i++) {
+        if (phrases[i].phrase && norm.indexOf(phrases[i].phrase) !== -1) return phrases[i].label;
+      }
+      return null;
+    }
+    function extractAlarmNames(text) {
+      var re = /(?:^|\n|\s*\|\s*)Alarme\s*:\s*([^\n|]+)/gi;
+      var names = [];
+      var m;
+      while ((m = re.exec(text || "")) !== null) {
+        var name = (m[1] || "").trim();
+        if (name && names.indexOf(name) === -1) names.push(name);
+      }
+      return names;
+    }
+    function displayResponse(text, status) {
+      if (status === "normal") return "Normalizado";
+      if (status === "alarme") {
+        var names = extractAlarmNames(text);
+        return names.length ? "Alarme: " + names.join(" | ") : "Alarme";
+      }
+      return (text || "").trim();
+    }
+    function extractCandidateWords(responseText, endId) {
+      var norm = normalize(responseText);
+      var endIdNorm = normalize(endId);
+      var words = norm.split(/[^a-z0-9çãõáéíóúâêô_]+/i).filter(Boolean);
+      var out = [];
+      words.forEach(function (w) {
+        if (w.length < 4) return;
+        if (w === endIdNorm) return;
+        if (STOPWORDS[w]) return;
+        if (/^\d+$/.test(w)) return;
+        if (out.indexOf(w) === -1) out.push(w);
+      });
+      return out;
+    }
+    function learn(label, responseText, endId) {
+      if (!responseText) return [];
+      var opposite = label === "alarme" ? "normal" : "alarme";
+      var candidates = extractCandidateWords(responseText, endId);
+      var added = [];
+      candidates.forEach(function (w) {
+        if (w.indexOf("alarm") !== -1) return;
+        var inSame = keywords[label].some(function (k) { return normalize(k) === w; });
+        var inOpp = keywords[opposite].some(function (k) { return normalize(k) === w; });
+        if (!inSame && !inOpp) { keywords[label].push(w); added.push(w); }
+      });
+      if (added.length) saveKeywords();
+      return added;
+    }
+
+    function sleep(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+    function setNativeValue(el, value) {
+      var proto = Object.getPrototypeOf(el);
+      var desc = Object.getOwnPropertyDescriptor(proto, "value");
+      var setter = desc && desc.set;
+      if (setter) { setter.call(el, value); } else { el.value = value; }
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function isIntermediateMessage(text) {
+      var lower = (text || "").toLowerCase();
+      for (var i = 0; i < IGNORE_PATTERNS.length; i++) {
+        if (lower.indexOf(IGNORE_PATTERNS[i]) !== -1) return true;
+      }
+      return false;
+    }
+
+    function isAlarmResult(text, endId) {
+      var t = (text || "").toUpperCase();
+      var id = (endId || "").toUpperCase();
+      if (!id) return false;
+      return t.indexOf(id) !== -1 && t.indexOf("ALARMES NETCOOL") !== -1;
+    }
+
+    function waitForAlarmResult(endId) {
+      return new Promise(function (resolve) {
+        var waited = 0;
+        var iv = setInterval(function () {
+          var nodes = document.querySelectorAll(SELECTOR_RESPONSE);
+          waited += POLL_INTERVAL_MS;
+          for (var i = nodes.length - 1; i >= 0; i--) {
+            var text = flatten(nodes[i]);
+            if (!text) continue;
+            if (isIntermediateMessage(text)) continue;
+            if (isAlarmResult(text, endId)) {
+              clearInterval(iv);
+              resolve(nodes[i]);
+              return;
+            }
+          }
+          if (waited >= RESPONSE_TIMEOUT_MS) {
+            clearInterval(iv);
+            resolve(null);
+          }
+        }, POLL_INTERVAL_MS);
+      });
+    }
+
+    function parseWorkbookRows(workbook) {
+      function key(value) { return normalize(String(value == null ? "" : value)).replace(/[^a-z0-9]/g, ""); }
+      var aliases = {
+        tsk: ["numerodeordem", "tsk", "numerodaordem", "ordemdeservico"],
+        endId: ["endid", "idend"],
+        neId: ["neid", "idne"],
+        failureType: ["tipodafalha", "tipodefalha"]
+      };
+      function columns(header, names) {
+        return names.map(function (name) { return header.indexOf(name); }).filter(function (index) { return index >= 0; });
+      }
+      function identifier(value) {
+        var text = String(value == null ? "" : value).trim();
+        if (/^(?:n\s*\/\s*[ia]|n[aã]o informado|n[aã]o se aplica|null|undefined|-+|—+)?$/i.test(text)) return "";
+        return text;
+      }
+      function readIdentifier(line, indexes) {
+        for (var i = 0; i < indexes.length; i++) {
+          var value = identifier(line[indexes[i]]);
+          if (value) return value;
+        }
+        return "";
+      }
+      for (var s = 0; s < workbook.SheetNames.length; s++) {
+        var matrix = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[s]], { header: 1, defval: "", raw: false });
+        for (var h = 0; h < Math.min(matrix.length, 20); h++) {
+          var header = matrix[h].map(key);
+          var tskCols = columns(header, aliases.tsk);
+          var endCols = columns(header, aliases.endId);
+          var neCols = columns(header, aliases.neId);
+          var failureCols = columns(header, aliases.failureType);
+          if (!tskCols.length && !endCols.length && !neCols.length) continue;
+          var imported = [];
+          for (var r = h + 1; r < matrix.length; r++) {
+            var line = matrix[r] || [];
+            var tsk = readIdentifier(line, tskCols);
+            var endId = readIdentifier(line, endCols);
+            var neId = readIdentifier(line, neCols);
+            if (!tsk && !endId && !neId) continue;
+            if ((!tsk || aliases.tsk.indexOf(key(tsk)) >= 0) &&
+                (!endId || aliases.endId.indexOf(key(endId)) >= 0) &&
+                (!neId || aliases.neId.indexOf(key(neId)) >= 0)) continue;
+            imported.push({ id: cryptoId(), imported: true, sourceRow: r + 1,
+              tsk: tsk, endId: endId, neId: neId,
+              failureType: readIdentifier(line, failureCols), response: "", status: null,
+              method: "", note: "Aguardando teste", attempts: [], ticket: "" });
+          }
+          if (imported.length) return imported;
+        }
+      }
+      throw new Error("Não encontrei linhas para testar. Use uma coluna TSK ou Número de Ordem, END_ID ou NE ID.");
+    }
+    function isPortalError(text, mode, id) {
+      var normalized = normalize(text);
+      if (!/ocorreu um erro|erro ao consultar|falha ao consultar|internal server error|request failed|timeout|tempo esgotado/.test(normalized)) return false;
+      var endpoint = /\/enderecos\/([^\/\s|?#]+)\/links/i.exec(text);
+      return mode !== "END_ID" || !endpoint || normalize(endpoint[1]) === normalize(id);
+    }
+    function isSheetResult(text, mode, id) {
+      var normalized = normalize(text);
+      if (mode === "TSK") {
+        return /o evento\s+eve\d+\s+(?:nao atende|atende)\s+aos criterios de fechamento/.test(normalized) &&
+          normalized.indexOf("validado via") !== -1 && normalized.indexOf("netcool") !== -1;
+      }
+      if (normalized.indexOf(normalize(id)) === -1) return false;
+      return normalized.indexOf("alarmes netcool") !== -1 ||
+        /sem alarmes?|nenhum alarme|nao foram encontrados alarmes/.test(normalized);
+    }
+    function classifySheetResult(text, mode) {
+      if (mode === "TSK") {
+        var normalized = normalize(text);
+        if (/\bnao atende\s+aos criterios de fechamento/.test(normalized)) return "alarme";
+        if (/\batende\s+aos criterios de fechamento/.test(normalized)) return "normal";
+        return null;
+      }
+      return classify(text);
+    }
+    function snapshotResponses() {
+      return Array.from(document.querySelectorAll(SELECTOR_RESPONSE)).map(function (node) {
+        return { node: node, text: flatten(node) };
+      });
+    }
+    function selectAllSegmentsIfAsked() {
+      var portalText = normalize(Array.from(document.body.children).filter(function (child) {
+        return child !== panel;
+      }).map(function (child) { return child.innerText || child.textContent || ""; }).join(" "));
+      if (portalText.indexOf("gostaria de consultar para o segmento") === -1) return;
+      var buttons = document.querySelectorAll("button, [role='button']");
+      for (var i = buttons.length - 1; i >= 0; i--) {
+        var button = buttons[i];
+        if (panel.contains(button) || clickedSegmentButtons.has(button) || button.disabled ||
+            button.getAttribute("aria-disabled") === "true" || !button.getClientRects().length) continue;
+        if (normalize(button.innerText || button.textContent) !== "todos") continue;
+        clickedSegmentButtons.add(button);
+        button.click();
+        elStatus.textContent = "Segmento Todos selecionado; aguardando resposta.";
+        return;
+      }
+    }
+    function waitForSheetAnswer(mode, id, before) {
+      return new Promise(function (resolve) {
+        var started = Date.now();
+        var timer = setInterval(function () {
+          if (stopRequested) { clearInterval(timer); resolve({ kind: "stopped" }); return; }
+          selectAllSegmentsIfAsked();
+          var nodes = document.querySelectorAll(SELECTOR_RESPONSE);
+          for (var i = nodes.length - 1; i >= 0; i--) {
+            var text = flatten(nodes[i]);
+            if (!text) continue;
+            var prior = before.find(function (entry) { return entry.node === nodes[i]; });
+            if (prior && prior.text === text) continue;
+            if (isPortalError(text, mode, id)) { clearInterval(timer); resolve({ kind: "error", text: text }); return; }
+            if (isIntermediateMessage(text)) continue;
+            if (isSheetResult(text, mode, id)) {
+              clearInterval(timer); resolve({ kind: "result", text: text }); return;
+            }
+          }
+          if (Date.now() - started >= RESPONSE_TIMEOUT_MS) {
+            clearInterval(timer); resolve({ kind: "timeout", text: "Sem resposta em 90 segundos" });
+          }
+        }, POLL_INTERVAL_MS);
+      });
+    }
+    function findTicketYesButton() {
+      var candidates = Array.from(document.querySelectorAll("button, [role='button']")).filter(function (button) {
+        return !panel.contains(button) && normalize(button.innerText || button.textContent || button.value) === "sim" &&
+          button.getClientRects().length > 0 && !clickedTicketButtons.has(button);
+      });
+      var portalChoices = candidates.filter(function (button) {
+        return button.matches("button.button-text.btn.button-size");
+      });
+      var pageText = normalize(Array.from(document.body.children).filter(function (child) {
+        return child !== panel;
+      }).map(function (child) { return child.innerText || child.textContent || ""; }).join(" "));
+      var ordered = portalChoices.concat(candidates.filter(function (button) { return portalChoices.indexOf(button) === -1; }));
+      for (var i = 0; i < ordered.length; i++) {
+        var parent = ordered[i];
+        for (var depth = 0; depth < 5 && parent && parent !== document.body; depth++, parent = parent.parentElement) {
+          var text = normalize(parent.innerText || parent.textContent);
+          if (/registrar.{0,90}ticket|ticket.{0,90}registrar/.test(text)) return ordered[i];
+        }
+      }
+      if (portalChoices.length === 1 && /registrar.{0,90}ticket|ticket.{0,90}registrar/.test(pageText)) return portalChoices[0];
+      return candidates.length === 1 && /registrar.{0,90}ticket|ticket.{0,90}registrar/.test(pageText) ? candidates[0] : null;
+    }
+    function confirmTicketRegistration() {
+      return new Promise(function (resolve) {
+        var started = Date.now();
+        var timer = setInterval(function () {
+          if (stopRequested) { clearInterval(timer); resolve(false); return; }
+          var button = findTicketYesButton();
+          if (button) {
+            clickedTicketButtons.add(button);
+            button.click(); clearInterval(timer); resolve(true); return;
+          }
+          if (Date.now() - started >= 12000) { clearInterval(timer); resolve(false); }
+        }, POLL_INTERVAL_MS);
+      });
+    }
+
+    function ensureXlsx() {
+      return new Promise(function (resolve) {
+        if (window.XLSX) { resolve(); return; }
+        var s = document.createElement("script");
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+        s.onload = function () { resolve(); };
+        s.onerror = function () { resolve(); };
+        document.head.appendChild(s);
+      });
+    }
+
+    var panel = document.createElement("div");
+    panel.id = "tat-panel";
+    panel.innerHTML =
+      '<div id="tat-header"><span>Testador de Alarmes</span><span id="tat-connectivity-host"></span><button id="tat-toggle">–</button></div>' +
+      '<div id="tat-body">' +
+      '  <textarea id="tat-list" placeholder="Cole aqui a lista de END_ID, um por linha"></textarea>' +
+      '  <div class="tat-row"><button id="tat-start">Iniciar</button><button id="tat-stop" disabled>Parar</button></div>' +
+      '  <label id="tat-import-label">Adicionar atividades ou relatório (até 3)<input id="tat-import" type="file" accept=".xlsx,.xls" multiple></label>' +
+      '  <div class="tat-row"><button id="tat-sheet-start" disabled>Testar acumuladas</button><span id="tat-sheet-info"></span></div>' +
+      '  <div id="tat-status">Pronto.</div>' +
+      '  <div id="tat-stats">' +
+      '    <div class="tat-stat" id="stat-alarme"><b>0</b><span>Alarme</span></div>' +
+      '    <div class="tat-stat" id="stat-normal"><b>0</b><span>Normal.</span></div>' +
+      '    <div class="tat-stat" id="stat-pendente"><b>0</b><span>Pendente</span></div>' +
+      '    <div class="tat-stat" id="stat-total"><b>0</b><span>Total</span></div>' +
+      "  </div>" +
+      '  <div id="tat-table"></div>' +
+      '  <div class="tat-row"><button id="tat-export">Exportar planilha (.xlsx)</button><button id="tat-clear">Limpar tabela</button></div>' +
+      '  <div id="tat-kw-toggle">Palavras aprendidas ▾</div>' +
+      '  <div id="tat-kw-body" style="display:none;">' +
+      '    <div class="tat-kw-title alarme">Indicam ALARME</div><div id="kw-alarme" class="tat-kw-list"></div>' +
+      '    <div class="tat-kw-title normal">Indicam NORMALIZADO</div><div id="kw-normal" class="tat-kw-list"></div>' +
+      '    <div class="tat-row"><select id="kw-type"><option value="alarme">Alarme</option><option value="normal">Normalizado</option></select>' +
+      '    <input type="text" id="kw-input" placeholder="palavra..."><button id="kw-add">+</button></div>' +
+      "  </div>" +
+      "</div>";
+    panel.querySelector("#tat-body").insertAdjacentHTML("beforeend", "<footer class=\"tat-signature\" aria-label=\"Créditos e licença\"><div class=\"tat-signature-top\"><span class=\"tat-signature-product\">Testador de Alarmes · 2026</span><a class=\"tat-signature-license\" href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\" rel=\"license noopener noreferrer\">CC0</a></div><div class=\"tat-signature-credit\"><span>Adaptado por</span> <strong>Cleverson Renan</strong></div><div class=\"tat-signature-contact\"><a href=\"mailto:cleversonrenan@gmail.com\">cleversonrenan@gmail.com</a><span aria-hidden=\"true\">/</span><a href=\"https://wa.me/5521983600686\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"WhatsApp: (21) 98360-0686\">WhatsApp (21) 98360-0686</a></div></footer>");
+  document.body.appendChild(panel);
+
+    var style = document.createElement("style");
+    style.textContent =
+      "#tat-panel{position:fixed;top:8px;right:8px;width:300px;max-width:calc(100vw - 16px);max-height:65vh;overflow:auto;z-index:999999;" +
+      "background:#0e1424;border:1px solid #2a344a;border-radius:8px;font-family:system-ui,sans-serif;" +
+      "font-size:12px;color:#e6edf5;box-shadow:0 8px 24px rgba(0,0,0,.5);}" +
+      "#tat-header{padding:5px 7px;gap:4px;flex-wrap:wrap;font-weight:700;display:flex;justify-content:space-between;align-items:center;" +
+      "background:#0a0f1c;border-bottom:1px solid #2a344a;border-radius:8px 8px 0 0;position:sticky;top:0;z-index:2;}" +
+      "#tat-header button{background:none;border:none;color:#e6edf5;cursor:pointer;font-size:14px;flex:none;}" +
+      "#tat-connectivity-host{margin-left:auto;display:inline-flex;align-items:center;}" +
+      "#tat-body{padding:6px;display:flex;flex-direction:column;gap:5px;}" +
+      "#tat-panel textarea,#tat-panel input,#tat-panel select{width:100%;background:#121b2e;color:#e6edf5;" +
+      "border:1px solid #2a344a;border-radius:6px;padding:6px;font-family:inherit;font-size:11px;box-sizing:border-box;}" +
+      "#tat-list{height:42px;min-height:36px;resize:vertical;font-family:monospace;}" +
+      "#tat-import-label{display:block;color:#8fa1b8;}#tat-import{margin-top:4px;}#tat-sheet-info{align-self:center;color:#8fa1b8;font-size:10px;}" +
+      ".tat-row{display:flex;gap:6px;}" +
+      "#tat-panel button{flex:1;background:#1c2740;border:1px solid #2a344a;color:#e6edf5;border-radius:6px;" +
+      "padding:3px 5px;min-height:24px;font-size:11px;line-height:1.3;cursor:pointer;}" +
+      "#tat-panel button:disabled{opacity:.4;cursor:not-allowed;}" +
+      "#tat-panel button:hover:not(:disabled){border-color:#3E8EF7;}" +
+      "#tat-status{color:#8fa1b8;}" +
+      "#tat-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;}" +
+      ".tat-stat{background:#121b2e;border:1px solid #2a344a;border-radius:4px;padding:2px;text-align:center;}" +
+      ".tat-stat b{display:inline;font-size:12px;margin-right:3px;} .tat-stat span{color:#8fa1b8;font-size:9px;}" +
+      "#stat-alarme b{color:#E4483C;} #stat-normal b{color:#33C481;} #stat-pendente b{color:#F2B90C;}" +
+      "#tat-table{max-height:120px;overflow:auto;border:1px solid #2a344a;border-radius:6px;}" +
+      ".tat-row-item{border-bottom:1px solid #22304A;padding:4px 5px;}" +
+      ".tat-row-item:last-child{border-bottom:none;}" +
+      ".tat-row-top{display:flex;justify-content:space-between;align-items:center;gap:6px;}" +
+      ".tat-endid{font-family:monospace;font-weight:700;}" +
+      ".tat-badge{padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;}" +
+      ".tat-badge.alarme{background:#3A1616;color:#E4483C;} .tat-badge.normal{background:#0F2B22;color:#33C481;}" +
+      ".tat-badge.pendente{background:#332A0C;color:#F2B90C;}" +
+      ".tat-resp{color:#8fa1b8;font-size:10px;margin-top:3px;max-height:34px;overflow:hidden;}" +
+      ".tat-resp.expanded{max-height:none;}" +
+      ".tat-mini-actions{display:flex;gap:4px;margin-top:4px;}" +
+      ".tat-mini-actions button{padding:2px 6px;font-size:10px;flex:none;}" +
+      "#tat-kw-toggle{cursor:pointer;color:#8fa1b8;}" +
+      ".tat-kw-title{font-size:10px;font-weight:700;margin-top:4px;}" +
+      ".tat-kw-title.alarme{color:#E4483C;} .tat-kw-title.normal{color:#33C481;}" +
+      ".tat-kw-list{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0;}" +
+      ".tat-kw{display:flex;align-items:center;gap:4px;background:#121b2e;border:1px solid #2a344a;" +
+      "border-radius:999px;padding:2px 6px;font-size:10px;}" +
+      ".tat-kw button{background:none;border:none;color:inherit;padding:0;font-size:11px;flex:none;}";
+    style.textContent += "#tat-panel{box-sizing:border-box;}#tat-panel #tat-header{position:sticky;top:0;z-index:2;}#tat-panel #tat-header button{flex:none;min-width:24px;}#tat-panel #tat-status{font-size:11px;line-height:1.35;overflow-wrap:anywhere;}#tat-panel .tat-signature{position:relative;margin-top:5px;padding:7px 8px 6px 10px;overflow:hidden;border:1px solid rgba(62,142,247,.28);border-left:3px solid #3e8ef7;border-radius:6px 2px 6px 2px;background:linear-gradient(112deg,rgba(62,142,247,.12) 0 68%,rgba(242,139,45,.11) 68% 100%);color:#8fa1b8;font:9px/1.35 system-ui,sans-serif;}#tat-panel .tat-signature:after{content:\"\";position:absolute;right:0;bottom:0;width:42px;height:2px;background:#f28b2d;}#tat-panel .tat-signature-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}#tat-panel .tat-signature-product{color:#9cc6ff;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}#tat-panel .tat-signature-license{color:#f6a657;font-weight:700;text-decoration:none;}#tat-panel .tat-signature-credit{margin-top:2px;}#tat-panel .tat-signature-credit span{color:#f6a657;font-size:8px;letter-spacing:.07em;text-transform:uppercase;}#tat-panel .tat-signature-credit strong{color:#e6edf5;font-weight:650;}#tat-panel .tat-signature-contact{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px;}#tat-panel .tat-signature-contact>span{color:#f28b2d;}#tat-panel .tat-signature-contact a{color:inherit;text-decoration:none;}#tat-panel input[type=file]{font-size:10px;padding:3px;}#tat-panel .tat-row{gap:4px;}";
+    style.textContent += "#tat-panel .tat-row-item{border-left:3px solid transparent;}#tat-panel .tat-row-item.normal,#tat-panel #stat-normal{background:#123d2b;border-color:#329968;color:#dcfce7;}#tat-panel .tat-row-item.alarme,#tat-panel #stat-alarme{background:#4a2025;border-color:#d55e68;color:#ffe4e6;}#tat-panel .tat-row-item.pendente,#tat-panel #stat-pendente{background:#443710;border-color:#cfa62d;color:#fff3bd;}#tat-panel .tat-row-item.normal .tat-resp{color:#bce8cf;}#tat-panel .tat-row-item.alarme .tat-resp{color:#f3bfc4;}#tat-panel .tat-row-item.pendente .tat-resp{color:#ecdaa0;}#tat-panel #tat-stats .tat-stat span{color:inherit;}#tat-panel #stat-normal b{color:#86efac;}#tat-panel #stat-alarme b{color:#fda4af;}#tat-panel #stat-pendente b{color:#fde047;}#tat-panel .tat-row-item .tat-mini-actions button{background:rgba(0,0,0,.18);border-color:currentColor;color:inherit;}";
+    document.head.appendChild(style);
+
+    var elList = panel.querySelector("#tat-list");
+    var elStart = panel.querySelector("#tat-start");
+    var elStop = panel.querySelector("#tat-stop");
+    var elStatus = panel.querySelector("#tat-status");
+    var elTable = panel.querySelector("#tat-table");
+    var elBody = panel.querySelector("#tat-body");
+    var elToggle = panel.querySelector("#tat-toggle");
+    var elKwToggle = panel.querySelector("#tat-kw-toggle");
+    var elKwBody = panel.querySelector("#tat-kw-body");
+    var elImport = panel.querySelector("#tat-import");
+    var elSheetStart = panel.querySelector("#tat-sheet-start");
+    var elSheetInfo = panel.querySelector("#tat-sheet-info");
+
+    // Indicador independente da fila de testes: consulta apenas a página do portal.
+    var connectivityHost = panel.querySelector("#tat-connectivity-host");
+    var connectivityRoot = connectivityHost.attachShadow({ mode: "open" });
+    var connectivityStyle = document.createElement("style");
+    connectivityStyle.textContent = "/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */\n@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-border-style:solid;--tw-font-weight:initial}}}@layer theme{:root,:host{--tat-color-slate-200:oklch(92.9% .013 255.508);--tat-color-slate-700:oklch(37.2% .044 257.287);--tat-color-slate-900:oklch(20.8% .042 265.755);--tat-spacing:.25rem;--tat-font-weight-medium:500;--tat-animate-pulse:pulse 2s cubic-bezier(.4, 0, .6, 1) infinite}}@layer utilities{.tat\\:inline-flex{display:inline-flex}.tat\\:size-2{width:calc(var(--tat-spacing) * 2);height:calc(var(--tat-spacing) * 2)}.tat\\:shrink-0{flex-shrink:0}.tat\\:animate-pulse{animation:var(--tat-animate-pulse)}.tat\\:items-center{align-items:center}.tat\\:gap-2{gap:calc(var(--tat-spacing) * 2)}.tat\\:rounded-full{border-radius:3.40282e38px}.tat\\:border{border-style:var(--tw-border-style);border-width:1px}.tat\\:border-slate-700{border-color:var(--tat-color-slate-700)}.tat\\:bg-\\[\\#22c55e\\]{background-color:#22c55e}.tat\\:bg-\\[\\#eab308\\]{background-color:#eab308}.tat\\:bg-\\[\\#ef4444\\]{background-color:#ef4444}.tat\\:bg-slate-900{background-color:var(--tat-color-slate-900)}.tat\\:px-2{padding-inline:calc(var(--tat-spacing) * 2)}.tat\\:py-1{padding-block:var(--tat-spacing)}.tat\\:text-\\[11px\\]{font-size:11px}.tat\\:font-medium{--tw-font-weight:var(--tat-font-weight-medium);font-weight:var(--tat-font-weight-medium)}.tat\\:text-slate-200{color:var(--tat-color-slate-200)}}@property --tw-border-style{syntax:\"*\";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:\"*\";inherits:false}@keyframes pulse{50%{opacity:.5}}";
+    connectivityRoot.appendChild(connectivityStyle);
+    var connectivityBadge = document.createElement("span");
+    connectivityBadge.className = "tat:inline-flex tat:items-center tat:gap-2 tat:rounded-full tat:border tat:border-slate-700 tat:bg-slate-900 tat:px-2 tat:py-1 tat:text-[11px] tat:font-medium tat:text-slate-200";
+    connectivityBadge.innerHTML = '<span id="tat-connection-dot" class="tat:size-2 tat:shrink-0 tat:rounded-full tat:bg-[#eab308] tat:animate-pulse" aria-hidden="true"></span><span id="tat-connection-text" role="status" aria-live="polite">Reconectando...</span>';
+    connectivityRoot.appendChild(connectivityBadge);
+    var connectivityDot = connectivityRoot.querySelector("#tat-connection-dot");
+    var connectivityText = connectivityRoot.querySelector("#tat-connection-text");
+    var CONNECTIVITY_INTERVAL_MS = 15000;
+    var CONNECTIVITY_FRESH_MS = 45000;
+    var CONNECTIVITY_TIMEOUT_MS = 6000;
+    var CONNECTIVITY_FAILURE_LIMIT = 3;
+    var lastConnectivitySuccess = 0;
+    var connectivityFailures = 0;
+    var connectivityInFlight = false;
+    var connectivityTimer = null;
+    var connectivityState = "reconnecting";
+
+    function setConnectivityState(state, detail) {
+      connectivityState = state;
+      var classes = {
+        connected: "tat:size-2 tat:shrink-0 tat:rounded-full tat:bg-[#22c55e]",
+        reconnecting: "tat:size-2 tat:shrink-0 tat:rounded-full tat:bg-[#eab308] tat:animate-pulse",
+        disconnected: "tat:size-2 tat:shrink-0 tat:rounded-full tat:bg-[#ef4444]"
+      };
+      var labels = { connected: "Conectado", reconnecting: "Reconectando...", disconnected: "Perda de conexão" };
+      connectivityDot.className = classes[state];
+      connectivityText.textContent = labels[state];
+      connectivityBadge.title = detail || labels[state];
+    }
+    async function probePortal() {
+      if (connectivityInFlight) return;
+      connectivityInFlight = true;
+      var controller = new AbortController();
+      var timeout = setTimeout(function () { controller.abort(); }, CONNECTIVITY_TIMEOUT_MS);
+      try {
+        if (!navigator.onLine) throw new Error("Navegador offline");
+        var response = await fetch(location.href, {
+          method: "GET", credentials: "include", cache: "no-store", signal: controller.signal
+        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        if (new URL(response.url).origin !== location.origin) throw new Error("Redirecionado para outro site");
+        connectivityFailures = 0;
+        lastConnectivitySuccess = Date.now();
+        setConnectivityState("connected", "Portal respondeu agora (HTTP " + response.status + ")");
+      } catch (error) {
+        connectivityFailures++;
+        var detail = error.name === "AbortError" ? "Tempo de resposta esgotado" : (error.message || String(error));
+        setConnectivityState(connectivityFailures >= CONNECTIVITY_FAILURE_LIMIT ? "disconnected" : "reconnecting",
+          detail + " · tentativa " + connectivityFailures + "/" + CONNECTIVITY_FAILURE_LIMIT);
+      } finally {
+        clearTimeout(timeout);
+        connectivityInFlight = false;
+        connectivityTimer = setTimeout(probePortal, CONNECTIVITY_INTERVAL_MS);
+      }
+    }
+    function refreshConnectivity() {
+      if (lastConnectivitySuccess && Date.now() - lastConnectivitySuccess > CONNECTIVITY_FRESH_MS && connectivityState === "connected") {
+        setConnectivityState("reconnecting", "Última resposta do portal há mais de 45 segundos");
+      }
+      if (!connectivityInFlight) {
+        clearTimeout(connectivityTimer);
+        probePortal();
+      }
+    }
+    window.addEventListener("online", refreshConnectivity);
+    window.addEventListener("offline", refreshConnectivity);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) refreshConnectivity();
+    });
+    window.addEventListener("pageshow", refreshConnectivity);
+    probePortal();
+
+    elToggle.addEventListener("click", function () {
+      var collapsed = elBody.style.display === "none";
+      elBody.style.display = collapsed ? "flex" : "none";
+      elToggle.textContent = collapsed ? "–" : "+";
+    });
+    elKwToggle.addEventListener("click", function () {
+      var hidden = elKwBody.style.display === "none";
+      elKwBody.style.display = hidden ? "block" : "none";
+      elKwToggle.textContent = "Palavras aprendidas " + (hidden ? "▴" : "▾");
+    });
+
+    function renderKeywords() {
+      renderKwList("kw-alarme", "alarme");
+      renderKwList("kw-normal", "normal");
+    }
+    function renderKwList(elId, type) {
+      var el = panel.querySelector("#" + elId);
+      el.innerHTML = "";
+      keywords[type].forEach(function (word) {
+        var span = document.createElement("span");
+        span.className = "tat-kw";
+        span.innerHTML = "<span></span><button>×</button>";
+        span.querySelector("span").textContent = word;
+        span.querySelector("button").addEventListener("click", function () {
+          keywords[type] = keywords[type].filter(function (w) { return w !== word; });
+          saveKeywords();
+        });
+        el.appendChild(span);
+      });
+    }
+
+    function badgeHtml(row) {
+      if (row.status) {
+        var label = row.status === "alarme" ? "ALARME" : "NORMALIZADO";
+        return '<span class="tat-badge ' + row.status + '">' + label + "</span>";
+      }
+      return '<span class="tat-badge pendente">PENDENTE</span>';
+    }
+
+    function renderTable() {
+      elTable.innerHTML = "";
+      rows.forEach(function (row) {
+        var item = document.createElement("div");
+        item.className = "tat-row-item " + (row.status === "normal" ? "normal" : row.status === "alarme" ? "alarme" : "pendente");
+        var top = document.createElement("div");
+        top.className = "tat-row-top";
+        var name = document.createElement("span");
+        name.className = "tat-endid";
+        name.textContent = row.endId || row.neId || row.tsk || "Sem identificador";
+        top.appendChild(name);
+        var badgeHolder = document.createElement("span");
+        badgeHolder.innerHTML = badgeHtml(row);
+        top.appendChild(badgeHolder.firstChild);
+        item.appendChild(top);
+        if (row.imported) {
+          var meta = document.createElement("div");
+          meta.className = "tat-resp";
+          meta.textContent = "TSK: " + (row.tsk || "—") + " · NE: " + (row.neId || "—") +
+            " · Via: " + (row.method || "—") + " · Linha: " + row.sourceRow +
+            (row.ticket ? " · Ticket: " + row.ticket : "");
+          meta.title = [row.tsk, row.failureType].filter(Boolean).join(" | ");
+          item.appendChild(meta);
+        }
+        var resp = document.createElement("div");
+        resp.className = "tat-resp";
+        var displayText = row.imported && row.method === "TSK" ? row.response : displayResponse(row.response, row.status);
+        displayText = displayText || row.note || "(sem resposta ainda)";
+        var rawText = row.response || displayText;
+        resp.textContent = displayText;
+        resp.title = "clique para ver texto original";
+        resp.addEventListener("click", function () {
+          resp.classList.toggle("expanded");
+          resp.textContent = resp.textContent === rawText ? displayText : rawText;
+        });
+        item.appendChild(resp);
+        var actions = document.createElement("div");
+        actions.className = "tat-mini-actions";
+        var btnA = document.createElement("button");
+        btnA.textContent = "✓ Alarme";
+        btnA.addEventListener("click", function () { confirmStatus(row.id, "alarme"); });
+        var btnN = document.createElement("button");
+        btnN.textContent = "✓ Normal.";
+        btnN.addEventListener("click", function () { confirmStatus(row.id, "normal"); });
+        var btnDel = document.createElement("button");
+        btnDel.textContent = "×";
+        btnDel.addEventListener("click", function () {
+          rows = rows.filter(function (r) { return r.id !== row.id; });
+          saveSession(); renderTable();
+        });
+        actions.appendChild(btnA); actions.appendChild(btnN); actions.appendChild(btnDel);
+        item.appendChild(actions);
+        elTable.appendChild(item);
+      });
+      renderStats();
+      updateImportSummary();
+    }
+    function renderStats() {
+      var alarme = rows.filter(function (r) { return r.status === "alarme"; }).length;
+      var normal = rows.filter(function (r) { return r.status === "normal"; }).length;
+      var pendente = rows.length - alarme - normal;
+      panel.querySelector("#stat-alarme b").textContent = alarme;
+      panel.querySelector("#stat-normal b").textContent = normal;
+      panel.querySelector("#stat-pendente b").textContent = pendente;
+      panel.querySelector("#stat-total b").textContent = rows.length;
+    }
+
+    function confirmStatus(rowId, label) {
+      var row = rows.find(function (r) { return r.id === rowId; });
+      if (!row) return;
+      row.status = label;
+      var added = row.imported ? [] : learn(label, row.response, row.endId);
+      saveSession(); renderTable();
+      if (added.length) elStatus.textContent = "Aprendido: " + added.join(", ");
+    }
+
+    function upsertRow(endId, responseText) {
+      var row = rows.find(function (r) { return !r.imported && r.endId.toUpperCase() === endId.toUpperCase(); });
+      if (!row) { row = { id: cryptoId(), endId: endId, response: "", status: null }; rows.push(row); }
+      row.response = responseText;
+      var suggested = classify(responseText);
+      if (suggested) {
+        row.status = suggested;
+        learn(suggested, responseText, endId);
+      } else {
+        row.status = null;
+      }
+      saveSession();
+    }
+
+    async function runSingleTest(endId, label) {
+      var input = document.querySelector(SELECTOR_INPUT);
+      var sendBtn = document.querySelector(SELECTOR_SEND);
+      if (!input || !sendBtn) {
+        elStatus.textContent = "Não encontrei o campo/botão do chat nesta página.";
+        return false;
+      }
+      setNativeValue(input, endId + " alarme");
+      sendBtn.click();
+      var responseEl = await waitForAlarmResult(endId);
+      var text = responseEl ? safeFlatten(responseEl) : "(sem resposta — timeout)";
+      var suggested = classify(text);
+      elStatus.textContent = label + " — " +
+        (suggested === "alarme" ? "ALARME" : (suggested === "normal" ? "NORMAL" : "SEM CLASSIFICAÇÃO"));
+      upsertRow(endId, text);
+      renderTable();
+      return suggested;
+    }
+
+    async function retryPending(rounds) {
+      var attempts = rounds || RETRY_ROUNDS;
+      for (var r = 0; r < attempts; r++) {
+        if (stopRequested) break;
+        var pendentes = rows.filter(function (row) { return !row.imported && !row.status; });
+        if (pendentes.length === 0) break;
+        elStatus.textContent = "Retentativa " + (r + 1) + "/" + attempts + ": " + pendentes.length + " pendente(s)...";
+        for (var i = 0; i < pendentes.length; i++) {
+          if (stopRequested) break;
+          var endId = pendentes[i].endId;
+          elStatus.textContent = "Repetindo " + endId + " (" + (i + 1) + "/" + pendentes.length + ", tentativa " + (r + 2) + ")...";
+          await runSingleTest(endId, "Repetindo " + endId);
+          await sleep(DELAY_BETWEEN_MS);
+        }
+      }
+    }
+
+    async function runTests(list) {
+      var input = document.querySelector(SELECTOR_INPUT);
+      var sendBtn = document.querySelector(SELECTOR_SEND);
+      if (!input || !sendBtn) {
+        elStatus.textContent = "Não encontrei o campo/botão do chat nesta página.";
+        running = false; elStart.disabled = false;
+        elSheetStart.disabled = !rows.some(function (row) { return row.imported; });
+        elStop.disabled = true;
+        return;
+      }
+      for (var i = 0; i < list.length; i++) {
+        if (stopRequested) { elStatus.textContent = "Parado em " + i + "/" + list.length + "."; break; }
+        var endId = list[i];
+        await runSingleTest(endId, "Testando " + (i + 1) + "/" + list.length + ": " + endId);
+        await sleep(DELAY_BETWEEN_MS);
+      }
+
+      if (!stopRequested) {
+        var pendBefore = rows.filter(function (row) { return !row.imported && !row.status; }).length;
+        if (pendBefore > 0) {
+          elStatus.textContent = pendBefore + " pendente(s). Re-testando " + RETRY_ROUNDS + "x...";
+          await retryPending(RETRY_ROUNDS);
+        }
+      }
+
+      running = false; stopRequested = false;
+      elStart.disabled = false;
+      elSheetStart.disabled = !rows.some(function (row) { return row.imported; });
+      elStop.disabled = true;
+      var manual = rows.filter(function (row) { return !row.imported; });
+      var pend = manual.filter(function (row) { return !row.status; }).length;
+      elStatus.textContent = "Concluído: " + manual.length + " na tabela, " + pend + " pendente(s) após retentativas.";
+    }
+
+    async function runSheetQuery(mode, id) {
+      var input = document.querySelector(SELECTOR_INPUT);
+      var sendBtn = document.querySelector(SELECTOR_SEND);
+      if (!input || !sendBtn) return { kind: "missing", text: "Campo ou botão do chat não encontrado" };
+      var before = snapshotResponses();
+      var command = id + (mode === "TSK" ? " validar" : " alarme");
+      try {
+        setNativeValue(input, command);
+        sendBtn.click();
+        return await waitForSheetAnswer(mode, id, before);
+      } catch (e) {
+        return { kind: "error", text: "Falha ao enviar consulta: " + (e.message || e) };
+      }
+    }
+    async function runSpreadsheet() {
+      var targets = rows.filter(function (row) { return row.imported && !row.status; });
+      var interrupted = false;
+      try {
+        for (var i = 0; i < targets.length; i++) {
+          if (stopRequested) { interrupted = true; break; }
+          var row = targets[i];
+          var steps = [
+            { mode: "END_ID", id: row.endId },
+            { mode: "NE ID", id: row.neId },
+            { mode: "TSK", id: row.tsk }
+          ].filter(function (step) { return !!step.id; });
+          row.response = ""; row.method = ""; row.note = "Em andamento";
+          row.attempts = [];
+          for (var j = 0; j < steps.length; j++) {
+            if (stopRequested) { interrupted = true; break; }
+            var step = steps[j];
+            elStatus.textContent = "Planilha " + (i + 1) + "/" + targets.length + " · " + step.mode + ": " + step.id;
+            row.note = "Consultando " + step.mode + " " + step.id;
+            saveSession(); renderTable();
+            var result = await runSheetQuery(step.mode, step.id);
+            if (result.kind === "stopped") { interrupted = true; break; }
+            if (result.kind === "missing") {
+              row.note = result.text; interrupted = true; stopRequested = true; break;
+            }
+            var status = result.kind === "result" ? classifySheetResult(result.text, step.mode) : null;
+            row.attempts.push(step.mode + ": " + (status || result.kind));
+            if (status) {
+              row.status = status;
+              row.response = result.text;
+              row.method = step.mode;
+              row.note = "Resolvido por " + step.mode;
+              if (step.mode === "TSK") {
+                elStatus.textContent = "TSK respondida; aguardando a opção Sim para registrar no ticket...";
+                var registered = await confirmTicketRegistration();
+                row.ticket = registered ? "Sim selecionado" : "Opção Sim não encontrada";
+                if (!registered) row.note += " · confirmação do ticket não encontrada";
+              }
+              break;
+            }
+            row.response = "";
+            row.note = (result.kind === "error" ? "Erro" : result.kind === "timeout" ? "Timeout" : "Resposta inconclusiva") +
+              " em " + step.mode + (j + 1 < steps.length ? "; próximo: " + steps[j + 1].mode : "; sem alternativa");
+            saveSession(); renderTable();
+            if (j + 1 < steps.length && !stopRequested) await sleep(DELAY_BETWEEN_MS);
+          }
+          if (interrupted) {
+            if (!row.status) row.note = "Interrompido; pronto para retomar";
+            saveSession(); renderTable(); break;
+          }
+          saveSession(); renderTable();
+          if (i + 1 < targets.length && !stopRequested) await sleep(DELAY_BETWEEN_MS);
+        }
+      } finally {
+        running = false; stopRequested = false;
+        elStart.disabled = false; elSheetStart.disabled = !rows.some(function (row) { return row.imported; });
+        elStop.disabled = true;
+        var imported = rows.filter(function (row) { return row.imported; });
+        var pending = imported.filter(function (row) { return !row.status; }).length;
+        elStatus.textContent = interrupted ? "Interrompido. " + pending + " linha(s) pendente(s)." :
+          "Planilha concluída: " + (imported.length - pending) + " resolvida(s), " + pending + " pendente(s).";
+      }
+    }
+
+    function importedSources() {
+      var sources = new Map();
+      rows.filter(function (row) { return row.imported; }).forEach(function (row) {
+        sources.set(row.sourceBatch || "legacy", row.sourceFile || "Planilha salva anteriormente");
+      });
+      return sources;
+    }
+    function updateImportSummary() {
+      var sources = importedSources();
+      var count = rows.filter(function (row) { return row.imported; }).length;
+      elSheetInfo.textContent = sources.size + "/" + MAX_SPREADSHEETS + " planilhas · " + count + " linhas";
+      elSheetInfo.title = count + " linhas acumuladas para teste";
+      elSheetStart.disabled = running || importing || !rows.some(function (row) { return row.imported && !row.status; });
+    }
+
+    elImport.addEventListener("change", async function () {
+      var files = Array.from(elImport.files || []);
+      if (!files.length) return;
+      if (running || importing) { elStatus.textContent = "Aguarde a operação atual antes de importar."; elImport.value = ""; return; }
+      if (importedSources().size + files.length > MAX_SPREADSHEETS) {
+        elStatus.textContent = "Limite de 3 planilhas. Limpe a tabela para iniciar um novo conjunto.";
+        elImport.value = ""; return;
+      }
+      importing = true; elImport.disabled = true; elStart.disabled = true;
+      updateImportSummary();
+      elStatus.textContent = "Lendo " + files.length + " planilha(s)...";
+      try {
+        await ensureXlsx();
+        if (!window.XLSX) throw new Error("Não foi possível carregar o leitor de planilhas.");
+        var additions = [];
+        for (var f = 0; f < files.length; f++) {
+          var file = files[f];
+          try {
+            var data = await file.arrayBuffer();
+            var workbook = XLSX.read(data, { type: "array" });
+            var imported = parseWorkbookRows(workbook);
+            if (!imported.length) throw new Error("Nenhuma linha com TSK, END_ID ou NE ID foi encontrada.");
+            var batch = cryptoId();
+            imported.forEach(function (row) { row.sourceBatch = batch; row.sourceFile = file.name; });
+            additions = additions.concat(imported);
+          } catch (e) { throw new Error(file.name + ": " + (e.message || e)); }
+        }
+        rows = rows.concat(additions);
+        saveSession(); renderTable();
+        elStatus.textContent = files.length + " planilha(s) adicionada(s), " + additions.length + " nova(s) linha(s). Clique em Testar acumuladas.";
+      } catch (e) { elStatus.textContent = "Falha na importação: " + (e.message || e); }
+      finally {
+        importing = false; elImport.disabled = false; elStart.disabled = false;
+        elImport.value = ""; updateImportSummary();
+      }
+    });
+    elSheetStart.addEventListener("click", function () {
+      if (running || importing) return;
+      if (!rows.some(function (row) { return row.imported && !row.status; })) {
+        elStatus.textContent = "Não há linhas pendentes na planilha."; return;
+      }
+      running = true; stopRequested = false;
+      elStart.disabled = true; elSheetStart.disabled = true; elStop.disabled = false;
+      runSpreadsheet().catch(function (e) { elStatus.textContent = "Erro na planilha: " + (e.message || e); });
+    });
+
+    elStart.addEventListener("click", function () {
+      if (running || importing) return;
+      var list = parseList(elList.value);
+      if (list.length === 0) { elStatus.textContent = "Cole uma lista de END_ID primeiro."; return; }
+      running = true; stopRequested = false;
+      elStart.disabled = true; elSheetStart.disabled = true; elStop.disabled = false;
+      runTests(list);
+    });
+    elStop.addEventListener("click", function () { stopRequested = true; elStatus.textContent = "Parando..."; });
+
+    renderTable();
+    panel.querySelector("#tat-clear").addEventListener("click", function () {
+      if (running || importing) { elStatus.textContent = "Aguarde a importação ou pare a pesquisa antes de limpar a tabela."; return; }
+      if (rows.length === 0) return;
+      if (confirm("Limpar a tabela atual? As palavras aprendidas não serão apagadas.")) {
+        rows = []; saveSession(); renderTable();
+        updateImportSummary();
+      }
+    });
+
+    panel.querySelector("#tat-export").addEventListener("click", async function () {
+      if (rows.length === 0) { elStatus.textContent = "Nada para exportar."; return; }
+      elStatus.textContent = "Carregando gerador de planilha...";
+      await ensureXlsx();
+      if (!window.XLSX) { elStatus.textContent = "Não foi possível carregar o gerador de planilhas."; return; }
+      var wb = XLSX.utils.book_new();
+      function sheetFor(filterFn) {
+        var data = rows.filter(filterFn).map(function (r) {
+          return {
+            "Linha da planilha": r.sourceRow || "",
+            "Número de Ordem": r.tsk || "",
+            "END_ID": r.endId,
+            "NE ID": r.neId || "",
+            "Tipo da Falha": r.failureType || "",
+            "Status": r.status === "alarme" ? "ALARME" : (r.status === "normal" ? "NORMALIZADO" : "PENDENTE"),
+            "Via": r.method || (r.imported ? "" : "END_ID"),
+            "Registro no ticket": r.ticket || "",
+            "Tentativas": Array.isArray(r.attempts) ? r.attempts.join("; ") : (r.attempts || ""),
+            "Observação": r.note || "",
+            "Resposta do portal": r.imported && r.method === "TSK" ? r.response : displayResponse(r.response, r.status)
+          };
+        });
+        return XLSX.utils.json_to_sheet(data, { header: ["Linha da planilha", "Número de Ordem", "END_ID", "NE ID", "Tipo da Falha", "Status", "Via", "Registro no ticket", "Tentativas", "Observação", "Resposta do portal"] });
+      }
+      XLSX.utils.book_append_sheet(wb, sheetFor(function () { return true; }), "Todos");
+      XLSX.utils.book_append_sheet(wb, sheetFor(function (r) { return r.status === "alarme"; }), "Com Alarme");
+      XLSX.utils.book_append_sheet(wb, sheetFor(function (r) { return r.status === "normal"; }), "Normalizados");
+      var pend = rows.filter(function (r) { return !r.status; });
+      if (pend.length) XLSX.utils.book_append_sheet(wb, sheetFor(function (r) { return !r.status; }), "Pendentes");
+      var stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+      XLSX.writeFile(wb, "teste_alarmes_" + stamp + ".xlsx");
+      elStatus.textContent = "Planilha exportada.";
+    });
+
+    panel.querySelector("#kw-add").addEventListener("click", function () {
+      var type = panel.querySelector("#kw-type").value;
+      var input = panel.querySelector("#kw-input");
+      var val = input.value.trim();
+      if (!val) return;
+      if (!keywords[type].some(function (k) { return normalize(k) === normalize(val); })) {
+        keywords[type].push(val); saveKeywords();
+      }
+      input.value = "";
+    });
+    panel.querySelector("#kw-input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") panel.querySelector("#kw-add").click();
+    });
+
+    renderKeywords();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+<script>
+(function () {
+  var appCode = document.getElementById("appCode").textContent;
+  var bookmarklet = "javascript:" + encodeURIComponent(appCode);
+  var link = document.getElementById("bookmark");
+  link.setAttribute("href", bookmarklet);
+
+  document.getElementById("btnCopy").addEventListener("click", function () {
+    var msg = document.getElementById("statusMsg");
+    function ok() { msg.className = "ok"; msg.textContent = "Link copiado! Crie um favorito e cole no campo de URL."; }
+    function err() { msg.className = "err"; msg.textContent = "Não consegui copiar — selecione o link manualmente."; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(bookmarklet).then(ok).catch(err);
+    } else {
+      window.prompt("Copie o link abaixo (Ctrl+C):", bookmarklet);
+      ok();
+    }
+  });
+})();
+</script>
+</body>
+</html>

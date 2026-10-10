@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testador de Alarmes — END_ID</title>
+<style>
+  :root{
+    --bg:#0B1220;
+    --panel:#121B2E;
+    --panel-2:#0F1729;
+    --border:#22304A;
+    --text:#E6EDF5;
+    --muted:#8FA1B8;
+    --alarme:#E4483C;
+    --alarme-bg:#3A1616;
+    --normal:#33C481;
+    --normal-bg:#0F2B22;
+    --pendente:#F2B90C;
+    --pendente-bg:#332A0C;
+    --accent:#3E8EF7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;
+    line-height:1.5;
+  }
+  .mono{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+
+  header{
+    padding:20px 28px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  header h1{
+    font-size:18px;
+    margin:0;
+    font-weight:600;
+    letter-spacing:0.2px;
+  }
+  header .sub{color:var(--muted); font-size:13px;}
+
+  .layout{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:0;
+    min-height:calc(100vh - 65px);
+  }
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;}
+  }
+
+  .side{
+    border-right:1px solid var(--border);
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  @media (max-width:900px){
+    .side{border-right:none; border-bottom:1px solid var(--border);}
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+  }
+  .card h2{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:var(--muted);
+    margin:0 0 10px 0;
+    font-weight:600;
+  }
+
+  textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:6px;
+    padding:8px;
+    font-size:13px;
+    resize:vertical;
+  }
+  #inputList{height:220px;}
+
+  button{
+    cursor:pointer;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
+    border-radius:6px;
+    padding:8px 12px;
+    font-size:13px;
+    transition:border-color .15s;
+  }
+  button:hover{border-color:var(--accent);}
+  button.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+    font-weight:600;
+  }
+  button.primary:hover{filter:brightness(1.08);}
+  button.ghost{background:transparent;}
+  button.small{padding:4px 8px; font-size:12px;}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+
+  .row-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+  .stats{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .stat{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:10px;
+    text-align:center;
+  }
+  .stat .n{font-size:20px; font-weight:700;}
+  .stat .l{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-top:2px;}
+  .stat.alarme .n{color:var(--alarme);}
+  .stat.normal .n{color:var(--normal);}
+  .stat.pendente .n{color:var(--pendente);}
+
+  .kw-list{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+  .kw{
+    display:flex; align-items:center; gap:6px;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:3px 8px 3px 10px;
+    font-size:12px;
+  }
+  .kw.alarme{color:var(--alarme); border-color:#5A2323;}
+  .kw.normal{color:var(--normal); border-color:#1E4636;}
+  .kw button{
+    border:none; background:none; padding:0 2px; color:inherit; font-size:13px; line-height:1;
+  }
+  .kw-add{display:flex; gap:6px; margin-top:8px;}
+  .kw-add input{
+    flex:1; background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    border-radius:6px; padding:6px 8px; font-size:12px;
+  }
+  .kw-add select{
+    background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+    border-radius:6px; font-size:12px;
+  }
+
+  main{padding:20px 28px;}
+  .toolbar{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px; flex-wrap:wrap; gap:10px;
+  }
+  .filters{display:flex; gap:6px;}
+  .filters button.active{border-color:var(--accent); color:var(--accent);}
+
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.4px;
+    color:var(--muted); border-bottom:1px solid var(--border); padding:8px 10px; font-weight:600;
+  }
+  tbody td{
+    border-bottom:1px solid var(--border);
+    padding:8px 10px;
+    vertical-align:top;
+  }
+  tbody tr:hover{background:rgba(255,255,255,0.02);}
+  .endid{font-weight:600; letter-spacing:.3px;}
+  .resp-input{
+    width:100%; min-height:40px; font-size:12px; padding:6px;
+  }
+  .badge{
+    display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px;
+    font-weight:700; letter-spacing:.3px; white-space:nowrap;
+  }
+  .badge.alarme{background:var(--alarme-bg); color:var(--alarme);}
+  .badge.normal{background:var(--normal-bg); color:var(--normal);}
+  .badge.pendente{background:var(--pendente-bg); color:var(--pendente);}
+  .badge.sugestao{opacity:.6; font-weight:600;}
+  .confirm-btns{display:flex; gap:6px; margin-top:6px;}
+  .confirm-btns button{padding:4px 8px; font-size:11px;}
+  .confirm-btns button.a{color:var(--alarme); border-color:#5A2323;}
+  .confirm-btns button.n{color:var(--normal); border-color:#1E4636;}
+  .del{color:var(--muted); font-size:12px;}
+  .empty{
+    text-align:center; color:var(--muted); padding:60px 20px;
+  }
+  .hint{color:var(--muted); font-size:12px; margin-top:4px;}
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:var(--panel); border:1px solid var(--accent); color:var(--text);
+    padding:8px 16px; border-radius:6px; font-size:13px; opacity:0; pointer-events:none;
+    transition:opacity .2s;
+  }
+  .toast.show{opacity:1;}
+  .signature-footer{
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"product credit" "license contacts";
+    align-items:center;
+    gap:4px 24px;
+    margin:18px 20px 20px;
+    padding:14px 18px 12px 22px;
+    overflow:hidden;
+    background:linear-gradient(112deg,rgba(62,142,247,.12) 0 64%,rgba(242,139,45,.11) 64% 100%);
+    border:1px solid rgba(62,142,247,.3);
+    border-left:4px solid #3E8EF7;
+    border-radius:9px 2px 9px 2px;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.45;
+  }
+  .signature-footer::after{
+    content:"";
+    position:absolute;
+    right:0;
+    bottom:0;
+    width:72px;
+    height:3px;
+    background:#F28B2D;
+  }
+  .signature-footer__product{
+    grid-area:product;
+    color:#9CC6FF;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .signature-footer__product span{color:#F6A657;}
+  .signature-footer__credit{grid-area:credit;text-align:right;white-space:nowrap;}
+  .signature-footer__credit span{color:#F6A657;text-transform:uppercase;letter-spacing:.09em;font-size:9px;}
+  .signature-footer__credit strong{color:var(--text);font-weight:650;}
+  .signature-footer__contacts{grid-area:contacts;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+  .signature-footer__contacts .divider{color:#F28B2D;}
+  .signature-footer a{color:inherit;text-decoration:none;}
+  .signature-footer a:hover{color:var(--text);}
+  .signature-footer__license{grid-area:license;justify-self:start;color:#9CC6FF!important;font-weight:700;letter-spacing:.06em;}
+  @media (max-width:600px){
+    .signature-footer{grid-template-columns:1fr;grid-template-areas:"product" "credit" "contacts" "license";gap:5px;margin:14px 12px 16px;}
+    .signature-footer__credit{text-align:left;white-space:normal;}
+    .signature-footer__contacts{justify-content:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Testador de Alarmes — END_ID</h1>
+    <div class="sub">Cole a lista, copie cada código para o portal, cole a resposta e classifique.</div>
+  </div>
+  <div class="sub" id="lastSaved"></div>
+</header>
+
+<div class="layout">
+  <div class="side">
+
+    <div class="card">
+      <h2>1. Colar resultados do userscript</h2>
+      <textarea id="inputBulk" placeholder="Cole aqui o resultado copiado do painel do portal (END_ID + TAB + resposta, uma linha por teste)" style="height:110px;"></textarea>
+      <div class="row-actions" style="margin-top:8px;">
+        <button class="primary" id="btnApplyBulk">Aplicar respostas</button>
+      </div>
+      <div class="hint">Preenche a resposta de cada END_ID e já classifica automaticamente quando reconhece o padrão.</div>
+    </div>
+
+    <div class="card">
+      <h2>2. Lista de END_ID (manual)</h2>
+      <textarea id="inputList" placeholder="Cole aqui, uma linha por END_ID..."></textarea>
+      <div class="row-actions" style="margin-top:8px;">
+        <button class="primary" id="btnProcess">Processar lista</button>
+        <button class="ghost" id="btnAppend">Adicionar à tabela</button>
+      </div>
+      <div class="hint">"Processar" substitui a tabela atual. "Adicionar" mantém o que já existe.</div>
+    </div>
+
+    <div class="card">
+      <h2>Resumo</h2>
+      <div class="stats">
+        <div class="stat alarme"><div class="n" id="cAlarme">0</div><div class="l">Alarme</div></div>
+        <div class="stat normal"><div class="n" id="cNormal">0</div><div class="l">Normalizado</div></div>
+        <div class="stat pendente"><div class="n" id="cPendente">0</div><div class="l">Pendente</div></div>
+        <div class="stat"><div class="n" id="cTotal">0</div><div class="l">Total</div></div>
+      </div>
+      <div class="row-actions" style="margin-top:12px;">
+        <button class="primary" id="btnExport">Exportar planilha (.xlsx)</button>
+      </div>
+      <div class="row-actions" style="margin-top:8px;">
+        <button class="ghost small" id="btnClearSession">Limpar tabela</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Palavras aprendidas</h2>
+      <div class="hint">Usadas para reconhecer automaticamente a resposta colada. Corrija a classificação de uma linha para ensinar novas palavras.</div>
+      <div style="margin-top:10px;">
+        <div style="color:var(--alarme); font-size:12px; font-weight:600; margin-bottom:4px;">Indicam ALARME</div>
+        <div class="kw-list" id="kwAlarme"></div>
+      </div>
+      <div style="margin-top:10px;">
+        <div style="color:var(--normal); font-size:12px; font-weight:600; margin-bottom:4px;">Indicam NORMALIZADO</div>
+        <div class="kw-list" id="kwNormal"></div>
+      </div>
+      <div class="kw-add">
+        <select id="kwAddType">
+          <option value="alarme">Alarme</option>
+          <option value="normal">Normalizado</option>
+        </select>
+        <input type="text" id="kwAddInput" placeholder="adicionar palavra...">
+        <button class="small" id="kwAddBtn">+</button>
+      </div>
+    </div>
+
+  </div>
+
+  <main>
+    <div class="toolbar">
+      <div class="filters">
+        <button class="active" data-filter="todos">Todos</button>
+        <button data-filter="alarme">Alarme</button>
+        <button data-filter="normal">Normalizado</button>
+        <button data-filter="pendente">Pendente</button>
+      </div>
+      <div class="row-actions">
+        <button class="ghost small" id="btnCopyAll">Copiar todos (END_ID alarme)</button>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:24px;">#</th>
+          <th style="width:150px;">END_ID</th>
+          <th style="width:90px;">Copiar</th>
+          <th style="width:110px;">Status</th>
+          <th>Resposta colada do portal</th>
+          <th style="width:24px;"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="emptyState">Cole uma lista de END_ID à esquerda e clique em "Processar lista".</div>
+  </main>
+</div>
+
+<footer class="signature-footer" aria-label="Créditos e licença">
+  <div class="signature-footer__product">Testador de Alarmes <span>· 2026</span></div>
+  <div class="signature-footer__credit"><span>Adaptado por</span> <strong>Cleverson Renan</strong></div>
+  <div class="signature-footer__contacts">
+    <a href="mailto:cleversonrenan@gmail.com">cleversonrenan@gmail.com</a>
+    <span class="divider" aria-hidden="true">/</span>
+    <a href="https://wa.me/5521983600686" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp: (21) 98360-0686">WhatsApp (21) 98360-0686</a>
+  </div>
+  <a class="signature-footer__license" href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="license noopener noreferrer" aria-label="Licença CC0 1.0 Universal">CC0 1.0</a>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var LS_KEYWORDS = "alarmTester.keywords.v2";
+  var LS_SESSION  = "alarmTester.session.v2";
+
+  var DEFAULT_KEYWORDS = {
+    alarme: ["alarme", "alarmado", "alarmando", "critico", "falha", "indisponivel", "offline", "rompimento"],
+    normal: ["normalizado", "sem alarme", "restabelecido", "comunicando", "ativo"]
+  };
+
+  var STOPWORDS = new Set([
+    "de","da","do","das","dos","com","sem","para","por","em","no","na","nos","nas",
+    "o","a","os","as","e","ou","um","uma","que","foi","esta","está","ja","já",
+    "status","end_id","endid","code","codigo","código","portal","teste","testado",
+    "site","link","resposta","id"
+  ]);
+
+  var keywords = loadKeywords();
+  var rows = loadSession();
+  var currentFilter = "todos";
+
+  // ---------- storage ----------
+  function loadKeywords(){
+    try{
+      var raw = localStorage.getItem(LS_KEYWORDS);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return JSON.parse(JSON.stringify(DEFAULT_KEYWORDS));
+  }
+  function saveKeywords(){
+    localStorage.setItem(LS_KEYWORDS, JSON.stringify(keywords));
+    renderKeywords();
+  }
+  function loadSession(){
+    try{
+      var raw = localStorage.getItem(LS_SESSION);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return [];
+  }
+  function saveSession(){
+    localStorage.setItem(LS_SESSION, JSON.stringify(rows));
+    document.getElementById("lastSaved").textContent =
+      "salvo " + new Date().toLocaleTimeString("pt-BR");
+  }
+
+  // ---------- text helpers ----------
+  function normalize(str){
+    return (str || "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .trim();
+  }
+  function parseList(text){
+    var lines = text.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+    var seen = new Set();
+    var out = [];
+    lines.forEach(function(l){
+      var key = l.toUpperCase();
+      if(!seen.has(key)){
+        seen.add(key);
+        out.push(l);
+      }
+    });
+    return out;
+  }
+
+  // ---------- classification ----------
+  function classify(responseText){
+    var norm = normalize(responseText);
+    if(!norm) return null;
+
+    // Regras estruturais (valem mais que palavras aprendidas):
+    if(norm.indexOf("sem alarme") !== -1) return "normal";
+    if(norm.indexOf("alarmes netcool") !== -1) return "alarme";
+
+    var allPhrases = [];
+    keywords.alarme.forEach(function(k){ allPhrases.push({label:"alarme", phrase:normalize(k)}); });
+    keywords.normal.forEach(function(k){ allPhrases.push({label:"normal", phrase:normalize(k)}); });
+    allPhrases.sort(function(a,b){ return b.phrase.length - a.phrase.length; });
+
+    for(var i=0;i<allPhrases.length;i++){
+      if(allPhrases[i].phrase && norm.indexOf(allPhrases[i].phrase) !== -1){
+        return allPhrases[i].label;
+      }
+    }
+    return null; // indefinido
+  }
+
+  function extractAlarmNames(text){
+    var re = /(?:^|\n|\s*\|\s*)Alarme\s*:\s*([^\n|]+)/gi;
+    var names = [];
+    var m;
+    while((m = re.exec(text || "")) !== null){
+      var name = (m[1] || "").trim();
+      if(name && names.indexOf(name) === -1) names.push(name);
+    }
+    return names;
+  }
+
+  function displayResponse(text, status){
+    if(status === "normal") return "Normalizado";
+    if(status === "alarme"){
+      var names = extractAlarmNames(text);
+      return names.length ? "Alarme: " + names.join(" | ") : "Alarme";
+    }
+    return (text || "").trim();
+  }
+
+  function extractCandidateWords(responseText, endId){
+    var norm = normalize(responseText);
+    var endIdNorm = normalize(endId);
+    var words = norm.split(/[^a-z0-9çãõáéíóúâêô_]+/i).filter(Boolean);
+    var out = [];
+    words.forEach(function(w){
+      if(w.length < 4) return;
+      if(w === endIdNorm) return;
+      if(STOPWORDS.has(w)) return;
+      if(/^\d+$/.test(w)) return;
+      if(out.indexOf(w) === -1) out.push(w);
+    });
+    return out;
+  }
+
+  function learn(label, responseText, endId){
+    if(!responseText) return [];
+    var opposite = label === "alarme" ? "normal" : "alarme";
+    var candidates = extractCandidateWords(responseText, endId);
+    var addedWords = [];
+    candidates.forEach(function(w){
+      if(w.indexOf("alarm") !== -1) return; // nunca aprende palavras da família "alarme"
+      var inSame = keywords[label].some(function(k){ return normalize(k) === w; });
+      var inOpp  = keywords[opposite].some(function(k){ return normalize(k) === w; });
+      if(!inSame && !inOpp){
+        keywords[label].push(w);
+        addedWords.push(w);
+      }
+    });
+    if(addedWords.length) saveKeywords();
+    return addedWords;
+  }
+
+  // ---------- row model ----------
+  // row: {id, endId, response, status: 'alarme'|'normal'|null, suggested: 'alarme'|'normal'|null, confirmed:boolean}
+
+  function addRows(endIds, replace){
+    if(replace) rows = [];
+    var existing = new Set(rows.map(function(r){ return r.endId.toUpperCase(); }));
+    endIds.forEach(function(id){
+      if(!existing.has(id.toUpperCase())){
+        rows.push({
+          id: cryptoId(),
+          endId: id,
+          response: "",
+          status: null,
+          suggested: null
+        });
+        existing.add(id.toUpperCase());
+      }
+    });
+    saveSession();
+    renderTable();
+  }
+
+  function cryptoId(){
+    return "r" + Math.random().toString(36).slice(2, 10);
+  }
+
+  function updateResponse(rowId, text){
+    var row = rows.find(function(r){ return r.id === rowId; });
+    if(!row) return;
+    row.response = text;
+    row.suggested = classify(text);
+    if(row.status === null){
+      // keep as pendente but store suggestion
+    }
+    saveSession();
+    renderTable();
+  }
+
+  function confirmStatus(rowId, label){
+    var row = rows.find(function(r){ return r.id === rowId; });
+    if(!row) return;
+    row.status = label;
+    // learn from every confirmed response, correction or not,
+    // so the vocabulary keeps growing with each new case seen
+    var added = learn(label, row.response, row.endId);
+    saveSession();
+    renderTable();
+    if(added.length){
+      showToast("Aprendido: " + added.join(", "));
+    }
+  }
+
+  function deleteRow(rowId){
+    rows = rows.filter(function(r){ return r.id !== rowId; });
+    saveSession();
+    renderTable();
+  }
+
+  // ---------- rendering ----------
+  function renderKeywords(){
+    renderKwList("kwAlarme", "alarme");
+    renderKwList("kwNormal", "normal");
+  }
+  function renderKwList(elId, type){
+    var el = document.getElementById(elId);
+    el.innerHTML = "";
+    keywords[type].forEach(function(word){
+      var span = document.createElement("span");
+      span.className = "kw " + type;
+      span.innerHTML = '<span></span><button title="remover">×</button>';
+      span.querySelector("span").textContent = word;
+      span.querySelector("button").addEventListener("click", function(){
+        keywords[type] = keywords[type].filter(function(w){ return w !== word; });
+        saveKeywords();
+      });
+      el.appendChild(span);
+    });
+  }
+
+  function statusBadgeHtml(row){
+    if(row.status){
+      var label = row.status === "alarme" ? "ALARME" : "NORMALIZADO";
+      return '<span class="badge ' + row.status + '">' + label + "</span>";
+    }
+    if(row.suggested){
+      var label2 = row.suggested === "alarme" ? "ALARME?" : "NORMALIZADO?";
+      return '<span class="badge ' + row.suggested + ' sugestao">' + label2 + "</span>";
+    }
+    return '<span class="badge pendente">PENDENTE</span>';
+  }
+
+  function renderTable(){
+    var tbody = document.getElementById("tbody");
+    var empty = document.getElementById("emptyState");
+    tbody.innerHTML = "";
+
+    var visible = rows.filter(function(r){
+      if(currentFilter === "todos") return true;
+      if(currentFilter === "pendente") return !r.status;
+      return r.status === currentFilter;
+    });
+
+    empty.style.display = rows.length === 0 ? "block" : "none";
+
+    visible.forEach(function(row, idx){
+      var tr = document.createElement("tr");
+
+      var tdIdx = document.createElement("td");
+      tdIdx.textContent = idx + 1;
+      tr.appendChild(tdIdx);
+
+      var tdId = document.createElement("td");
+      tdId.className = "endid mono";
+      tdId.textContent = row.endId;
+      tr.appendChild(tdId);
+
+      var tdCopy = document.createElement("td");
+      var copyBtn = document.createElement("button");
+      copyBtn.className = "small";
+      copyBtn.textContent = "Copiar";
+      copyBtn.addEventListener("click", function(){
+        copyToClipboard(row.endId + " alarme");
+        showToast(row.endId + " alarme — copiado");
+      });
+      tdCopy.appendChild(copyBtn);
+      tr.appendChild(tdCopy);
+
+      var tdStatus = document.createElement("td");
+      tdStatus.innerHTML = statusBadgeHtml(row);
+      tr.appendChild(tdStatus);
+
+      var tdResp = document.createElement("td");
+      var ta = document.createElement("textarea");
+      ta.className = "resp-input mono";
+      ta.value = row.response;
+      ta.placeholder = "Cole aqui a resposta do portal...";
+      ta.addEventListener("input", function(){
+        updateResponseLocal(row.id, ta.value, tdStatus);
+      });
+      tdResp.appendChild(ta);
+
+      var confirmDiv = document.createElement("div");
+      confirmDiv.className = "confirm-btns";
+      var btnA = document.createElement("button");
+      btnA.className = "a";
+      btnA.textContent = "✓ Alarme";
+      btnA.addEventListener("click", function(){ confirmStatus(row.id, "alarme"); });
+      var btnN = document.createElement("button");
+      btnN.className = "n";
+      btnN.textContent = "✓ Normalizado";
+      btnN.addEventListener("click", function(){ confirmStatus(row.id, "normal"); });
+      confirmDiv.appendChild(btnA);
+      confirmDiv.appendChild(btnN);
+      tdResp.appendChild(confirmDiv);
+
+      tr.appendChild(tdResp);
+
+      var tdDel = document.createElement("td");
+      var delBtn = document.createElement("button");
+      delBtn.className = "del small ghost";
+      delBtn.textContent = "×";
+      delBtn.title = "remover linha";
+      delBtn.addEventListener("click", function(){ deleteRow(row.id); });
+      tdDel.appendChild(delBtn);
+      tr.appendChild(tdDel);
+
+      tbody.appendChild(tr);
+    });
+
+    renderStats();
+  }
+
+  // avoid full re-render (and losing textarea focus) on every keystroke
+  function updateResponseLocal(rowId, text, tdStatusEl){
+    var row = rows.find(function(r){ return r.id === rowId; });
+    if(!row) return;
+    row.response = text;
+    row.suggested = classify(text);
+    tdStatusEl.innerHTML = statusBadgeHtml(row);
+    saveSession();
+    renderStats();
+  }
+
+  function renderStats(){
+    var alarme = rows.filter(function(r){ return r.status === "alarme"; }).length;
+    var normal = rows.filter(function(r){ return r.status === "normal"; }).length;
+    var pendente = rows.length - alarme - normal;
+    document.getElementById("cAlarme").textContent = alarme;
+    document.getElementById("cNormal").textContent = normal;
+    document.getElementById("cPendente").textContent = pendente;
+    document.getElementById("cTotal").textContent = rows.length;
+  }
+
+  function applyBulkResponses(text){
+    var lines = text.split("\n");
+    var applied = 0;
+    lines.forEach(function(line){
+      if(!line.trim()) return;
+      var parts = line.split("\t");
+      if(parts.length < 2) return;
+      var id = parts[0].trim();
+      var resp = parts.slice(1).join("\t").trim();
+      if(!id) return;
+
+      var row = rows.find(function(r){ return r.endId.toUpperCase() === id.toUpperCase(); });
+      if(!row){
+        row = { id: cryptoId(), endId: id, response: "", status: null, suggested: null };
+        rows.push(row);
+      }
+      row.response = resp;
+      row.suggested = classify(resp);
+      if(row.suggested){
+        row.status = row.suggested;
+        learn(row.status, resp, id);
+      }
+      applied++;
+    });
+    saveSession();
+    renderTable();
+    showToast(applied + " resposta(s) aplicada(s)");
+  }
+
+  // ---------- misc ----------
+  function copyToClipboard(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+    }else{
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); }catch(e){}
+    document.body.removeChild(ta);
+  }
+  var toastTimer;
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 1600);
+  }
+
+  function exportXlsx(){
+    if(rows.length === 0){ showToast("Nada para exportar"); return; }
+    var wb = XLSX.utils.book_new();
+
+    function sheetFor(filterFn){
+      var data = rows.filter(filterFn).map(function(r){
+        return {
+          "END_ID": r.endId,
+          "Status": r.status === "alarme" ? "ALARME" : (r.status === "normal" ? "NORMALIZADO" : "PENDENTE"),
+          "Resposta do portal": displayResponse(r.response, r.status)
+        };
+      });
+      return XLSX.utils.json_to_sheet(data);
+    }
+
+    XLSX.utils.book_append_sheet(wb, sheetFor(function(){ return true; }), "Todos");
+    XLSX.utils.book_append_sheet(wb, sheetFor(function(r){ return r.status === "alarme"; }), "Com Alarme");
+    XLSX.utils.book_append_sheet(wb, sheetFor(function(r){ return r.status === "normal"; }), "Normalizados");
+    var pend = rows.filter(function(r){ return !r.status; });
+    if(pend.length){
+      XLSX.utils.book_append_sheet(wb, sheetFor(function(r){ return !r.status; }), "Pendentes");
+    }
+
+    var stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
+    XLSX.writeFile(wb, "teste_alarmes_" + stamp + ".xlsx");
+  }
+
+  // ---------- wiring ----------
+  document.getElementById("btnApplyBulk").addEventListener("click", function(){
+    var text = document.getElementById("inputBulk").value;
+    if(!text.trim()){ showToast("Cole os resultados primeiro"); return; }
+    applyBulkResponses(text);
+    document.getElementById("inputBulk").value = "";
+  });
+
+  document.getElementById("btnProcess").addEventListener("click", function(){
+    var list = parseList(document.getElementById("inputList").value);
+    if(list.length === 0){ showToast("Cole uma lista primeiro"); return; }
+    addRows(list, true);
+  });
+  document.getElementById("btnAppend").addEventListener("click", function(){
+    var list = parseList(document.getElementById("inputList").value);
+    if(list.length === 0){ showToast("Cole uma lista primeiro"); return; }
+    addRows(list, false);
+  });
+  document.getElementById("btnClearSession").addEventListener("click", function(){
+    if(rows.length === 0) return;
+    if(confirm("Limpar a tabela atual? As palavras aprendidas não serão apagadas.")){
+      rows = [];
+      saveSession();
+      renderTable();
+    }
+  });
+  document.getElementById("btnExport").addEventListener("click", exportXlsx);
+  document.getElementById("btnCopyAll").addEventListener("click", function(){
+    var text = rows.map(function(r){ return r.endId + " alarme"; }).join("\n");
+    if(!text){ showToast("Tabela vazia"); return; }
+    copyToClipboard(text);
+    showToast("Lista copiada");
+  });
+
+  document.querySelectorAll(".filters button").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".filters button").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentFilter = btn.getAttribute("data-filter");
+      renderTable();
+    });
+  });
+
+  document.getElementById("kwAddBtn").addEventListener("click", function(){
+    var type = document.getElementById("kwAddType").value;
+    var input = document.getElementById("kwAddInput");
+    var val = input.value.trim();
+    if(!val) return;
+    if(!keywords[type].some(function(k){ return normalize(k) === normalize(val); })){
+      keywords[type].push(val);
+      saveKeywords();
+    }
+    input.value = "";
+  });
+  document.getElementById("kwAddInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter") document.getElementById("kwAddBtn").click();
+  });
+
+  // ---------- init ----------
+  renderKeywords();
+  renderTable();
+})();
+</script>
+</body>
+</html>
