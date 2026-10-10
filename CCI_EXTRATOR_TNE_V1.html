@@ -2981,6 +2981,28 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             return json;
         }
 
+        // Detecta o separador do CSV sem depender da configuração regional do computador.
+        function detectDelimiter(text) {
+            const firstLine = String(text).split(/\r?\n/, 1)[0] || '';
+            const counts = { ';': 0, ',': 0, '\t': 0, '|': 0 };
+            let inQuotes = false;
+            for (const ch of firstLine) {
+                if (ch === '"') inQuotes = !inQuotes;
+                else if (!inQuotes && counts[ch] !== undefined) counts[ch]++;
+            }
+            return Object.keys(counts).reduce((a, b) => counts[b] > counts[a] ? b : a, ';');
+        }
+
+        // Lê CSV em UTF-8 e também arquivos legados do Excel em Windows-1252.
+        function decodeTextBuffer(buf) {
+            try {
+                return new TextDecoder('utf-8', { fatal: true }).decode(buf);
+            } catch (e) {
+                try { return new TextDecoder('windows-1252').decode(buf); }
+                catch (e2) { return new TextDecoder('utf-8').decode(buf); }
+            }
+        }
+
         function loadFile(file, target) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -2988,7 +3010,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     try {
                         const data = new Uint8Array(e.target.result);
                         const isXlsx = /\.(xlsx|xls)$/i.test(file.name);
-                        const workbook = XLSX.read(data, isXlsx ? { type: 'array', cellDates: true } : { type: 'array', cellDates: false, raw: true });
+                        const decodedText = isXlsx ? '' : decodeTextBuffer(data);
+                        const workbook = isXlsx
+                            ? XLSX.read(data, { type: 'array', cellDates: true })
+                            : XLSX.read(decodedText, { type: 'string', raw: true, FS: detectDelimiter(decodedText) });
                         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                         const json = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
                         if (json.length === 0) { reject(new Error('Planilha vazia')); return; }
@@ -3956,7 +3981,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
         document.querySelectorAll('.upload-slot[data-type]:not([data-type="genesis"])').forEach(slot => {
             slot.addEventListener('click', function(e) {
-                if (this.classList.contains('loaded')) return;
+                if (this.classList.contains('loaded') && (this.dataset.type !== 'agendadas' || dataStore.agendadasArquivos.length >= 3)) return;
                 if (e.target.closest('.slot-clear')) return;
                 const input = this.querySelector('input[type="file"]');
                 if (input) { e.preventDefault(); input.click(); }
