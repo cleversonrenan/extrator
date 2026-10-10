@@ -2311,6 +2311,36 @@ body::before {
   html[data-ui="command-v3"] .v3-spark,
   html[data-ui="command-v3"] .v3-brand-logo { filter:none !important; }
   html[data-ui="command-v3"] .header h1 img.v3-brand-logo { width:72px !important; height:27px !important; flex:0 0 72px !important; padding:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important; object-fit:contain !important; }
+
+  /* rodapé unificado */
+  html[data-ui="command-v3"] .cci-footer {
+    max-width:none !important; margin:28px 8px 14px 82px !important; padding:22px 12px 0 !important;
+    display:flex; flex-direction:column; align-items:center; gap:16px; position:relative;
+    border-top:1px solid var(--v3-line) !important; color:var(--v3-muted);
+  }
+  html[data-ui="command-v3"] .cci-footer::before {
+    content:''; position:absolute; top:-1px; left:50%; width:min(420px,55%); height:1px;
+    transform:translateX(-50%); background:linear-gradient(90deg,transparent,var(--v3-orange),transparent);
+  }
+  .footer-kicker,.footer-platform-row { display:flex; align-items:center; justify-content:center; gap:10px; }
+  .footer-line { width:28px; height:1px; background:var(--v3-line-strong); opacity:.7; }
+  .footer-kicker strong,.footer-platform-label { color:var(--v3-blue2); font-size:10px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+  .footer-credit-card { min-width:240px; padding:12px 18px; display:flex; align-items:center; gap:13px; border:1px solid var(--v3-line); border-radius:14px; background:var(--v3-panel); }
+  .footer-monogram { width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center; border:1px solid var(--v3-line-strong); border-radius:50%; color:var(--v3-blue2); background:var(--v3-panel2); font:800 13px/1 var(--font); }
+  .footer-credit-copy { display:flex; flex-direction:column; gap:3px; }
+  .footer-credit-copy strong { color:var(--v3-text); font-size:13px; }
+  .footer-credit-copy a,.footer-license a { color:var(--v3-blue2); text-decoration:none; }
+  .footer-credit-copy a { font-size:11px; }
+  .footer-credit-copy a:hover,.footer-license a:hover { text-decoration:underline; }
+  .footer-bottom { width:100%; padding:14px 8px 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px 24px; border-top:1px solid var(--v3-line); }
+  .footer-platform-row .foot-dots { display:inline-flex; align-items:center; gap:4px; }
+  .footer-platform-row .foot-dot { width:5px; height:5px; border-radius:50%; background:var(--v3-line-strong); }
+  .footer-platform-row .foot-dot.on { background:var(--v3-green); }
+  .footer-license { margin:0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; color:var(--v3-muted); font-size:10px; text-align:center; }
+  .footer-license img { width:16px; height:16px; margin-left:2px; object-fit:contain; vertical-align:middle; }
+  html[data-theme="dark"] .footer-license img { filter:invert(1); }
+  @media (max-width:900px) { html[data-ui="command-v3"] .cci-footer { margin-left:8px !important; } }
+  @media (max-width:620px) { .footer-bottom { flex-direction:column; } .footer-license { max-width:340px; } }
 </style>
 <!-- CCI_COMMAND_V3_CSS_END -->
 </head>
@@ -4685,47 +4715,16 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 })();
 </script>
 <!-- CCI_COMMAND_V3_JS_END -->
+  <footer class="cci-footer" aria-label="Créditos e licença">
+    <div class="footer-kicker"><span class="footer-line"></span><strong>Desenvolvido por</strong><span class="footer-line"></span></div>
+    <div class="footer-credit-card">
+      <div class="footer-monogram" aria-hidden="true">CR</div>
+      <div class="footer-credit-copy"><strong>Cleverson Renan</strong><a href="mailto:cleversonrenan@gmail.com">cleversonrenan@gmail.com</a></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-platform-row"><span class="footer-line"></span><span class="footer-platform-label">Plataforma TLP TRJ · 2026</span><span class="footer-line"></span><span class="foot-dots" aria-label="Operação online"><span class="foot-dot on"></span><span class="foot-dot"></span><span class="foot-dot"></span></span></div>
+      <p class="footer-license">Esta obra está licenciada sob a licença <a rel="license noopener noreferrer" target="_blank" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal.</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="Creative Commons" loading="lazy"><img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" alt="CC Zero" loading="lazy"></p>
+    </div>
+  </footer>
 </body>
-
-  <footer style="margin-top:2.25rem;display:flex;flex-direction:column;align-items:center;gap:2rem;position:relative;border-top:1px solid var(--border);padding-top:2rem;">
-
-  <!-- linha laranja centralizada no topo -->
-  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-mid),transparent)"></div>
-
-  <!-- label da seção -->
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:var(--subtle)"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Desenvolvido por</span>
-    <div style="width:28px;height:1px;background:var(--subtle)"></div>
-  </div>
-
-  <!-- cards de crédito -->
-  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
-
-    <div style="display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:13px 18px;min-width:240px">
-      <div style="width:38px;height:38px;border-radius:50%;background:var(--tag);border:1px solid var(--accent-mid);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;color:var(--accent);flex-shrink:0">CR</div>
-      <div style="display:flex;flex-direction:column;gap:2px">
-        <span style="font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;color:var(--text);line-height:1">Cleverson Renan</span>
-        <a href="mailto:cleversonrenan@gmail.com" style="font-size:11px;color:var(--muted);text-decoration:none">cleversonrenan@gmail.com</a>
-      </div>
-    </div>
-
-  <!-- rodapé inferior (mantém o original) -->
-  <div style="width:100%;display:flex;align-items:center;justify-content:center;border-top:1px solid var(--border);padding-top:1.25rem;flex-wrap:wrap;gap:12px">
-   
-	<div style="display:flex;align-items:center;gap:10px">
-    <div style="width:28px;height:1px;background:var(--subtle)"></div>
-    <span style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600">Plataforma TLP TRJ · 2026</span>
-    <div style="width:28px;height:1px;background:var(--subtle)"></div>
-  </div>
-	
-	
-    <div class="foot-dots">
-      <div class="foot-dot on"></div>
-      <div class="foot-dot"></div>
-      <div class="foot-dot"></div>
-    </div>
-  </div>
-</footer>
-
 </html>
