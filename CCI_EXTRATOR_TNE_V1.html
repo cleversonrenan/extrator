@@ -4,7 +4,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI EXTRATOR TNE v1.0</title>
-    <link rel="icon" type="image/png" href="tne.png">
+    <link rel="icon" type="image/png" href="TLP.PNG">
     <script>
       (function () {
         try {
@@ -2285,6 +2285,37 @@ body::before {
   @media (max-width:620px){.upload-card .upload-row{grid-template-columns:1fr !important}.chart-grid.v3-analytics-grid{grid-template-columns:1fr !important}.v3-signals-panel{grid-column:auto}.stats-grid{grid-template-columns:repeat(2,1fr) !important}.cci-pulse-panel,.pulse-strip,.pulse-cci{grid-template-columns:95px 1fr !important}.cci-pulse-state,.pulse-meta,.pulse-cci small{display:none !important}}
   @media (prefers-reduced-motion:reduce){.v3-sla-orbit::before,.v3-rail-signal{animation:none !important}}
   *,*::before,*::after{box-sizing:border-box}.app-container{padding:8px 8px 24px 82px !important}.header{min-height:54px !important;padding:6px 10px !important;gap:8px !important;overflow:visible !important}.header h1{min-width:0 !important;gap:7px !important}.header h1 img.v3-brand-logo{display:block !important;width:39px;height:39px;object-fit:contain;border-radius:8px;filter:drop-shadow(0 0 9px rgba(0,140,255,.35));flex:0 0 39px}.upload-card{height:164px;padding:9px 10px 57px !important}.upload-card .upload-row{gap:6px !important}.upload-slot{padding:7px 24px 7px 43px !important}.chart-grid.v3-analytics-grid{gap:6px !important}.v3-analytics-grid .chart-box,.v3-signals-panel{padding:8px 9px !important}.stats-grid{gap:5px !important}.stat-card{padding:7px 8px !important}.v3-table-tools{min-height:50px;align-items:stretch !important;gap:6px !important}.v3-table-tools .search-bar,.v3-table-tools .toolbar-row{height:auto !important;min-height:50px !important;padding:6px 9px !important;overflow:visible !important}.v3-table-tools .toolbar-row{display:flex !important;flex-wrap:wrap !important;align-content:center !important}#mainContent{padding:7px !important}.calls-table{width:100% !important;min-width:0 !important;table-layout:fixed !important}.calls-table th,.calls-table td{padding:5px 4px !important;overflow-wrap:anywhere}.calls-table th:nth-child(4),.calls-table td:nth-child(4){width:5.5% !important}.calls-table th:nth-child(11),.calls-table td:nth-child(11){width:6% !important}
+  /* modo leve: reduz processamento gráfico e mantém contraste */
+  html[data-ui="command-v3"] { --v3-glow:none !important; }
+  html[data-ui="command-v3"] body { background:var(--v3-bg) !important; }
+  html[data-ui="command-v3"] body::before,
+  html[data-ui="command-v3"] .header::after,
+  html[data-ui="command-v3"] .upload-card::after,
+  html[data-ui="command-v3"] .v3-analytics-grid .chart-box::before,
+  html[data-ui="command-v3"] .v3-signals-panel::before,
+  html[data-ui="command-v3"] .stat-card::after,
+  html[data-ui="command-v3"] .v3-sla-orbit::before,
+  html[data-ui="command-v3"] .v3-rail-signal { display:none !important; }
+  html[data-ui="command-v3"] *,
+  html[data-ui="command-v3"] *::before,
+  html[data-ui="command-v3"] *::after { animation:none !important; transition:none !important; backdrop-filter:none !important; }
+  html[data-ui="command-v3"] .header,
+  html[data-ui="command-v3"] .v3-command-rail,
+  html[data-ui="command-v3"] .upload-card,
+  html[data-ui="command-v3"] .upload-slot,
+  html[data-ui="command-v3"] .v3-analytics-grid .chart-box,
+  html[data-ui="command-v3"] .v3-signals-panel,
+  html[data-ui="command-v3"] .stat-card,
+  html[data-ui="command-v3"] .filter-bar,
+  html[data-ui="command-v3"] .search-bar,
+  html[data-ui="command-v3"] .toolbar-row,
+  html[data-ui="command-v3"] #mainContent { background:var(--v3-panel) !important; box-shadow:none !important; }
+  html[data-ui="command-v3"] .cci-wave-blue,
+  html[data-ui="command-v3"] .cci-wave-orange,
+  html[data-ui="command-v3"] .pulse-energy,
+  html[data-ui="command-v3"] .v3-spark,
+  html[data-ui="command-v3"] .v3-brand-logo { filter:none !important; }
+  html[data-ui="command-v3"] .header h1 img.v3-brand-logo { width:72px !important; height:27px !important; flex:0 0 72px !important; border-radius:0 !important; }
 </style>
 <!-- CCI_COMMAND_V3_CSS_END -->
 </head>
@@ -2305,7 +2336,7 @@ body::before {
     <div class="app-container">
 
         <div class="header">
-            <h1><img id="logoImg" src="data:image/png;base64,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" alt="Logo" style="height:34px;width:auto;"> CCI EXTRATOR TNE <small>v1.0 | Multi-Planilhas </small></h1>
+            <h1><img id="logoImg" src="TLP.PNG" alt="Logo TLP" style="height:34px;width:auto;"> CCI EXTRATOR TNE <small>v1.0 | Multi-Planilhas </small></h1>
             <div class="header-actions">
                 <nav class="region-nav" aria-label="Navegação entre extratores regionais">
                     <a href="CCI_EXTRATOR_TRJ_v1.html" title="Abrir extrator TRJ">TRJ</a>
@@ -2545,11 +2576,15 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             'PERNAMBUCO': 'PE', 'PARAIBA': 'PB', 'RIO GRANDE DO NORTE': 'RN', 'CEARA': 'CE'
         };
 
+        function normalizeTNEUF(uf) {
+            if (!uf) return '';
+            const u = String(uf).trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            return UF_FULLNAME_MAP[u] || u;
+        }
+
         function findTNERegion(uf) {
-            if (!uf) return 'N/A';
-            let u = String(uf).trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            // Aceita nome completo do estado (ex: "Alagoas") além da sigla (ex: "AL")
-            if (u.length > 2 && UF_FULLNAME_MAP[u]) u = UF_FULLNAME_MAP[u];
+            const u = normalizeTNEUF(uf);
+            if (!u) return 'N/A';
             for (const [region, ufs] of Object.entries(TNE_MAP)) {
                 if (ufs.includes(u)) return region.toUpperCase();
             }
@@ -2625,6 +2660,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         let currentSort = 'uf';
         let sortAsc = true;
         let _slaInterval = null;
+        let _searchTimer = null;
         let _slaRadarMinute = -1;
         let crossCounts = { fora: 0, verificar: 0, concentrador: 0 };
 
@@ -2909,6 +2945,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const colUF = findColumn(row, ['UF', 'Estado']);
                 if (colUF) uf = String(row[colUF] || '').trim();
             }
+            uf = normalizeTNEUF(uf);
 
             return {
                 tsk: get('TSK') || 'N/I',
@@ -3070,7 +3107,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                             console.log('[' + target + '] Carregado:', json.length, 'linhas, colunas:', Object.keys(json[0]));
                             resolve(json);
                         }
-                        checkCrossData();
                     } catch (err) { reject(err); }
                 };
                 reader.readAsArrayBuffer(file);
@@ -3220,9 +3256,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             document.getElementById('dataStatus').textContent = combinedData.length + ' registros';
             if (!_slaInterval) {
                 _slaInterval = setInterval(function() {
+                    if (document.hidden) return;
                     updateSLATime();
                     if (displayData.length > 0) { updateTable(); updateConcTable(); }
-                }, 10000);
+                }, 60000);
             }
             updateSLATime();
         }
@@ -3245,7 +3282,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     if (selectedUF.has(uf)) selectedUF.delete(uf);
                     else selectedUF.add(uf);
                     this.classList.toggle('active');
-                    applyFiltersAndSort(); updateStats(); updateCharts();
+                    applyFiltersAndSort(); updateStats();
                 });
             });
         }
@@ -3300,7 +3337,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     allChk.checked = selectedRegras.size === 0;
                 }
                 updateRegraLabel();
-                applyFiltersAndSort(); updateStats(); updateCharts();
+                applyFiltersAndSort(); updateStats();
             });
         }
 
@@ -3451,12 +3488,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
         function updateTable() {
             const tbody = document.getElementById('tableBody');
-            const data = displayData.slice(0, 100);
+            const LIMIT = 100;
+            const data = displayData.slice(0, LIMIT);
             if (data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado. Faça upload das planilhas.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(buildRowHtml).join('');
+            let html = data.map(buildRowHtml).join('');
+            if (displayData.length > LIMIT) {
+                html += '<tr><td colspan="11" style="text-align:center;padding:10px;color:var(--orange);">Exibindo os primeiros ' + LIMIT + ' de ' + displayData.length + ' registros — use os filtros ou exporte para acessar todos.</td></tr>';
+            }
+            tbody.innerHTML = html;
         }
 
         function updateConcTable() {
@@ -3469,12 +3511,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 .sort((a, b) => (concPrio[a.prioridade] || 99) - (concPrio[b.prioridade] || 99) || slaTime(a) - slaTime(b));
             const cc = document.getElementById('concCount');
             if (cc) cc.textContent = '(' + list.length + ')';
-            const data = list.slice(0, 100);
+            const LIMIT = 100;
+            const data = list.slice(0, LIMIT);
             if (data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">Nenhum chamado encontrado.</td></tr>';
                 return;
             }
-            tbody.innerHTML = data.map(buildRowHtml).join('');
+            let html = data.map(buildRowHtml).join('');
+            if (list.length > LIMIT) {
+                html += '<tr><td colspan="11" style="text-align:center;padding:10px;color:var(--orange);">Exibindo os primeiros ' + LIMIT + ' de ' + list.length + ' concentradores — exporte para acessar todos.</td></tr>';
+            }
+            tbody.innerHTML = html;
         }
 
         // ================================================================
@@ -3529,12 +3576,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
 
         function updateCharts() {
-            const mc = {};
-            combinedData.forEach(d => { if (d.isMissaoCritica) { const n = d.ne || 'N/I'; mc[n] = (mc[n] || 0) + 1; } });
-            const sortedMC = Object.keys(mc).sort((a, b) => mc[b] - mc[a]).slice(0, 10);
-            const mcColors = ['#0068df','#0878ff','#168cff','#24a0ff','#4bb7ff','#ff6900','#ff7a18','#ff8b33','#ff9d52','#ffb078'];
-            createChart('chartUF', 'bar', sortedMC, sortedMC.map(n => mc[n]), mcColors);
-
             const pc = {};
             combinedData.forEach(d => { const p = d.prioridade; pc[p] = (pc[p] || 0) + 1; });
             const pOrder = ['P1','P2','P3','P4','P5','N/A'];
@@ -3542,18 +3583,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const pColors = ['#e0361b','#ef6c0a','#f59e0b','#22c55e','#14b8a6','#d1d1d6'];
             createChart('chartPrioridade', 'doughnut', pLabels, pLabels.map(p => pc[p]), pColors);
 
-            const tneOrder = ['TNE1', 'TNE2', 'N/A'];
-            const rc = {};
-            combinedData.forEach(d => { const t = d.tne || 'N/A'; const u = d.uf || 'N/A'; const k = t + ' - ' + u; rc[k] = (rc[k] || 0) + 1; });
-            const rLabels = Object.keys(rc).sort((a, b) => {
-                const ta = a.split(' - ')[0], tb = b.split(' - ')[0];
-                const oa = tneOrder.indexOf(ta), ob = tneOrder.indexOf(tb);
-                if (oa !== ob) return (oa === -1 ? 99 : oa) - (ob === -1 ? 99 : ob);
-                return rc[b] - rc[a];
-            });
-            const rColors = ['#0068df','#0878ff','#168cff','#24a0ff','#4bb7ff','#ff6900','#ff7a18','#ff8b33','#ff9d52','#ffb078'];
-            createChart('chartSuspensao', 'doughnut', rLabels, rLabels.map(k => rc[k]), rColors);
-
+            _slaRadarMinute = Math.floor(Date.now() / 60000);
             createSLARadarChart();
         }
 
@@ -3575,7 +3605,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 { label: 'Até 6h', data: cumulative(180, 360), borderColor: '#10ce83', backgroundColor: '#10ce8322' }
             ].map(s => ({ ...s, borderWidth: 3, tension: .38, fill: false, pointRadius: 2.5, pointHoverRadius: 6, spanGaps: false }));
             charts.chartFalha = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels, datasets: series }, options: {
-                responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, animation: { duration: 650, easing: 'easeOutQuart' },
+                responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, animation: false,
                 plugins: { legend: { display: true, position: 'top', labels: { color: radarMuted, usePointStyle: true, boxWidth: 7, padding: 12, font: { size: 10, weight: '600' } } }, tooltip: { backgroundColor: '#06172b', borderColor: '#1a5685', borderWidth: 1, titleColor: '#fff', bodyColor: '#dceeff' } },
                 scales: { x: { grid: { color: radarGrid }, ticks: { color: radarMuted, font: { size: 9 } } }, y: { beginAtZero: true, ticks: { precision: 0, color: radarMuted, font: { size: 9 } }, grid: { color: radarGrid } } }
             }});
@@ -3633,7 +3663,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     cutout: type === 'doughnut' ? '68%' : undefined,
-                    animation: { duration: 750, easing: 'easeOutQuart' },
+                    animation: false,
                     interaction: { mode: 'nearest', intersect: false },
                     plugins: {
                         legend: { display: circular && labels.length > 0 && labels.length < 8, position: 'bottom', labels: { boxWidth: 8, boxHeight: 8, padding: 9, font: { size: 9 } } },
@@ -3664,7 +3694,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 else selectedTNE = val;
             } else if (ESTADO_KEYS.includes(val)) { toggleSet(selectedEstado, val); }
             refreshFilterButtonStates();
-            applyFiltersAndSort(); updateStats(); updateCharts();
+            applyFiltersAndSort(); updateStats();
         }
 
         function refreshFilterButtonStates() {
@@ -3746,7 +3776,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             document.querySelectorAll('.filter-btn[data-sort]').forEach(b => b.classList.remove('active'));
             document.querySelector('.filter-btn[data-sort="uf"]').classList.add('active');
             updateSortIndicators();
-            applyFiltersAndSort(); updateStats(); updateCharts();
+            applyFiltersAndSort(); updateStats();
         });
 
         // ================================================================
@@ -3755,7 +3785,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         document.getElementById('searchInput').addEventListener('input', function() {
             searchTerm = this.value;
             if (!combinedData.length) return;
-            applyFiltersAndSort(); updateStats(); updateCharts();
+            clearTimeout(_searchTimer);
+            _searchTimer = setTimeout(function() { applyFiltersAndSort(); updateStats(); }, 160);
         });
 
         // ================================================================
@@ -3784,6 +3815,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     this.value = '';
                     checkCrossData();
                 }).catch(err => {
+                    checkCrossData();
                     alert('Erro ao carregar ' + target + ': ' + err.message);
                     if (target !== 'agendadas' || dataStore.agendadasArquivos.length === 0) updateSlotStatus(target, false);
                 });
@@ -3842,11 +3874,11 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  EXPORT
         // ================================================================
-        function getExportRows() {
-            return displayData.map(d => {
+        function getExportRows(items) {
+            return (items || displayData).map(d => {
                 const sla = getSLAInfo(d);
                 return {
-                    'UF': d.uf, 'TNE': d.tne, 'TSK': d.tsk, 'Prioridade': d.prioridade,
+                    'UF': normalizeTNEUF(d.uf) || 'N/A', 'TNE': d.tne, 'TSK': d.tsk, 'Prioridade': d.prioridade,
                     'NE ID': d.ne, 'END_ID': d.end_id, 'Tipo da Falha': d.tipoFalha,
                     'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft,
                     'Status': d.status, 'Cruzamento': d.cruzamento
@@ -3856,11 +3888,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
         function exportXLSX() {
             try {
-            const rows = getExportRows();
-            if (!rows.length) { alert('Nenhum registro para exportar.'); return; }
-            const headers = Object.keys(rows[0]);
-            const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
-
+            const items = displayData.slice();
+            if (!items.length) { alert('Nenhum registro para exportar.'); return; }
             const SLA_STYLES = {
                 cinza:    { fill: { fgColor: { rgb: 'E5E7EB' } }, font: { color: { rgb: '4B5563' } } },
                 vermelho: { fill: { fgColor: { rgb: 'FEE2E2' } }, font: { color: { rgb: 'B91C1C' }, bold: true } },
@@ -3874,34 +3903,34 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 verde:    { font: { color: { rgb: '15803D' } } }
             };
             const HEADER_STYLE = { fill: { fgColor: { rgb: 'E8630A' } }, font: { bold: true, color: { rgb: 'FFFFFF' } }, alignment: { horizontal: 'center' } };
-
-            const slaIdx = headers.indexOf('SLA (Fim)');
-            const timeIdx = headers.indexOf('Tempo Restante');
-
-            headers.forEach((h, i) => {
-                const addr = XLSX.utils.encode_cell({ r: 0, c: i });
-                if (ws[addr]) ws[addr].s = HEADER_STYLE;
-            });
-
-            displayData.forEach((d, r) => {
-                const sla = getSLAInfo(d);
-                const row = r + 1;
-                const slaCell = slaIdx >= 0 ? ws[XLSX.utils.encode_cell({ r: row, c: slaIdx })] : null;
-                if (slaCell) slaCell.s = SLA_STYLES[sla.class];
-                const timeCell = timeIdx >= 0 ? ws[XLSX.utils.encode_cell({ r: row, c: timeIdx })] : null;
-                if (timeCell) timeCell.s = SLA_FONT[sla.class];
-            });
-
-            ws['!cols'] = headers.map((h, i) => {
-                let maxLen = h.length;
-                rows.forEach(r => { const v = String(r[h] ?? ''); if (v.length > maxLen) maxLen = v.length; });
-                return { wch: Math.min(Math.max(maxLen + 2, 8), 60) };
-            });
-
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Relatorio_TNE');
+            const tneOrder = ['TNE1', 'TNE2', 'N/A'];
+            const ufOrder = ['AL', 'BA', 'SE', 'PI', 'PE', 'PB', 'RN', 'CE', 'N/A'];
+            const groups = {};
+            items.forEach(d => { const tne = d.tne || 'N/A', uf = normalizeTNEUF(d.uf) || 'N/A', key = tne + '|' + uf; (groups[key] = groups[key] || []).push(d); });
+            Object.keys(groups).sort((a, b) => {
+                const [ta, ua] = a.split('|'), [tb, ub] = b.split('|');
+                const it = v => { const i = tneOrder.indexOf(v); return i < 0 ? 99 : i; };
+                const iu = v => { const i = ufOrder.indexOf(v); return i < 0 ? 99 : i; };
+                return it(ta) - it(tb) || iu(ua) - iu(ub) || a.localeCompare(b);
+            }).forEach(key => {
+                const groupItems = groups[key], parts = key.split('|');
+                const rows = getExportRows(groupItems), headers = Object.keys(rows[0]);
+                const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+                const slaIdx = headers.indexOf('SLA (Fim)'), timeIdx = headers.indexOf('Tempo Restante');
+                headers.forEach((h, i) => { const cell = ws[XLSX.utils.encode_cell({ r: 0, c: i })]; if (cell) cell.s = HEADER_STYLE; });
+                groupItems.forEach((d, r) => {
+                    const sla = getSLAInfo(d), row = r + 1;
+                    const slaCell = slaIdx >= 0 ? ws[XLSX.utils.encode_cell({ r: row, c: slaIdx })] : null;
+                    const timeCell = timeIdx >= 0 ? ws[XLSX.utils.encode_cell({ r: row, c: timeIdx })] : null;
+                    if (slaCell) slaCell.s = SLA_STYLES[sla.class];
+                    if (timeCell) timeCell.s = SLA_FONT[sla.class];
+                });
+                ws['!cols'] = headers.map(h => { let max = h.length; rows.forEach(r => { max = Math.max(max, String(r[h] ?? '').length); }); return { wch: Math.min(Math.max(max + 2, 8), 60) }; });
+                XLSX.utils.book_append_sheet(wb, ws, (parts[0] + '_' + parts[1]).replace(/[\\\/?*\[\]:]/g, '_').slice(0, 31));
+            });
             const ts = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-            downloadXlsx(wb, 'relatorio_TNE_' + ts + '.xlsx');
+            downloadXlsx(wb, 'relatorio_TNE_por_estado_' + ts + '.xlsx');
             } catch (err) {
                 alert('Erro ao exportar XLSX: ' + (err && err.message || err) + '. Use o botão Copiar como alternativa.');
             }
@@ -3948,14 +3977,32 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const byTne = {};
             items.forEach(d => { const t = d.tne || 'N/A'; (byTne[t] = byTne[t] || []).push(d); });
 
-            const sections = [];
+            const ufOrder = ['AL', 'BA', 'SE', 'PI', 'PE', 'PB', 'RN', 'CE', 'N/A'];
+            const p12Vencidos = combinedData.filter(function(d) {
+                if (d.prioridade !== 'P1' && d.prioridade !== 'P2') return false;
+                const sla = getSLAInfo(d);
+                return sla.class === 'cinza' && String(sla.timeLeft).indexOf('Vencido') !== -1;
+            }).length;
+            const p12Status = p12Vencidos
+                ? '*Atenção: ' + p12Vencidos + (p12Vencidos === 1 ? ' chamado P1/P2 vencido' : ' chamados P1/P2 vencidos') + ' no momento.*'
+                : '*P1 e P2 no prazo no momento.*';
+            const sections = [p12Status];
             Object.keys(byTne).sort((a, b) => {
                 const oa = tneOrder.indexOf(a), ob = tneOrder.indexOf(b);
                 return (oa === -1 ? 99 : oa) - (ob === -1 ? 99 : ob);
             }).forEach(tne => {
                 sections.push('');
                 sections.push('*' + tne + '*');
-                sections.push(byTne[tne].sort(sortBySla).map(rowText).join('\n'));
+                const byUf = {};
+                byTne[tne].forEach(d => { const uf = normalizeTNEUF(d.uf) || 'N/A'; (byUf[uf] = byUf[uf] || []).push(d); });
+                Object.keys(byUf).sort((a, b) => {
+                    const ia = ufOrder.indexOf(a), ib = ufOrder.indexOf(b);
+                    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+                }).forEach(uf => {
+                    sections.push('_Estado: ' + uf + '_');
+                    sections.push(byUf[uf].sort(sortBySla).map(rowText).join('\n'));
+                    sections.push('');
+                });
             });
 
             const text = sections.join('\n');
@@ -4035,7 +4082,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         (function() {
             var TRUST_INTERVAL = 5 * 60 * 1000;
             var TRUST_VISIBLE = 60 * 1000;
-            var TRUST_REFRESH = 60 * 1000;
 
             var trustStyle = document.createElement('style');
             trustStyle.textContent =
@@ -4102,7 +4148,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     if (!d || !d.slaFim) continue;
                     var t = new Date(d.slaFim).getTime();
                     if (isNaN(t)) continue;
-                    withSla.push({ d: d, rem: t - now });
+                    var rem = t - now;
+                    if (rem <= 0) continue;
+                    withSla.push({ d: d, rem: rem });
                 }
                 withSla.sort(function(a, b) { return a.rem - b.rem; });
                 var top5 = withSla.slice(0, 5);
@@ -4116,12 +4164,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     var it = top5[j].d;
                     var rem = top5[j].rem;
                     var pc = trustPriorityColor(it.prioridade);
-                    var timeTxt;
-                    if (rem < 0) { timeTxt = 'VENCIDO'; }
-                    else {
-                        var mi = Math.floor(rem / 60000);
-                        timeTxt = Math.floor(mi / 60) + 'h ' + (mi % 60) + 'm';
-                    }
+                    var mi = Math.floor(rem / 60000);
+                    var timeTxt = Math.floor(mi / 60) + 'h ' + (mi % 60) + 'm';
                     html += '<div class="trust-item" style="background:' + pc[1] + ';">' +
                         '<span class="trust-prio" style="background:' + pc[0] + ';color:#fff;">' + (it.prioridade || 'N/A') + '</span>' +
                         '<span class="trust-info">' +
@@ -4145,14 +4189,6 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             setInterval(trustShow, TRUST_INTERVAL);
 
-            // Atualiza automaticamente o vencimento/SLA da tabela principal
-            setInterval(function() {
-                if (typeof displayData !== 'undefined' && displayData.length > 0) {
-                    if (typeof updateTable === 'function') updateTable();
-                    if (typeof updateConcTable === 'function') updateConcTable();
-                    if (typeof window.showTrust === 'function') window.showTrust();
-                }
-            }, TRUST_REFRESH);
         })();
     </script>
 
@@ -4193,7 +4229,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
     const h=document.querySelector('.header h1'); if(!h || h.querySelector('.v3-brand-logo')) return;
     const match=document.title.match(/\b(TRJ|TMG|TNE)\b/i), region=match?match[1].toUpperCase():'CCI';
     document.documentElement.dataset.region=region;
-    h.innerHTML='<img class="v3-brand-logo" src="'+region.toLowerCase()+'.png" alt="Logo '+region+'"><span>CCI EXTRATOR <strong style="color:var(--v3-orange)">'+region+'</strong></span><small>v1.0 · MULTI-PLANILHAS</small>';
+    h.innerHTML='<img class="v3-brand-logo" src="TLP.PNG" alt="Logo TLP"><span>CCI EXTRATOR <strong style="color:var(--v3-orange)">'+region+'</strong></span><small>v1.0 · MULTI-PLANILHAS</small>';
   }
   function signalRow(cls,icon,title,sub,id){ return '<div class="v3-signal '+cls+'"><span class="v3-signal-icon">'+icon+'</span><span class="v3-signal-copy"><b>'+title+'</b><small>'+sub+'</small></span><strong class="v3-signal-value" id="'+id+'">0</strong><i class="v3-spark"></i></div>'; }
   function buildAnalytics(){
@@ -4216,6 +4252,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
     if(search&&toolbar&&main&&!document.querySelector('.v3-table-tools')){const tools=document.createElement('div');tools.className='v3-table-tools';main.parentNode.insertBefore(tools,main);tools.appendChild(search);tools.appendChild(toolbar);}
   }
   function updateV3(){
+    if(document.hidden)return;
     const total=number('totalChamados'),p1=number('totalP1'),p2=number('totalP2'),late=number('totalVencidos'),safe=number('totalNoPrazo');
     const conc=n('concCount'); let critical=conc?(parseInt(String(conc.textContent).replace(/\D/g,''),10)||0):0;
     const map={v3SignalCritical:critical,v3SignalLate:late,v3SignalPriority:p1+p2,v3SignalSafe:safe};Object.keys(map).forEach(k=>{const e=n(k);if(e)e.textContent=map[k].toLocaleString('pt-BR')});
@@ -4224,7 +4261,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
     const ds=n('dataStatus');if(ds&&total)ds.textContent=total.toLocaleString('pt-BR')+' registros';
   }
   function nav(){document.querySelectorAll('[data-v3-target]').forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.v3Target;const target=key==='top'?document.body:n(key);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.v3-rail-btn').forEach(x=>x.classList.toggle('active',x===btn));}));}
-  function init(){document.documentElement.setAttribute('data-ui','command-v3');brand();arrange();buildAnalytics();nav();updateV3();setInterval(updateV3,1000);}
+  function init(){document.documentElement.setAttribute('data-ui','command-v3');brand();arrange();buildAnalytics();nav();updateV3();setInterval(updateV3,10000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
