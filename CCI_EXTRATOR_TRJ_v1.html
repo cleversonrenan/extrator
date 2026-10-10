@@ -2716,6 +2716,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         let currentSort = 'uf';
         let sortAsc = true;
         let _slaInterval = null;
+        let _slaRadarMinute = -1;
         let crossCounts = { fora: 0, verificar: 0, concentrador: 0 };
         let eveCounts = {};
 
@@ -3812,6 +3813,11 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         }
 
         function updateSLATime() {
+            const radarMinute = Math.floor(Date.now() / 60000);
+            if (_slaRadarMinute !== radarMinute && combinedData.length) {
+                _slaRadarMinute = radarMinute;
+                createSLARadarChart();
+            }
             const el = document.getElementById('slaTime');
             if (!el) return;
             const agora = new Date();
@@ -3856,10 +3862,32 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const rColors = rLabels.map(r => cssVar(rVars[regiaoOrder.indexOf(r)] || '--muted'));
             createChart('chartSuspensao', 'doughnut', rLabels, rLabels.map(r => rc[r]), rColors);
 
-            const fc = {};
-            combinedData.forEach(d => { const f = d.tipoFalha || 'Não classificado'; fc[f] = (fc[f] || 0) + 1; });
-            const sortedFalha = Object.keys(fc).sort((a, b) => fc[b] - fc[a]).slice(0, 8);
-            createChart('chartFalha', 'line', sortedFalha, sortedFalha.map(f => fc[f]), cssVar('--red'));
+            createSLARadarChart();
+        }
+
+        function createSLARadarChart() {
+            const canvas = document.getElementById('chartFalha');
+            if (!canvas) return;
+            if (charts.chartFalha) charts.chartFalha.destroy();
+            const now = Date.now();
+            const minute = 60000;
+            const remaining = combinedData.map(d => d.slaFim ? new Date(d.slaFim).getTime() - now : NaN).filter(Number.isFinite);
+            const marks = [0, 30, 60, 120, 180, 240, 300, 360];
+            const labels = ['Agora', '30 min', '1h', '2h', '3h', '4h', '5h', '6h'];
+            const cumulative = (from, to) => marks.map(mark => mark < from ? null : remaining.filter(ms => ms > from * minute && ms <= Math.min(mark, to) * minute).length);
+            const expired = remaining.filter(ms => ms <= 0).length;
+            const series = [
+                { label: 'Vencidos', data: marks.map(() => expired), borderColor: '#8b98a8', backgroundColor: '#8b98a822' },
+                { label: 'Até 1h', data: cumulative(0, 60), borderColor: '#ff4055', backgroundColor: '#ff405522' },
+                { label: 'Até 3h', data: cumulative(60, 180), borderColor: '#ffd02e', backgroundColor: '#ffd02e22' },
+                { label: 'Até 6h', data: cumulative(180, 360), borderColor: '#10ce83', backgroundColor: '#10ce8322' }
+            ].map(s => ({ ...s, borderWidth: 3, tension: .38, fill: false, pointRadius: 2.5, pointHoverRadius: 6, spanGaps: false }));
+            charts.chartFalha = new Chart(canvas.getContext('2d'), { type: 'line', data: { labels, datasets: series }, options: {
+                responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                animation: { duration: 650, easing: 'easeOutQuart' },
+                plugins: { legend: { display: true, position: 'top', labels: { color: cssVar('--muted'), usePointStyle: true, boxWidth: 7, padding: 12, font: { size: 10, weight: '600' } } }, tooltip: { backgroundColor: '#06172b', borderColor: '#1a5685', borderWidth: 1, titleColor: '#fff', bodyColor: '#dceeff' } },
+                scales: { x: { grid: { color: cssVar('--border') + '55' }, ticks: { color: cssVar('--muted'), font: { size: 9 } } }, y: { beginAtZero: true, ticks: { precision: 0, color: cssVar('--muted'), font: { size: 9 } }, grid: { color: cssVar('--border') + '55' } } }
+            }});
         }
 
         // Reconstrói todos os gráficos com as cores do tema atual
