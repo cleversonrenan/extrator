@@ -127,7 +127,7 @@
     .region-card p { position: relative; z-index: 1; max-width: 260px; margin: 0; color: var(--muted); font-size: 12px; }
     .region-open { position: absolute; z-index: 1; right: 20px; top: 20px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 10px; color: var(--blue); }
 
-    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .tool-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 17px; min-height: 116px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); text-decoration: none; transition: border-color .18s ease, transform .18s ease; }
     .tool-card:hover { transform: translateY(-3px); border-color: var(--orange); }
     .tool-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px; color: #fff; background: linear-gradient(145deg, var(--blue-strong), var(--blue)); }
@@ -233,6 +233,10 @@
         <a class="tool-card" href="https://fabioesgoncalves.github.io/Conversor/" title="Abrir sincronização de planilhas">
           <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 7h11l-3-3m3 3-3 3M17 17H6l3 3m-3-3 3-3"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg></span>
           <span class="tool-copy"><strong>Sincronização de planilhas</strong><span>Prepare e sincronize arquivos para a operação.</span><small>Desenvolvido por Fabio Gonçalves</small></span><span class="tool-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="tool-card" href="./testador_portal_bookmarklet.html" title="Abrir Testador de Alarmes">
+          <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6M10 3v5l-5.2 8.5A3 3 0 0 0 7.4 21h9.2a3 3 0 0 0 2.6-4.5L14 8V3"/><path d="M7.5 15h9M10 18h4"/></svg></span>
+          <span class="tool-copy"><strong>Testador de Alarmes</strong><span>Instale o testador no portal e exporte os resultados.</span><small>Adaptado por Cleverson Renan</small></span><span class="tool-arrow" aria-hidden="true">→</span>
         </a>
       </div>
     </section>
