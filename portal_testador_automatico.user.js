@@ -42,42 +42,92 @@
   var panel = document.createElement("div");
   panel.id = "tim-auto-tester-panel";
   panel.innerHTML =
-    '<div id="tat-header">Testador automático de alarmes <button id="tat-toggle">–</button></div>' +
+    '<div id="tat-header"><span class="tat-brand"><span class="tat-logo"><img src="https://cleversonrenan.github.io/extrator/TLP.PNG" alt="TLP"></span><span class="tat-title"><strong>Testador automático</strong><small>Portal TLP</small></span></span><button id="tat-toggle" type="button" aria-label="Recolher painel" title="Recolher painel">–</button></div>' +
     '<div id="tat-body">' +
-    '  <textarea id="tat-list" placeholder="Cole aqui a lista de END_ID, um por linha"></textarea>' +
-    '  <div id="tat-row">' +
+    '  <section class="tat-section"><span class="tat-section-title">Consulta manual</span><textarea id="tat-list" placeholder="Cole aqui a lista de END_ID, um por linha"></textarea>' +
+    '  <div class="tat-row">' +
     '    <button id="tat-start">Iniciar</button>' +
     '    <button id="tat-stop" disabled>Parar</button>' +
-    "  </div>" +
+    "  </div></section>" +
     '  <div id="tat-status">Pronto.</div>' +
-    '  <textarea id="tat-output" placeholder="Resultados aparecem aqui (END_ID + TAB + resposta)" readonly></textarea>' +
-    '  <div id="tat-row">' +
+    '  <section class="tat-section"><span class="tat-section-title">Resultados</span><textarea id="tat-output" placeholder="Resultados aparecem aqui (END_ID + TAB + resposta)" readonly></textarea>' +
+    '  <div class="tat-row">' +
     '    <button id="tat-copy">Copiar resultados</button>' +
     '    <button id="tat-download">Baixar .txt</button>' +
-    "  </div>" +
+    "  </div></section>" +
     "</div>";
   panel.querySelector("#tat-body").insertAdjacentHTML("beforeend", "<footer class=\"tlp-signoff\" aria-label=\"Créditos e licença\"><div class=\"signoff-credit\"><span class=\"signoff-tag\">Adaptação</span><div class=\"signoff-person\"><span>Adaptado por</span><strong>Cleverson Renan</strong><a href=\"mailto:cleversonrenan@gmail.com\">cleversonrenan@gmail.com</a></div></div><div class=\"signoff-meta\"><div class=\"signoff-product\">Testador de Alarmes · 2026</div><div class=\"signoff-license\">Esta obra está licenciada sob a licença <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\" target=\"_blank\" rel=\"license noopener\">CC0 1.0 Universal.</a><img src=\"https://mirrors.creativecommons.org/presskit/icons/cc.svg\" alt=\"Creative Commons\"><img src=\"https://mirrors.creativecommons.org/presskit/icons/zero.svg\" alt=\"CC Zero\"></div></div></footer>");
   document.body.appendChild(panel);
 
-  var style = document.createElement("style");
-  style.textContent =
-    "#tim-auto-tester-panel{position:fixed;top:8px;right:8px;width:300px;max-width:calc(100vw - 16px);max-height:65vh;overflow:auto;z-index:999999;" +
-    "background:#12182a;border:1px solid #2a344a;border-radius:8px;" +
-    "font-family:system-ui,sans-serif;font-size:12px;color:#e6edf5;box-shadow:0 8px 24px rgba(0,0,0,.4);}" +
-    "#tat-header{padding:5px 7px;gap:4px;flex-wrap:wrap;font-weight:700;display:flex;justify-content:space-between;align-items:center;" +
-    "background:#0e1424;border-bottom:1px solid #2a344a;border-radius:8px 8px 0 0;}" +
-    "#tat-header button{background:none;border:none;color:#e6edf5;cursor:pointer;font-size:14px;}" +
-    "#tat-body{padding:6px;display:flex;flex-direction:column;gap:5px;}" +
-    "#tim-auto-tester-panel textarea{width:100%;background:#0e1424;color:#e6edf5;border:1px solid #2a344a;" +
-    "border-radius:6px;padding:6px;font-family:monospace;font-size:11px;resize:vertical;box-sizing:border-box;}" +
-    "#tat-list{height:42px;min-height:36px;} #tat-output{height:72px;}" +
-    "#tat-row{display:flex;gap:6px;}" +
-    "#tim-auto-tester-panel button{flex:1;background:#1c2740;border:1px solid #2a344a;color:#e6edf5;" +
-    "border-radius:6px;padding:3px 5px;min-height:24px;font-size:11px;line-height:1.3;cursor:pointer;}" +
-    "#tim-auto-tester-panel button:disabled{opacity:.4;cursor:not-allowed;}" +
-    "#tim-auto-tester-panel button:hover:not(:disabled){border-color:#3E8EF7;}" +
-    "#tat-status{color:#8fa1b8;}";
-  style.textContent += "#tim-auto-tester-panel{box-sizing:border-box;}#tim-auto-tester-panel #tat-header{position:sticky;top:0;z-index:2;}#tim-auto-tester-panel #tat-header button{flex:none;min-width:24px;}#tim-auto-tester-panel #tat-status{font-size:11px;line-height:1.35;overflow-wrap:anywhere;}#tim-auto-tester-panel .tlp-signoff{display:grid;grid-template-columns:1fr;gap:6px;margin-top:5px;padding:8px;border:1px solid #17466e;border-left:3px solid #ff7417;border-radius:6px;background:#0a1d31;color:#93abc1;font:8px/1.3 system-ui,sans-serif;}#tim-auto-tester-panel .signoff-credit{display:flex;align-items:center;gap:7px;min-width:0;}#tim-auto-tester-panel .signoff-tag{flex:none;padding:3px 4px;border:1px solid rgba(255,116,23,.45);border-radius:4px;color:#ff7417;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}#tim-auto-tester-panel .signoff-person{display:grid;grid-template-columns:auto 1fr;gap:1px 4px;min-width:0;}#tim-auto-tester-panel .signoff-person>span{font-size:8px;}#tim-auto-tester-panel .signoff-person strong{color:#f2f8ff;font-size:9px;}#tim-auto-tester-panel .signoff-person a{grid-column:1/-1;color:#19a6ff;font-size:8px;text-decoration:none;overflow-wrap:anywhere;}#tim-auto-tester-panel .signoff-meta{display:grid;gap:3px;padding-top:6px;border-top:1px solid #17466e;}#tim-auto-tester-panel .signoff-product{color:#f2f8ff;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;}#tim-auto-tester-panel .signoff-license{display:flex;align-items:center;flex-wrap:wrap;gap:3px;font-size:8px;}#tim-auto-tester-panel .signoff-license a{color:#19a6ff;text-decoration:none;}#tim-auto-tester-panel .signoff-license img{width:11px;height:11px;object-fit:contain;}#tim-auto-tester-panel .signoff-person a:hover,#tim-auto-tester-panel .signoff-license a:hover{text-decoration:underline;}#tim-auto-tester-panel input[type=file]{font-size:10px;padding:3px;}#tim-auto-tester-panel .tat-row{gap:4px;}";
+    var style = document.createElement("style");
+    style.textContent = `
+      #tim-auto-tester-panel{--tat-bg:#061423;--tat-surface:#0a1d31;--tat-surface-2:#0d253e;--tat-line:#17466e;--tat-line-soft:rgba(39,126,190,.28);--tat-text:#f2f8ff;--tat-muted:#93abc1;--tat-blue:#19a6ff;--tat-blue-strong:#007de5;--tat-orange:#ff7417;--tat-green:#2be19d;--tat-red:#ff5364;--tat-yellow:#ffd02e;position:fixed;top:8px;right:8px;width:390px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);overflow:auto;z-index:999999;background:var(--tat-bg);border:1px solid var(--tat-line);border-radius:14px;color:var(--tat-text);font:500 12px/1.4 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 16px 42px rgba(0,0,0,.34);color-scheme:dark;isolation:isolate;scrollbar-color:var(--tat-blue-strong) transparent}
+      #tim-auto-tester-panel,#tim-auto-tester-panel *{box-sizing:border-box}
+      #tim-auto-tester-panel #tat-header{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;min-height:58px;padding:7px 8px 7px 11px;border-bottom:1px solid var(--tat-line);background:var(--tat-surface);overflow:hidden}
+      #tim-auto-tester-panel #tat-header::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:linear-gradient(var(--tat-blue),var(--tat-orange))}
+      #tim-auto-tester-panel .tat-brand{display:flex;align-items:center;gap:8px;min-width:0}
+      #tim-auto-tester-panel .tat-logo{display:grid;place-items:center;width:48px;height:31px;flex:0 0 48px}
+      #tim-auto-tester-panel .tat-logo img{display:block;width:100%;height:100%;object-fit:contain}
+      #tim-auto-tester-panel .tat-title{display:grid;min-width:0;line-height:1.05}
+      #tim-auto-tester-panel .tat-title strong{overflow:hidden;color:var(--tat-text);font-size:13px;letter-spacing:-.02em;text-overflow:ellipsis;white-space:nowrap}
+      #tim-auto-tester-panel .tat-title small{margin-top:4px;color:var(--tat-orange);font-size:7px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+      #tim-auto-tester-panel #tat-connectivity-host{display:inline-flex;align-items:center;min-width:0}
+      #tim-auto-tester-panel #tat-toggle{display:grid;place-items:center;min-width:30px;width:30px;height:30px;flex:none;padding:0;border:1px solid var(--tat-line);border-radius:9px;background:var(--tat-surface-2);color:var(--tat-blue);font-size:16px;line-height:1;cursor:pointer}
+      #tim-auto-tester-panel #tat-toggle:hover{border-color:var(--tat-blue)}
+      #tim-auto-tester-panel #tat-body{display:flex;flex-direction:column;gap:7px;padding:8px}
+      #tim-auto-tester-panel .tat-section{display:grid;gap:6px;padding:8px;border:1px solid var(--tat-line-soft);border-radius:10px;background:var(--tat-surface)}
+      #tim-auto-tester-panel .tat-section-title{color:var(--tat-orange);font-size:8px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+      #tim-auto-tester-panel textarea,#tim-auto-tester-panel input,#tim-auto-tester-panel select{width:100%;margin:0;padding:7px 8px;border:1px solid var(--tat-line);border-radius:7px;background:var(--tat-surface-2);color:var(--tat-text);font:500 11px/1.35 Inter,system-ui,sans-serif;outline:none}
+      #tim-auto-tester-panel textarea:focus,#tim-auto-tester-panel input:focus,#tim-auto-tester-panel select:focus{border-color:var(--tat-blue);box-shadow:0 0 0 2px rgba(25,166,255,.12)}
+      #tim-auto-tester-panel #tat-list{height:58px;min-height:42px;resize:vertical;font-family:"SFMono-Regular",Consolas,monospace}
+      #tim-auto-tester-panel #tat-import-label{display:grid;gap:4px;color:var(--tat-muted);font-size:9px}
+      #tim-auto-tester-panel #tat-import{padding:5px;font-size:9px}
+      #tim-auto-tester-panel #tat-sheet-info{align-self:center;min-width:0;color:var(--tat-muted);font-size:9px;overflow-wrap:anywhere}
+      #tim-auto-tester-panel .tat-row{display:flex;gap:5px;align-items:stretch}
+      #tim-auto-tester-panel button{min-height:30px;flex:1;padding:5px 8px;border:1px solid var(--tat-line);border-radius:7px;background:var(--tat-surface-2);color:var(--tat-text);font:800 10px/1.2 Inter,system-ui,sans-serif;cursor:pointer}
+      #tim-auto-tester-panel button:hover:not(:disabled){border-color:var(--tat-blue)}
+      #tim-auto-tester-panel button:disabled{opacity:.42;cursor:not-allowed}
+      #tim-auto-tester-panel #tat-start,#tim-auto-tester-panel #tat-sheet-start,#tim-auto-tester-panel #tat-export{border-color:var(--tat-blue);background:linear-gradient(115deg,var(--tat-blue-strong),var(--tat-blue));color:#fff}
+      #tim-auto-tester-panel #tat-stop{border-color:rgba(255,116,23,.55);color:var(--tat-orange)}
+      #tim-auto-tester-panel #tat-status{min-height:30px;padding:7px 9px;border-left:3px solid var(--tat-blue);border-radius:6px;background:var(--tat-surface);color:var(--tat-muted);font-size:10px;line-height:1.35;overflow-wrap:anywhere}
+      #tim-auto-tester-panel #tat-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+      #tim-auto-tester-panel .tat-stat{position:relative;display:grid;gap:1px;min-width:0;padding:7px 4px;border:1px solid var(--tat-line);border-radius:9px;background:var(--tat-surface);text-align:center;overflow:hidden}
+      #tim-auto-tester-panel .tat-stat::after{content:"";position:absolute;right:5px;bottom:0;left:5px;height:2px;border-radius:2px;background:var(--tat-blue)}
+      #tim-auto-tester-panel .tat-stat b{color:var(--tat-text);font-size:17px;line-height:1}
+      #tim-auto-tester-panel .tat-stat span{color:var(--tat-muted);font-size:8px;white-space:nowrap}
+      #tim-auto-tester-panel #stat-alarme::after{background:var(--tat-red)}#tim-auto-tester-panel #stat-alarme b{color:var(--tat-red)}
+      #tim-auto-tester-panel #stat-normal::after{background:var(--tat-green)}#tim-auto-tester-panel #stat-normal b{color:var(--tat-green)}
+      #tim-auto-tester-panel #stat-pendente::after{background:var(--tat-yellow)}#tim-auto-tester-panel #stat-pendente b{color:var(--tat-yellow)}
+      #tim-auto-tester-panel #tat-table{max-height:210px;overflow:auto;border:1px solid var(--tat-line);border-radius:9px;background:var(--tat-surface)}
+      #tim-auto-tester-panel .tat-row-item{padding:7px 8px;border-left:3px solid transparent;border-bottom:1px solid var(--tat-line-soft)}
+      #tim-auto-tester-panel .tat-row-item:last-child{border-bottom:0}
+      #tim-auto-tester-panel .tat-row-item.normal{border-left-color:var(--tat-green);background:rgba(43,225,157,.07)}
+      #tim-auto-tester-panel .tat-row-item.alarme{border-left-color:var(--tat-red);background:rgba(255,83,100,.07)}
+      #tim-auto-tester-panel .tat-row-item.pendente{border-left-color:var(--tat-yellow);background:rgba(255,208,46,.07)}
+      #tim-auto-tester-panel .tat-row-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+      #tim-auto-tester-panel .tat-endid{font-family:"SFMono-Regular",Consolas,monospace;font-weight:800}
+      #tim-auto-tester-panel .tat-badge{padding:2px 7px;border:1px solid currentColor;border-radius:999px;font-size:8px;font-weight:900;text-transform:uppercase}
+      #tim-auto-tester-panel .tat-badge.alarme{color:var(--tat-red);background:rgba(255,83,100,.1)}
+      #tim-auto-tester-panel .tat-badge.normal{color:var(--tat-green);background:rgba(43,225,157,.1)}
+      #tim-auto-tester-panel .tat-badge.pendente{color:var(--tat-yellow);background:rgba(255,208,46,.1)}
+      #tim-auto-tester-panel .tat-resp{max-height:38px;margin-top:3px;overflow:hidden;color:var(--tat-muted);font-size:9px}
+      #tim-auto-tester-panel .tat-resp.expanded{max-height:none}
+      #tim-auto-tester-panel .tat-mini-actions{display:flex;gap:4px;margin-top:5px}
+      #tim-auto-tester-panel .tat-mini-actions button{min-height:24px;padding:2px 6px;flex:none;background:transparent;font-size:9px}
+      #tim-auto-tester-panel #tat-kw-toggle{padding:7px 9px;border:1px solid var(--tat-line-soft);border-radius:8px;background:var(--tat-surface);color:var(--tat-muted);font-size:9px;font-weight:800;cursor:pointer}
+      #tim-auto-tester-panel #tat-kw-body{padding:7px;border:1px solid var(--tat-line-soft);border-radius:8px;background:var(--tat-surface)}
+      #tim-auto-tester-panel .tat-kw-title{margin-top:4px;font-size:9px;font-weight:800}#tim-auto-tester-panel .tat-kw-title.alarme{color:var(--tat-red)}#tim-auto-tester-panel .tat-kw-title.normal{color:var(--tat-green)}
+      #tim-auto-tester-panel .tat-kw-list{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
+      #tim-auto-tester-panel .tat-kw{display:flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--tat-line);border-radius:999px;background:var(--tat-surface-2);font-size:9px}
+      #tim-auto-tester-panel .tat-kw button{min-height:0;padding:0;border:0;background:none;color:inherit;font-size:10px;flex:none}
+      #tim-auto-tester-panel .tlp-signoff{display:grid;grid-template-columns:1fr;gap:6px;margin-top:2px;padding:8px;border:1px solid var(--tat-line);border-left:3px solid var(--tat-orange);border-radius:8px;background:var(--tat-surface);color:var(--tat-muted);font:8px/1.3 system-ui,sans-serif}
+      #tim-auto-tester-panel .signoff-credit{display:flex;align-items:center;gap:7px;min-width:0}#tim-auto-tester-panel .signoff-tag{flex:none;padding:3px 4px;border:1px solid rgba(255,116,23,.45);border-radius:4px;color:var(--tat-orange);font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+      #tim-auto-tester-panel .signoff-person{display:grid;grid-template-columns:auto 1fr;gap:1px 4px;min-width:0}#tim-auto-tester-panel .signoff-person>span{font-size:8px}#tim-auto-tester-panel .signoff-person strong{color:var(--tat-text);font-size:9px}#tim-auto-tester-panel .signoff-person a{grid-column:1/-1;color:var(--tat-blue);font-size:8px;text-decoration:none;overflow-wrap:anywhere}
+      #tim-auto-tester-panel .signoff-meta{display:grid;gap:3px;padding-top:6px;border-top:1px solid var(--tat-line)}#tim-auto-tester-panel .signoff-product{color:var(--tat-text);font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}#tim-auto-tester-panel .signoff-license{display:flex;align-items:center;flex-wrap:wrap;gap:3px;font-size:8px}#tim-auto-tester-panel .signoff-license a{color:var(--tat-blue);text-decoration:none}#tim-auto-tester-panel .signoff-license img{width:11px;height:11px;object-fit:contain}
+      @media(max-width:430px){#tim-auto-tester-panel{top:4px;right:4px;max-width:calc(100vw - 8px);max-height:calc(100vh - 8px)}#tim-auto-tester-panel .tat-logo{width:39px;flex-basis:39px}#tim-auto-tester-panel .tat-title small{display:none}}
+      @media(prefers-reduced-motion:reduce){#tim-auto-tester-panel *,#tim-auto-tester-panel *::before,#tim-auto-tester-panel *::after{animation:none!important;transition:none!important}}
+    `;
+    style.textContent += "#tim-auto-tester-panel #tat-output{height:110px;min-height:72px;resize:vertical;font-family:\"SFMono-Regular\",Consolas,monospace}#tim-auto-tester-panel #tat-copy{border-color:var(--tat-blue);background:linear-gradient(115deg,var(--tat-blue-strong),var(--tat-blue));color:#fff}";
     document.head.appendChild(style);
 
   var elList = panel.querySelector("#tat-list");
