@@ -2440,8 +2440,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <div class="stat-card p1" data-filter="P1"><div class="label">🔴 P1</div><div class="value" id="totalP1">0</div><div class="sub">Críticos</div></div>
                     <div class="stat-card p2" data-filter="P2"><div class="label">🟠 P2</div><div class="value" id="totalP2">0</div><div class="sub">Urgentes</div></div>
                     <div class="stat-card p3" data-filter="P3"><div class="label">🟡 P3</div><div class="value" id="totalP3">0</div><div class="sub">Média</div></div>
-                    <div class="stat-card p4" data-filter="P4"><div class="label">🔵 P4</div><div class="value" id="totalP4">0</div><div class="sub">Baixa</div></div>
-                    <div class="stat-card p5" data-filter="P5"><div class="label">⚪ P5</div><div class="value" id="totalP5">0</div><div class="sub">Mínima</div></div>
+                    <div class="stat-card p4" data-filter="P4"><div class="label">🟢 P4</div><div class="value" id="totalP4">0</div><div class="sub">Baixa</div></div>
+                    <div class="stat-card p5" data-filter="P5"><div class="label">🔵 P5</div><div class="value" id="totalP5">0</div><div class="sub">Mínima</div></div>
                     <div class="stat-card sla" data-filter="noprazo"><div class="label">✅ No Prazo</div><div class="value" id="totalNoPrazo">0</div><div class="sub">Dentro do SLA</div></div>
                     <div class="stat-card vencidos" data-filter="vencidos"><div class="label">❌ Vencidos</div><div class="value" id="totalVencidos">0</div><div class="sub">SLA estourado</div></div>
                 </div>
@@ -3844,13 +3844,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         //  STATS
         // ================================================================
         function updateStats() {
-            const total = combinedData.length;
-            const p1 = combinedData.filter(d => d.prioridade === 'P1').length;
-            const p2 = combinedData.filter(d => d.prioridade === 'P2').length;
-            const p3 = combinedData.filter(d => d.prioridade === 'P3').length;
-            const p4 = combinedData.filter(d => d.prioridade === 'P4').length;
-            const p5 = combinedData.filter(d => d.prioridade === 'P5' || d.prioridade === 'N/A').length;
-            const comSLA = combinedData.filter(d => d.slaFim && !isNaN(new Date(d.slaFim)));
+            const statData = combinedData.filter(d => d && (d.origem === 'agendadas' || d.origem === 'naoagendadas'));
+            const total = statData.length;
+            const p1 = statData.filter(d => d.prioridade === 'P1').length;
+            const p2 = statData.filter(d => d.prioridade === 'P2').length;
+            const p3 = statData.filter(d => d.prioridade === 'P3').length;
+            const p4 = statData.filter(d => d.prioridade === 'P4').length;
+            const p5 = statData.filter(d => d.prioridade === 'P5' || d.prioridade === 'N/A').length;
+            const comSLA = statData.filter(d => d.slaFim && !isNaN(new Date(d.slaFim)));
             const vencidos = comSLA.filter(d => new Date(d.slaFim) < new Date());
             const noPrazo = comSLA.filter(d => new Date(d.slaFim) >= new Date());
 
@@ -4538,6 +4539,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         (function() {
             var TRUST_INTERVAL = 5 * 60 * 1000;
             var TRUST_VISIBLE = 60 * 1000;
+            var TRUST_STORAGE_KEY = 'cci-sla-toast-enabled';
+            var trustEnabled = true;
+            try { trustEnabled = localStorage.getItem(TRUST_STORAGE_KEY) !== 'off'; } catch (e) {}
 
             var trustStyle = document.createElement('style');
             trustStyle.textContent =
@@ -4596,6 +4600,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
             function trustShow() {
                 if (typeof combinedData === 'undefined') return;
+                if (!trustEnabled) { trustHide(); trustRefreshToggle(); return; }
                 var list = combinedData || [];
                 var now = new Date().getTime();
                 var withSla = [];
@@ -4637,11 +4642,29 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 trustHideTimer = setTimeout(trustHide, TRUST_VISIBLE);
             }
 
+            function trustRefreshToggle() {
+                var btn = document.getElementById('toastToggle');
+                if (!btn) return;
+                btn.textContent = trustEnabled ? '🔔 Toast ligado' : '🔕 Toast desligado';
+                btn.setAttribute('aria-pressed', trustEnabled ? 'true' : 'false');
+                btn.style.color = trustEnabled ? 'var(--v3-blue, #18aaff)' : 'var(--v3-muted, #8aa6bc)';
+            }
+
+            function trustSetEnabled(enabled) {
+                trustEnabled = !!enabled;
+                try { localStorage.setItem(TRUST_STORAGE_KEY, trustEnabled ? 'on' : 'off'); } catch (e) {}
+                trustRefreshToggle();
+                if (trustEnabled) trustShow(); else trustHide();
+            }
+
             var trustClose = document.getElementById('trustClose');
             if (trustClose) trustClose.addEventListener('click', trustHide);
 
             window.showTrust = trustShow;
             window.hideTrust = trustHide;
+            window.toggleSlaToast = function() { trustSetEnabled(!trustEnabled); };
+            window.refreshSlaToastToggle = trustRefreshToggle;
+            trustRefreshToggle();
 
             setInterval(trustShow, TRUST_INTERVAL);
 
@@ -4672,7 +4695,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
     if(radar){radar.classList.add('v3-radar');const h=radar.querySelector('h4');if(h)h.textContent='◎ Radar da Operação';const orbit=document.createElement('div');orbit.className='v3-sla-orbit';orbit.innerHTML='<span><small>PRÓXIMO SLA</small><b id="v3SlaClock">--</b></span>';radar.appendChild(orbit);}
     if(priority){priority.classList.add('v3-priority');const h=priority.querySelector('h4');if(h)h.textContent='◇ Distribuição por Prioridade';}
     [mc,region].forEach(b=>{if(b)b.classList.add('v3-secondary')});
-    const signals=document.createElement('section');signals.className='v3-signals-panel';signals.innerHTML='<h4>◖ Sinais da Operação</h4><div class="v3-signal-list">'+signalRow('warn','⚠','Missão crítica','Chamados críticos ativos','v3SignalCritical')+signalRow('warn','◉','SLA vencido','Fora do prazo','v3SignalLate')+signalRow('','⌘','Concentração','P1 e P2 em atenção','v3SignalPriority')+signalRow('','◷','Dentro do SLA','Operação protegida','v3SignalSafe')+'</div>';grid.appendChild(signals);
+    const signals=document.createElement('section');signals.className='v3-signals-panel';signals.innerHTML='<h4 style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>◖ Sinais da Operação</span><button id="toastToggle" type="button" onclick="window.toggleSlaToast&&window.toggleSlaToast()" style="border:1px solid var(--v3-line);border-radius:7px;background:var(--v3-panel-2);color:var(--v3-muted);padding:4px 7px;font:700 8px inherit;cursor:pointer">🔔 Toast ligado</button></h4><div class="v3-signal-list">'+signalRow('warn','⚠','Missão crítica','Chamados críticos ativos','v3SignalCritical')+signalRow('warn','◉','SLA vencido','Fora do prazo','v3SignalLate')+signalRow('','⌘','Atenção','P1 e P2 em atenção','v3SignalPriority')+signalRow('','◷','Dentro do SLA','Operação protegida','v3SignalSafe')+'</div>';grid.appendChild(signals);if(window.refreshSlaToastToggle)window.refreshSlaToastToggle();
   }
   function arrange(){
     const header=document.querySelector('.header'),navEl=document.querySelector('.cci-regional-nav,.region-nav'),live=document.querySelector('.cci-live,.live-indicator'),actions=document.querySelector('.header-actions');
@@ -4685,7 +4708,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
   function updateV3(){
     if(document.hidden)return;
     const total=number('totalChamados'),p1=number('totalP1'),p2=number('totalP2'),late=number('totalVencidos'),safe=number('totalNoPrazo');
-    const conc=n('concCount'); let critical=conc?(parseInt(String(conc.textContent).replace(/\D/g,''),10)||0):0;
+    let critical=0; try{critical=(typeof dataStore!=='undefined'&&Array.isArray(dataStore.missaoCritica))?dataStore.missaoCritica.length:0;}catch(e){}
     const map={v3SignalCritical:critical,v3SignalLate:late,v3SignalPriority:p1+p2,v3SignalSafe:safe};Object.keys(map).forEach(k=>{const e=n(k);if(e)e.textContent=map[k].toLocaleString('pt-BR')});
     const sla=n('slaTime'),clock=n('v3SlaClock');if(sla&&clock)clock.textContent=sla.textContent.replace(/\s*\(.*/, '')||'--';
     try{ if(typeof dataStore!=='undefined'){const pairs=[['slotAgendadas',dataStore.agendadas],['slotNaoAgendadas',dataStore.naoagendadas],['slotGenesis',dataStore.genesis],['slotConcentradores',dataStore.concentradores]];pairs.forEach(([id,a])=>{const el=n(id),title=el&&el.querySelector('.slot-title');if(title&&Array.isArray(a))title.setAttribute('data-count',a.length);});}}catch(e){}
