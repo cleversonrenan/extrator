@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0056)https://cleversonrenan.github.io/Extrator_TNE/Index.html -->
 <html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCI EXTRATOR TRJ v1.0</title>
     <link rel="icon" type="image/png" href="TLP.PNG">
@@ -1627,10 +1627,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             --sh: 0 0.25rem 1rem rgba(0, 0, 0, .38);
         }
 
-      * { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+      * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -1773,6 +1773,7 @@ body::before {
         .stat-card.p4 { --bc: var(--green); } .stat-card.p4 .value { color: var(--green); }
         .stat-card.p5 { --bc: var(--teal); } .stat-card.p5 .value { color: var(--teal); }
         .stat-card.sla { --bc: var(--green); } .stat-card.sla .value { color: var(--green); }
+        .stat-card.semsla { --bc: var(--muted); } .stat-card.semsla .value { color: var(--muted); }
         .stat-card.vencidos { --bc: var(--red); } .stat-card.vencidos .value { color: var(--red); }
         .stat-card.active-filter { box-shadow: 0 0 0 2px var(--accent), var(--shadow); }
 
@@ -2248,7 +2249,7 @@ body::before {
   .v3-sla-orbit small { display:block;font-size:7px;color:var(--v3-muted); }.v3-sla-orbit b{display:block;font:800 12px var(--mono);color:var(--v3-orange);text-shadow:0 0 8px rgba(255,100,23,.6);max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 
   /* operational cards */
-  .stats-grid { grid-template-columns:repeat(8,minmax(95px,1fr)) !important;gap:7px !important;margin:0 0 9px !important; }
+  .stats-grid { grid-template-columns:repeat(9,minmax(90px,1fr)) !important;gap:7px !important;margin:0 0 9px !important; }
   .stat-card { min-height:68px !important;height:68px !important;padding:8px 10px !important;border:1px solid var(--v3-line) !important;border-radius:11px !important;background:linear-gradient(145deg,var(--v3-panel),color-mix(in srgb,var(--v3-panel) 88%,rgba(0,140,255,.13))) !important;box-shadow:var(--v3-glow) !important;overflow:hidden; }
   .stat-card::before { height:2px !important;box-shadow:0 0 10px currentColor; }.stat-card::after{width:42px !important;height:42px !important;right:-11px !important;top:-11px !important;opacity:.16 !important;filter:blur(2px);}
   .stat-card .label { font-size:8px !important;color:var(--v3-muted) !important; }.stat-card .value{font-size:22px !important;line-height:1.05 !important;text-shadow:0 0 10px currentColor;}.stat-card .sub{font-size:7px !important;margin-top:1px !important;}
@@ -2437,13 +2438,14 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
 
                 <!-- STATS -->
                 <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card" data-filter="all"><div class="label">📌 Total</div><div class="value" id="totalChamados">0</div><div class="sub">Carregue as planilhas</div></div>
+                    <div class="stat-card"><div class="label">📌 Registros carregados</div><div class="value" id="totalChamados">0</div><div class="sub">Agendadas + Não Agendadas</div></div>
                     <div class="stat-card p1" data-filter="P1"><div class="label">🔴 P1</div><div class="value" id="totalP1">0</div><div class="sub">Críticos</div></div>
                     <div class="stat-card p2" data-filter="P2"><div class="label">🟠 P2</div><div class="value" id="totalP2">0</div><div class="sub">Urgentes</div></div>
                     <div class="stat-card p3" data-filter="P3"><div class="label">🟡 P3</div><div class="value" id="totalP3">0</div><div class="sub">Média</div></div>
                     <div class="stat-card p4" data-filter="P4"><div class="label">🟢 P4</div><div class="value" id="totalP4">0</div><div class="sub">Baixa</div></div>
                     <div class="stat-card p5" data-filter="P5"><div class="label">🔵 P5</div><div class="value" id="totalP5">0</div><div class="sub">Mínima</div></div>
                     <div class="stat-card sla" data-filter="noprazo"><div class="label">✅ No Prazo</div><div class="value" id="totalNoPrazo">0</div><div class="sub">Dentro do SLA</div></div>
+                    <div class="stat-card semsla"><div class="label">➖ Sem SLA</div><div class="value" id="totalSemSLA">0</div><div class="sub">Sem vencimento válido</div></div>
                     <div class="stat-card vencidos" data-filter="vencidos"><div class="label">❌ Vencidos</div><div class="value" id="totalVencidos">0</div><div class="sub">SLA estourado</div></div>
                 </div>
 
@@ -3846,6 +3848,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         function updateStats() {
             const statData = combinedData.filter(d => d && (d.origem === 'agendadas' || d.origem === 'naoagendadas'));
+            const agendadasRaw = Array.isArray(dataStore.agendadas) ? dataStore.agendadas.length : 0;
+            const naoAgendadasRaw = Array.isArray(dataStore.naoagendadas) ? dataStore.naoagendadas.length : 0;
+            const totalRegistros = agendadasRaw + naoAgendadasRaw;
             const total = statData.length;
             const p1 = statData.filter(d => d.prioridade === 'P1').length;
             const p2 = statData.filter(d => d.prioridade === 'P2').length;
@@ -3855,14 +3860,19 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             const comSLA = statData.filter(d => d.slaFim && !isNaN(new Date(d.slaFim)));
             const vencidos = comSLA.filter(d => new Date(d.slaFim) < new Date());
             const noPrazo = comSLA.filter(d => new Date(d.slaFim) >= new Date());
+            const semSLA = total - comSLA.length;
 
-            document.getElementById('totalChamados').textContent = total;
+            const totalEl = document.getElementById('totalChamados');
+            totalEl.textContent = totalRegistros;
+            const totalSub = totalEl.parentElement.querySelector('.sub');
+            if (totalSub) totalSub.textContent = agendadasRaw + ' ag. + ' + naoAgendadasRaw + ' não ag. • ' + total + ' casos únicos ativos';
             document.getElementById('totalP1').textContent = p1;
             document.getElementById('totalP2').textContent = p2;
             document.getElementById('totalP3').textContent = p3;
             document.getElementById('totalP4').textContent = p4;
             document.getElementById('totalP5').textContent = p5;
             document.getElementById('totalNoPrazo').textContent = noPrazo.length;
+            document.getElementById('totalSemSLA').textContent = semSLA;
             document.getElementById('totalVencidos').textContent = vencidos.length;
         }
 
@@ -3891,7 +3901,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         function updateCharts() {
             const pc = {};
-            combinedData.forEach(d => { const p = d.prioridade; pc[p] = (pc[p] || 0) + 1; });
+            const priorityData = combinedData.filter(d => d && (d.origem === 'agendadas' || d.origem === 'naoagendadas'));
+            priorityData.forEach(d => { const p = d.prioridade; pc[p] = (pc[p] || 0) + 1; });
             const pOrder = ['P1','P2','P3','P4','P5','N/A'];
             const pVarMap = { P1: '--red', P2: '--orange', P3: '--yellow', P4: '--green', P5: '--teal', 'N/A': '--subtle' };
             const pLabels = pOrder.filter(p => pc[p]);
@@ -3908,7 +3919,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             if (charts.chartFalha) charts.chartFalha.destroy();
             const now = Date.now();
             const minute = 60000;
-            const remaining = combinedData.map(d => d.slaFim ? new Date(d.slaFim).getTime() - now : NaN).filter(Number.isFinite);
+            const remaining = combinedData.filter(d => d && (d.origem === 'agendadas' || d.origem === 'naoagendadas')).map(d => d.slaFim ? new Date(d.slaFim).getTime() - now : NaN).filter(Number.isFinite);
             const marks = [0, 30, 60, 120, 180, 240, 300, 360];
             const labels = ['Agora', '30 min', '1h', '2h', '3h', '4h', '5h', '6h'];
             const cumulative = (from, to) => marks.map(mark => mark < from ? null : remaining.filter(ms => ms > from * minute && ms <= Math.min(mark, to) * minute).length);
@@ -4533,7 +4544,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         console.log('📊 Genesis → Cruzamento automático (não está no Genesis = Verificar, está no Genesis = Fora)');
         console.log('🏭 Concentradores → Marcação automática');
         console.log('🗺️ TRJ: Baixada | Grande Rio | Niterói | Zona Oeste | Interior RJ | Espírito Santo');
-    
+
         // ================================================================
         //  TRUST -- Alertas de SLA (5 atividades mais proximas de estourar)
         // ================================================================
