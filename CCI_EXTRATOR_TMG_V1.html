@@ -2495,6 +2495,7 @@ body::before {
             </nav>
             <div class="header-actions">
                 <div class="sla-counter" aria-live="polite">Dados: <span id="dataStatus">Nenhum</span></div>
+                <button id="toastToggle" class="toast-toggle-top" type="button" onclick="window.toggleSlaToast&&window.toggleSlaToast()" title="Desligar alertas toast" aria-label="Desligar alertas toast" aria-pressed="true" style="width:34px;height:34px;min-width:34px;padding:0;display:inline-grid;place-items:center;flex:0 0 34px;border:1px solid var(--v3-line-strong,var(--border));border-radius:50%;background:var(--v3-panel-2,var(--surface));color:var(--v3-blue,var(--accent));font-size:16px;line-height:1;cursor:pointer">🔔</button>
                 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false">
                     <span id="themeIcon" aria-hidden="true">☾</span><span id="themeLabel">ESCURO</span>
                 </button>
@@ -4347,7 +4348,9 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             function trustRefreshToggle() {
                 var btn = document.getElementById('toastToggle');
                 if (!btn) return;
-                btn.textContent = trustEnabled ? '🔔 Toast ligado' : '🔕 Toast desligado';
+                btn.textContent = trustEnabled ? '🔔' : '🔕';
+                btn.title = trustEnabled ? 'Desligar alertas toast' : 'Ligar alertas toast';
+                btn.setAttribute('aria-label', btn.title);
                 btn.setAttribute('aria-pressed', trustEnabled ? 'true' : 'false');
                 btn.style.color = trustEnabled ? 'var(--v3-blue, #18aaff)' : 'var(--v3-muted, #8aa6bc)';
             }
@@ -4464,7 +4467,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
     if(radar){radar.classList.add('v3-radar');const h=radar.querySelector('h4');if(h)h.textContent='◎ Radar da Operação';const orbit=document.createElement('div');orbit.className='v3-sla-orbit';orbit.innerHTML='<span><small>PRÓXIMO SLA</small><b id="v3SlaClock">--</b></span>';radar.appendChild(orbit);}
     if(priority){priority.classList.add('v3-priority');const h=priority.querySelector('h4');if(h)h.textContent='◇ Distribuição por Prioridade';}
     [mc,region].forEach(b=>{if(b)b.classList.add('v3-secondary')});
-    const signals=document.createElement('section');signals.className='v3-signals-panel';signals.innerHTML='<h4 style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>◖ Sinais da Operação</span><button id="toastToggle" type="button" onclick="window.toggleSlaToast&&window.toggleSlaToast()" style="border:1px solid var(--v3-line);border-radius:7px;background:var(--v3-panel-2);color:var(--v3-muted);padding:4px 7px;font:700 8px inherit;cursor:pointer">🔔 Toast ligado</button></h4><div class="v3-signal-list">'+signalRow('warn','⚠','Missão crítica','Chamados críticos ativos','v3SignalCritical')+signalRow('warn','◉','SLA vencido','Fora do prazo','v3SignalLate')+signalRow('','⌘','Atenção','P1 e P2 em atenção','v3SignalPriority')+signalRow('','◷','Dentro do SLA','Operação protegida','v3SignalSafe')+'</div>';grid.appendChild(signals);if(window.refreshSlaToastToggle)window.refreshSlaToastToggle();
+    const signals=document.createElement('section');signals.className='v3-signals-panel';signals.innerHTML='<h4>◖ Sinais da Operação</h4><div class="v3-signal-list">'+signalRow('warn','⚠','Missão crítica','Chamados críticos ativos','v3SignalCritical')+signalRow('warn','◉','SLA vencido','Fora do prazo','v3SignalLate')+signalRow('','⌘','Atenção','P1 e P2 em atenção','v3SignalPriority')+signalRow('','◷','Dentro do SLA','Operação protegida','v3SignalSafe')+'</div>';grid.appendChild(signals);if(window.refreshSlaToastToggle)window.refreshSlaToastToggle();
   }
   function arrange(){
     const header=document.querySelector('.header'),navEl=document.querySelector('.cci-regional-nav,.region-nav'),live=document.querySelector('.cci-live,.live-indicator'),actions=document.querySelector('.header-actions');
