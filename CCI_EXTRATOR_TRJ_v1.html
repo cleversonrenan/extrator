@@ -2703,7 +2703,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             REPETIDO: ['Repetido'],
             LAT: ['Latitude XTTS', 'Latitude'],
             LNG: ['Longitude XTTS', 'Longitude'],
-            CRIACAO: ['Criação do NTT', 'Data'],
+            CRIACAO: ['Data de criação da TSK', 'Data criação TSK', 'Data de criação', 'Data da criação', 'Criado em', 'Data de abertura', 'Abertura', 'Criação do NTT', 'Data'],
             SLA_FIM: ['Fim SLA', 'SLA Fim', 'Fim do SLA'],
             ENTRADA: ['Data/Hora de Entrada no site'],
             SAIDA: ['Data/Hora de Saída do site'],
@@ -2877,6 +2877,17 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 }
             }
             return parseSlaData(s);
+        }
+
+        function formatCreationDateForExport(value) {
+            const date = parseDateValue(value);
+            if (!date) return value ? String(value).trim() : '';
+            const dd = String(date.getDate()).padStart(2, '0');
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const yyyy = date.getFullYear();
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mi = String(date.getMinutes()).padStart(2, '0');
+            return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi;
         }
 
         function parsePriority(p) {
@@ -4339,7 +4350,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 else if (isConc) mc = 'Concentrador';
                 else if (d.isMissaoCritica) mc = '⚠️';
                 return {
-                    'TSK': d.tsk, 'Prioridade': d.prioridade,
+                    'TSK': d.tsk, 'Data de criação da TSK': formatCreationDateForExport(d.criacao), 'Prioridade': d.prioridade,
                     'NE ID': d.ne, 'END_ID': d.end_id,
                     'Técnico': d.tecnico || '', 'Cidade': d.cidade || '', 'UF': d.uf || '',
                     'Tipo da Falha': d.tipoFalha, 'Falha': d.falha || '',
