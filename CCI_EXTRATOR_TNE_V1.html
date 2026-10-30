@@ -3924,11 +3924,34 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  EXPORT
         // ================================================================
+        const TSK_SERVICE_NOW_BASE = 'https://timbrasil.service-now.com/now/nav/ui/classic/params/target/u_task_evento.do%3Fsys_id%3D';
+
+        function buildTskServiceNowUrl(tsk) {
+            const value = String(tsk === null || tsk === undefined ? '' : tsk).trim();
+            if (!value || value === 'N/I') return '';
+            return TSK_SERVICE_NOW_BASE + encodeURIComponent(value);
+        }
+
+        function applyTskHyperlinks(ws, headers, items) {
+            const tskIdx = headers.indexOf('TSK');
+            if (tskIdx < 0) return;
+            (items || []).forEach((item, index) => {
+                const url = buildTskServiceNowUrl(item.tsk);
+                if (!url) return;
+                const cell = ws[XLSX.utils.encode_cell({ r: index + 1, c: tskIdx })];
+                if (!cell) return;
+                cell.v = url;
+                cell.w = url;
+                cell.l = { Target: url, Tooltip: 'Abrir ' + String(item.tsk || 'TSK') + ' no ServiceNow' };
+                cell.s = { font: { color: { rgb: '0563C1' }, underline: true } };
+            });
+        }
+
         function getExportRows(items) {
             return (items || displayData).map(d => {
                 const sla = getSLAInfo(d);
                 return {
-                    'UF': normalizeTNEUF(d.uf) || 'N/A', 'TNE': d.tne, 'TSK': d.tsk, 'Data de criação da TSK': formatCreationDateForExport(d.criacao), 'Prioridade': d.prioridade,
+                    'UF': normalizeTNEUF(d.uf) || 'N/A', 'TNE': d.tne, 'TSK': buildTskServiceNowUrl(d.tsk), 'Data de criação da TSK': formatCreationDateForExport(d.criacao), 'Prioridade': d.prioridade,
                     'NE ID': d.ne, 'END_ID': d.end_id, 'Tipo da Falha': d.tipoFalha,
                     'SLA (Fim)': sla.label, 'Tempo Restante': sla.timeLeft,
                     'Status': d.status, 'Cruzamento': d.cruzamento
@@ -3969,6 +3992,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
                 const slaIdx = headers.indexOf('SLA (Fim)'), timeIdx = headers.indexOf('Tempo Restante');
                 headers.forEach((h, i) => { const cell = ws[XLSX.utils.encode_cell({ r: 0, c: i })]; if (cell) cell.s = HEADER_STYLE; });
+                applyTskHyperlinks(ws, headers, groupItems);
                 groupItems.forEach((d, r) => {
                     const sla = getSLAInfo(d), row = r + 1;
                     const slaCell = slaIdx >= 0 ? ws[XLSX.utils.encode_cell({ r: row, c: slaIdx })] : null;

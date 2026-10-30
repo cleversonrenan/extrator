@@ -4341,6 +4341,29 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
         // ================================================================
         //  EXPORT
         // ================================================================
+        const TSK_SERVICE_NOW_BASE = 'https://timbrasil.service-now.com/now/nav/ui/classic/params/target/u_task_evento.do%3Fsys_id%3D';
+
+        function buildTskServiceNowUrl(tsk) {
+            const value = String(tsk === null || tsk === undefined ? '' : tsk).trim();
+            if (!value || value === 'N/I') return '';
+            return TSK_SERVICE_NOW_BASE + encodeURIComponent(value);
+        }
+
+        function applyTskHyperlinks(ws, headers, items) {
+            const tskIdx = headers.indexOf('TSK');
+            if (tskIdx < 0) return;
+            (items || []).forEach((item, index) => {
+                const url = buildTskServiceNowUrl(item.tsk);
+                if (!url) return;
+                const cell = ws[XLSX.utils.encode_cell({ r: index + 1, c: tskIdx })];
+                if (!cell) return;
+                cell.v = url;
+                cell.w = url;
+                cell.l = { Target: url, Tooltip: 'Abrir ' + String(item.tsk || 'TSK') + ' no ServiceNow' };
+                cell.s = { font: { color: { rgb: '0563C1' }, underline: true } };
+            });
+        }
+
         function getExportRows() {
             return displayData.map(d => {
                 const sla = getSLAInfo(d);
@@ -4350,7 +4373,7 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 else if (isConc) mc = 'Concentrador';
                 else if (d.isMissaoCritica) mc = '⚠️';
                 return {
-                    'TSK': d.tsk, 'Data de criação da TSK': formatCreationDateForExport(d.criacao), 'Prioridade': d.prioridade,
+                    'TSK': buildTskServiceNowUrl(d.tsk), 'Data de criação da TSK': formatCreationDateForExport(d.criacao), 'Prioridade': d.prioridade,
                     'NE ID': d.ne, 'END_ID': d.end_id,
                     'Técnico': d.tecnico || '', 'Cidade': d.cidade || '', 'UF': d.uf || '',
                     'Tipo da Falha': d.tipoFalha, 'Falha': d.falha || '',
@@ -4397,6 +4420,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 const addr = XLSX.utils.encode_cell({ r: 0, c: i });
                 if (ws[addr]) ws[addr].s = HEADER_STYLE;
             });
+
+            applyTskHyperlinks(ws, headers, displayData);
 
             displayData.forEach((d, r) => {
                 const sla = getSLAInfo(d);
