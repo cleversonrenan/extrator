@@ -2362,7 +2362,8 @@ body::before {
 
         <div class="header">
             <h1><img id="logoImg" src="TLP.PNG" alt="Logo TLP" style="height:34px;width:auto;"> CCI EXTRATOR TNE <small>v1.0 | Multi-Planilhas </small></h1>
-            <nav class="cci-regional-nav" aria-label="Alternar regional">
+            <button type="button" class="filter-btn btn-export" id="btnAtualizarRegioes" title="Recarregar mapeamento regional do GitHub" style="margin-right:8px;">🔄 Atualizar regiões</button><span id="regioesUpdateMsg" style="font-size:11px;margin-right:8px;color:var(--muted);"></span>
+                <nav class="cci-regional-nav" aria-label="Alternar regional">
                 <a href="CCI_EXTRATOR_TRJ_v1.html" title="Abrir extrator TRJ">TRJ</a>
                 <a href="CCI_EXTRATOR_TMG_V1.html" title="Abrir extrator TMG">TMG</a>
                 <a href="CCI_EXTRATOR_TNE_V1.html" class="active" aria-current="page" title="Extrator TNE ativo">TNE</a>
@@ -2522,6 +2523,10 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                     <span class="label">📤 Exportar (<span id="exportCount">0</span> registros):</span>
                     <button type="button" class="filter-btn btn-export" id="btnExportXLSX">📊 XLSX</button>
                     <button class="filter-btn btn-export" id="btnExportCopy">📋 Copiar</button>
+                    <span class="label" style="margin-left:8px;">Concentradores e MC:</span>
+                    <button type="button" class="filter-btn btn-export" id="btnCopyConcMC">📋 Copiar Conc/MC</button>
+                    <button type="button" class="filter-btn btn-export" id="btnExportConcMCXLSX">📊 XLSX Conc/MC</button>
+                    <span id="concMcExportMsg" style="font-size:11px;margin-left:6px;color:var(--muted);"></span>
                 </div>
 
                 <!-- TABLE -->
@@ -2773,6 +2778,8 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
             return String(id).trim().toUpperCase().replace(/[\s\-_]+/g, '');
         }
 
+        const REGIOES_CONFIG_FILE = 'CCI_EXTRATOR_TNE_v1.regioes.json';
+        function applyRegionConfig(cfg){ try{ if(!cfg||typeof cfg!=='object') return false; if(cfg.labels&&typeof cfg.labels==='object'){ window.REGIAO_LABELS_MAP = cfg.labels; } return true; }catch(e){console.warn(e); return false;} }
         function getSLAInfo(d) {
             if (!d.slaFim) return { label: '--', timeLeft: '--', class: 'verde', percent: 100 };
             const fim = new Date(d.slaFim);
@@ -3501,12 +3508,13 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 ? '<span class="badge ' + (cruzClass[d.cruzamento] || '') + '">' + (cruzLabel[d.cruzamento] || d.cruzamento) + '</span>'
                 : '<span style="color:var(--muted);">—</span>';
             let mcHtml = '';
+            const critBadge = '<span class="mc-badge" title="Missão Crítica" style="display:inline-flex;align-items:center;gap:4px;color:#d97706;font-weight:700;font-size:12px;white-space:nowrap;"><span style="color:#f59e0b;font-size:14px;line-height:1;">⚠️</span><span>Crítico</span></span>';
             if (d.isMissaoCritica && isConc) {
-                mcHtml = '<span title="Missão Crítica + Concentrador" style="font-size:13px;">⚠️ Concentrador</span>';
+                mcHtml = critBadge + '<div style="font-size:10px;color:var(--purple);margin-top:2px;">Concentrador</div>';
             } else if (isConc) {
-                mcHtml = '<span title="Concentrador" style="font-size:13px;">Concentrador</span>';
+                mcHtml = '<span title="Concentrador" style="font-size:12px;color:var(--purple);font-weight:600;">Concentrador</span>';
             } else if (d.isMissaoCritica) {
-                mcHtml = '<span title="Missão Crítica" style="font-size:16px;">⚠️</span>';
+                mcHtml = critBadge;
             }
             const rowPrioClass = { P1: 'row-p1', P2: 'row-p2', P3: 'row-p3', P4: 'row-p4', P5: 'row-p5' }[d.prioridade] || '';
             const rowClass = isConc ? 'row-concentrador' : rowPrioClass;
@@ -4078,6 +4086,203 @@ Data/Hora	Duração	Tipo	...	NE_ID	END_ID	...	Status
                 navigator.clipboard.writeText(text).then(done).catch(function() { alert('Copie manualmente:\n\n' + text); });
             } else { alert('Copie manualmente:\n\n' + text); }
         }
+
+
+        // ===== Conc/MC export + dynamic region config (added) =====
+        function getConcMCExportItems() {
+            const base = (typeof displayData !== 'undefined' && Array.isArray(displayData)) ? displayData.slice() : [];
+            const seen = new Set();
+            return base.filter(d => {
+                const isConc = d && (d.isConcentrador || d.cruzamento === 'concentrador');
+                const isMC = d && d.isMissaoCritica;
+                if (!isConc && !isMC) return false;
+                const key = String(d.tsk || '') + '|' + String(d.end_id || '') + '|' + String(d.ne || '');
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+        function getTipoFixaMovel(d) {
+            try {
+                if (typeof getRegraGroup === 'function') {
+                    const rg = getRegraGroup(d);
+                    if (rg === 'fixa') return 'Fixa';
+                    if (rg === 'movel') return 'Móvel';
+                    if (rg === 'preditiva') return 'Preditiva';
+                }
+            } catch(e) {}
+            const cm = String((d && (d.cm || d.CM || d.grupo_trabalho || d.grupo || d.place || '')) || '').toUpperCase();
+            if (/MOVEL|MÓVEL|RAN|CEL|MOBILE|4G|5G/.test(cm)) return 'Móvel';
+            if (/PREDIT/.test(cm)) return 'Preditiva';
+            return 'Fixa';
+        }
+        function formatTempoRestanteForMsg(sla) {
+            if (!sla) return '';
+            if (sla.class === 'cinza' || /Vencido/i.test(String(sla.timeLeft||'')) || /Expirado/i.test(String(sla.label||''))) return '⏰ Vencido';
+            return sla.timeLeft && sla.timeLeft !== '--' ? sla.timeLeft : '';
+        }
+        function formatSlaDateBR(d) {
+            try { return (typeof formatDateSLA === 'function') ? formatDateSLA(d && d.slaFim) : ''; } catch(e) { return ''; }
+        }
+        function buildConcMCWhatsAppText() {
+            const items = getConcMCExportItems();
+            const title = '*Concentradores e Missão Crítica na fila no momento.*';
+            if (!items.length) return title + '\n\n_Nenhum chamado de Concentrador ou Missão Crítica encontrado com os filtros atuais._';
+            const groups = {};
+            items.forEach(d => {
+                const regiao = (d && (d.regiao || d.anf || d.uf || 'Sem região')) || 'Sem região';
+                const tipo = getTipoFixaMovel(d);
+                const key = regiao + '||' + tipo;
+                if (!groups[key]) groups[key] = { regiao: regiao, tipo: tipo, items: [] };
+                groups[key].items.push(d);
+            });
+            const keys = Object.keys(groups).sort((a,b) => {
+                const ga = groups[a], gb = groups[b];
+                const ra = String(ga.regiao), rb = String(gb.regiao);
+                if (ra !== rb) return ra.localeCompare(rb, 'pt-BR');
+                return String(ga.tipo).localeCompare(String(gb.tipo), 'pt-BR');
+            });
+            const slaMs = (d) => { if (!d || !d.slaFim) return Infinity; const t = new Date(d.slaFim).getTime(); return isNaN(t)?Infinity:t; };
+            const lines = [title, ''];
+            keys.forEach(k => {
+                const g = groups[k];
+                lines.push('*' + g.regiao + ' - ' + g.tipo + '*');
+                g.items.slice().sort((a,b)=>slaMs(a)-slaMs(b)).forEach(d => {
+                    const sla = (typeof getSLAInfo === 'function') ? getSLAInfo(d) : {label:'--',timeLeft:'--',class:'verde'};
+                    const slaFmt = formatSlaDateBR(d) || (sla.label && sla.label!=='--'?sla.label:'s/ SLA');
+                    const tempo = formatTempoRestanteForMsg(sla);
+                    const site = d.ne || d.site || d.end_id || 'N/I';
+                    const falha = d.tipoFalha || d.falha || '';
+                    let line = [d.tsk || '', d.prioridade || '', site, falha];
+                    // build: TSK - P - SITE - FALHA - ⚠️ Crítico - SLA (data) tempo
+                    line = line.filter(Boolean).join(' - ');
+                    if (d.isMissaoCritica) line += ' - ⚠️ Crítico';
+                    line += ' - SLA (' + slaFmt + ')';
+                    if (tempo) line += ' ' + tempo;
+                    lines.push(line);
+                });
+                lines.push('');
+            });
+            return lines.join('\n').replace(/\n{3,}/g,'\n\n').trim() + '\n';
+        }
+        function setConcMCMsg(text, ok) {
+            const el = document.getElementById('concMcExportMsg');
+            if (!el) return;
+            el.textContent = text;
+            el.style.color = ok ? 'var(--green, #15803d)' : 'var(--red, #b91c1c)';
+            clearTimeout(window._concMcMsgT);
+            window._concMcMsgT = setTimeout(()=>{ if(el.textContent===text){ el.textContent=''; el.style.color='var(--muted)'; } }, 3500);
+        }
+        async function copyConcMCToClipboard() {
+            const text = buildConcMCWhatsAppText();
+            const btn = document.getElementById('btnCopyConcMC');
+            const original = btn ? btn.textContent : '';
+            const success = () => { if(btn){ btn.textContent='✅ Copiado!'; setTimeout(()=>{ btn.textContent=original; },1800);} setConcMCMsg('Copiado para a área de transferência.', true); };
+            const fail = (err) => {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.left='-9999px';
+                    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, ta.value.length);
+                    const ok = document.execCommand && document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    if (ok) { success(); return; }
+                } catch(e) {}
+                setConcMCMsg('Falha ao copiar. Verifique permissões do navegador.', false);
+                try { window.prompt('Copie o relatório abaixo:', text); } catch(e) {}
+            };
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    success();
+                } else {
+                    fail();
+                }
+            } catch(e) { fail(e); }
+        }
+        function exportConcMCXLSX() {
+            try {
+                const items = getConcMCExportItems();
+                if (!items.length) { setConcMCMsg('Nenhum registro de Concentrador/Missão Crítica para exportar.', false); return; }
+                const rows = items.map(d => {
+                    const sla = (typeof getSLAInfo === 'function') ? getSLAInfo(d) : {label:'--',timeLeft:'--',class:'verde'};
+                    const isConc = d.isConcentrador || d.cruzamento === 'concentrador';
+                    const tipo = getTipoFixaMovel(d);
+                    const slaFmt = formatSlaDateBR(d) || sla.label || '--';
+                    const tempo = sla.timeLeft || '--';
+                    const situacao = (sla.class === 'cinza' || /Vencido/i.test(String(tempo))) ? 'Vencido' : 'No prazo';
+                    return {
+                        'Região': d.regiao || d.anf || d.uf || '',
+                        'Tipo (Fixa/Móvel)': tipo,
+                        'TSK': d.tsk || '',
+                        'Prioridade': d.prioridade || '',
+                        'Site / NE ID / END_ID': [d.ne||'', d.end_id||''].filter(Boolean).join(' / '),
+                        'Tipo de falha': d.tipoFalha || d.falha || '',
+                        'Cruzamento / Concentrador': d.cruzamento || (isConc ? 'concentrador' : ''),
+                        'Missão Crítica': d.isMissaoCritica ? 'Sim' : 'Não',
+                        'SLA': slaFmt,
+                        'Tempo restante': tempo,
+                        'Situação do SLA': situacao
+                    };
+                });
+                const headers = Object.keys(rows[0]);
+                const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+                ws['!cols'] = headers.map(h => ({ wch: Math.min(Math.max(h.length+2, 12), 50) }));
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Conc_MC');
+                const ts = new Date().toISOString().slice(0,10);
+                const filename = 'concentradores_missao_critica_' + ts + '.xlsx';
+                if (typeof downloadXlsx === 'function') downloadXlsx(wb, filename);
+                else XLSX.writeFile(wb, filename);
+                setConcMCMsg('XLSX de Concentradores/Missão Crítica exportado.', true);
+            } catch(err) {
+                console.error(err);
+                setConcMCMsg('Erro ao exportar XLSX: ' + (err && err.message || err), false);
+            }
+        }
+        // ---- Dynamic region mapping (GitHub JSON + local fallback) ----
+        function getRegionConfigUrl() {
+            const base = (location && location.origin && location.origin !== 'null') ? (location.origin + location.pathname.replace(/[^\/]*$/, '')) : '';
+            // try same directory relative JSON
+            const file = (typeof REGIOES_CONFIG_FILE !== 'undefined' && REGIOES_CONFIG_FILE) ? REGIOES_CONFIG_FILE : 'CCI_EXTRATOR_TRJ_v1.regioes.json';
+            return { relative: file, sameDir: base ? (base + file) : file };
+        }
+        async function atualizarRegioesFromRemote(showMsg) {
+            const msgEl = document.getElementById('regioesUpdateMsg');
+            const setMsg = (t, ok) => { if(!msgEl) return; msgEl.textContent=t; msgEl.style.color = ok==null?'var(--muted)':(ok?'var(--green,#15803d)':'var(--red,#b91c1c)'); };
+            try {
+                if (location && location.protocol === 'file:') {
+                    setMsg('Arquivo local: atualização remota pode ser bloqueada pelo navegador. Usando configuração local.', false);
+                    if (showMsg) alert('Quando aberto localmente (file://), o navegador pode bloquear a leitura remota por CORS. A configuração regional local foi preservada.');
+                    return false;
+                }
+                const file = (typeof REGIOES_CONFIG_FILE !== 'undefined' && REGIOES_CONFIG_FILE) ? REGIOES_CONFIG_FILE : null;
+                if (!file) { setMsg('Configuração regional externa não definida para este extrator.', false); return false; }
+                const url = file + (file.indexOf('?')>=0?'&':'?') + '_ts=' + Date.now();
+                const resp = await fetch(url, { cache: 'no-store' });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const cfg = await resp.json();
+                if (typeof applyRegionConfig === 'function') {
+                    const applied = applyRegionConfig(cfg);
+                    if (applied) {
+                        setMsg('Regiões atualizadas.', true);
+                        try { if (typeof applyCruzamento === 'function') applyCruzamento(); if (typeof applyFilters === 'function') applyFilters(); if (typeof updateTable === 'function') updateTable(); if (typeof updateConcTable === 'function') updateConcTable(); if (typeof updateStats === 'function') updateStats(); if (typeof updateCharts === 'function') updateCharts(); } catch(e){}
+                        return true;
+                    }
+                }
+                setMsg('Configuração carregada, mas formato não reconhecido. Mantida configuração local.', false);
+                return false;
+            } catch(e) {
+                console.warn('Falha ao atualizar regiões:', e);
+                setMsg('Falha ao carregar regiões remotas. Mantida configuração local.', false);
+                if (showMsg) alert('Não foi possível atualizar as regiões pelo GitHub/remoto. Motivo: ' + (e && e.message || e) + '\nA configuração local válida foi preservada.');
+                return false;
+            }
+        }
+        try { document.getElementById('btnCopyConcMC') && document.getElementById('btnCopyConcMC').addEventListener('click', copyConcMCToClipboard); } catch(e){}
+        try { document.getElementById('btnExportConcMCXLSX') && document.getElementById('btnExportConcMCXLSX').addEventListener('click', exportConcMCXLSX); } catch(e){}
+        try { document.getElementById('btnAtualizarRegioes') && document.getElementById('btnAtualizarRegioes').addEventListener('click', function(){ atualizarRegioesFromRemote(true); }); } catch(e){}
+        // auto-try load on start (non-blocking)
+        try { setTimeout(function(){ atualizarRegioesFromRemote(false); }, 300); } catch(e){}
 
         document.getElementById('btnExportXLSX').addEventListener('click', exportXLSX);
         document.getElementById('btnExportCopy').addEventListener('click', exportCopyText);

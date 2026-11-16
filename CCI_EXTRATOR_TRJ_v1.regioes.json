@@ -1,0 +1,27 @@
+﻿{
+  "extrator": "TRJ",
+  "regioes": {
+    "Baixada": ["TRJ-RJ-BXD01-BXD01"],
+    "Grande Rio": ["TRJ-RJ-GRD01-ZSL01"],
+    "Niterói": ["TRJ-RJ-BXD01-NIT02"],
+    "Zona Oeste": ["TRJ-RJ-ZNO01-ZOE02"],
+    "Interior RJ": ["TRJ-RJ-INT01-CBF01", "TRJ-RJ-INT01-NFB03", "TRJ-RJ-INT01-PET04", "TRJ-RJ-INT01-VRD05", "TRJ-RJ-ZNO01-ANG01"],
+    "Espírito Santo": ["TRJ-ES-EPS01-CIM01", "TRJ-ES-EPS01-SMT02", "TRJ-ES-EPS01-VIT03"],
+    "Campos dos Goytacazes": ["TRJ-RJ-INT01-CPS02"]
+  },
+  "places": {
+    "TRJ-RJ-BXD01-BXD01": "Baixada Fluminense",
+    "TRJ-RJ-GRD01-ZSL01": "Grande Rio",
+    "TRJ-RJ-BXD01-NIT02": "Niterói",
+    "TRJ-RJ-ZNO01-ZOE02": "Zona Oeste",
+    "TRJ-RJ-INT01-CBF01": "Cabo Frio",
+    "TRJ-RJ-INT01-NFB03": "Nova Friburgo",
+    "TRJ-RJ-INT01-PET04": "Petrópolis",
+    "TRJ-RJ-INT01-VRD05": "Volta Redonda",
+    "TRJ-RJ-ZNO01-ANG01": "Angra dos Reis / Costa Verde",
+    "TRJ-ES-EPS01-CIM01": "CIM - Cachoeiro de Itapemirim",
+    "TRJ-ES-EPS01-SMT02": "SMT - São Mateus",
+    "TRJ-ES-EPS01-VIT03": "VIT - Grande Vitória",
+    "TRJ-RJ-INT01-CPS02": "CPS - Campos dos Goytacazes"
+  }
+}
